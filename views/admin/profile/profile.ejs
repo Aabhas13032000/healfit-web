@@ -1,0 +1,140 @@
+<%- include('../../components/header/header.ejs',{cssFile : 'adminPages'}) %> 
+
+<div id="load"></div>
+
+<div class="container-fluid">
+    <div class="form">
+        <div class="abstract-bg">
+            <img src="https://img.freepik.com/free-photo/incognito-man-building-biceps-with-barbell_7502-5120.jpg?t=st=1656347667~exp=1656348267~hmac=976bd11533a4c27437bb930501ddf377c2df2f28b2474c34c8d7a4541cd0313c&w=1800" alt="">
+        </div>
+        <div class="profile">
+            <div class="row">
+                <div class="col-lg-2 col-md-3 col-sm-12 col-12 d-flex align-items-center justify-content-center">
+                    <div class="profile-image">
+                        <img src="<%= data.profile_image %>" alt="">
+                    </div>
+                </div>
+                <div class="col-lg-10 col-md-9 col-sm-12 col-12 d-flex align-items-center justify-content-center justify-content-md-start">
+                    <div>
+                        <h4 class="text-center text-md-start"><%= data.name %></h4>
+                        <p class="text-center text-md-start">Update your photo and personal details</p>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <% if(message) { %> 
+                <div class="alert <%= alert %>  alert-dismissible fade show" role="alert" id="success-alert">
+                    <%= message %> 
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %> 
+            <div class="main-form">
+                <form action="/admin/updateProfile" method="POST">
+                    <div class="row">
+                        <div class="col-lg-3 d-flex align-items-center">
+                            <p>Email</p>
+                        </div>
+                        <div class="col-lg-9">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="username" readonly name="username" required value="<%= data.email %>" placeholder="Enter a username">
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-lg-3 d-flex align-items-center">
+                            <p>Current-Password</p>
+                        </div>
+                        <div class="col-lg-9">
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="current_password" id="current_password" readonly placeholder="Enter a new password" value="<%= data.password %>">
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-lg-3 d-flex align-items-center">
+                            <p>Password</p>
+                        </div>
+                        <div class="col-lg-9">
+                            <div class="form-group">
+                                <input type="password" class="form-control" id="password" name="password" minlength="8" placeholder="Enter a new password" autocomplete="off">
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-lg-3 d-flex align-items-center">
+                            <p>Re-Enter password</p>
+                        </div>
+                        <div class="col-lg-9">
+                            <div class="form-group">
+                                <input type="password" class="form-control" id="c_password" onkeyup="checkPassword(this.value)" name="c_password" minlength="8"  placeholder="Re-Enter a new password" autocomplete="off">
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-lg-3 d-flex align-items-center">
+                            <p>Phone number</p>
+                        </div>
+                        <div class="col-lg-9">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" minlength="13" placeholder="Enter phone number with +91" maxlength="13" autocomplete="off" value="<%= data.phoneNumber %>" required>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-lg-3 d-flex align-items-start">
+                            <p>Share message</p>
+                        </div>
+                        <div class="col-lg-9">
+                            <div class="form-group">
+                                <textarea type="text" rows="5" class="form-control" id="shareText" name="shareText" placeholder="Enter share message" autocomplete="off" required><%= data.share_text %></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="button">
+                                <button type="submit" id="book_verify" class="btn btn-primary" style="width: 100%;margin-top: 20px;">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                    <br><br>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    if(document.getElementById('success-alert')) {
+        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+            $("#success-alert").slideUp(500);
+        });
+    }
+
+    function checkPassword(c_password){
+        var password = document.getElementById('password').value;
+        if(document.getElementById('c_password').classList.contains('is-valid')){
+            document.getElementById('c_password').classList.remove('is-valid')
+        }
+        if(document.getElementById('c_password').classList.contains('is-invalid')){
+            document.getElementById('c_password').classList.remove('is-invalid')
+        }
+        if(password.length == c_password.length){
+            if(password === c_password){
+                document.getElementById('c_password').classList.add('is-valid');
+            } else {
+                document.getElementById('c_password').classList.add('is-invalid');
+            }
+        } else if(password.length < c_password.length){
+            document.getElementById('c_password').classList.add('is-invalid');
+        }
+    }
+</script>
+
+<%- include('../../components/footer/footer.ejs') %> 

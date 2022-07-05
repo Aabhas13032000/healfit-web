@@ -1,0 +1,271 @@
+.container-fluid {
+    background-color: var(--background);
+    height: 100%;
+    overflow: hidden;
+    padding: 0;
+    display: flex;
+}
+
+/* Sidebar */
+.container-fluid .sidebar {
+    background-color: var(--white);
+    width: 16rem;
+    border-right: 1px solid var(--default-input-borders);
+    overflow: hidden;
+    height: 100%;
+}
+
+/* Sidebar list */
+.container-fluid .sidebar ul {
+    padding: 10px 10px 10px 10px;
+    margin: 0;
+    color: var(--rich-black);
+    font-family: Gilroy-Regular;
+    font-size: 16px;
+    list-style-type: none;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 74%;
+}
+
+.container-fluid .sidebar ul .list {
+    margin-top: 0px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    cursor: pointer;
+    padding: 10px 20px 10px 10px;
+    /* transition: 0.3s ease-in; */
+}
+
+.container-fluid .sidebar ul .list .iconify {
+    margin-right: 10px;
+    color: var(--rich-black);
+    /* transition: 0.3s ease-in; */
+    height: 20px;
+    width: 20px;
+}
+
+.container-fluid .sidebar ul .list .sidebar_text {
+    margin-left: 5px;
+    color: var(--rich-black);
+    font-family: Gilroy-Regular;
+}
+
+.container-fluid .sidebar ul .list:hover {
+    /* background-color: var(--light-yellow); */
+    background-color: var(--light-card-bg);
+    padding: 10px 20px 10px 10px;
+    border-radius: 8px;
+}
+
+.container-fluid .sidebar ul .list:hover .iconify,.sidebar ul .list:hover .sidebar_text{
+    color: var(--rich-black) !important;
+    font-family: Gilroy-Regular !important;
+}
+
+.container-fluid .sidebar ul .selected {
+    /* background-color: var(--highlight); */
+    background-color: var(--card-bg);
+    padding: 10px 20px 10px 10px;
+    border-radius: 8px;
+}
+
+.container-fluid .sidebar ul .selected .iconify,.sidebar ul .selected .sidebar_text{
+    color: var(--rich-black) !important;
+    font-family: Gilroy-Regular !important;
+}
+
+/* Logo */
+.container-fluid .sidebar .logo {
+    display: flex;
+    /* justify-content: space-between; */
+    justify-content: center;
+    padding: 12px 10px;
+    align-items: center;
+    width: 100%;
+    height: 8%;
+}
+
+.container-fluid .sidebar .logo a {
+    /* margin-left: 10px; */
+    margin-left: 0px;
+    width: 0;
+}
+
+.container-fluid .sidebar .logo a .iconify {
+    width: 0;
+}
+
+.container-fluid .sidebar .logo h5 {
+    margin: 0;
+    font-family: Hellix-Medium;
+}
+
+/* Profile */
+.container-fluid .sidebar .profile {
+    height: 18%;
+    width: 100% !important;
+    padding: 10px;
+    display: flex;
+    align-items: end;
+    overflow: hidden;
+    margin: 0;
+}
+
+.container-fluid .sidebar .profile div {
+    width: 100%;
+    overflow: hidden;
+}
+
+.container-fluid .sidebar .profile .details {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px 5px;
+    border-radius: 8px;
+}
+
+.container-fluid .sidebar .profile .details:hover {
+    background-color: var(--light-card-bg);
+    padding: 5px 5px;
+    border-radius: 8px;
+}
+
+.container-fluid .sidebar .profile .selected_profile {
+    background-color: var(--card-bg);
+    padding: 5px 5px;
+    border-radius: 8px;
+}
+
+.container-fluid .sidebar .profile .details:hover .name h6,.container-fluid .sidebar .profile .details:hover .name p{
+    color: var(--rich-black) !important;   
+}
+
+.container-fluid .sidebar .profile .selected_profile .name h6,.container-fluid .sidebar .profile .selected_profile .name p{
+    color: var(--rich-black) !important;   
+}
+
+.container-fluid .sidebar .profile .details .name {
+    display: inline-block;
+    text-align: left;
+}
+
+.container-fluid .sidebar .profile .details .name h6 {
+    margin: 0px 0px 0px 20px;
+    font-family: Gilroy-Medium;
+    color: var(--rich-black);
+    font-size: 16px;
+}
+
+.container-fluid .sidebar .profile .details .name p {
+    font-size: 14px;
+    color: var(--sub-text);
+    font-family: Gilroy-Regular;
+    margin: 5px 0px 0px 20px;
+}
+
+.container-fluid .sidebar .profile .details .profile_image {
+    min-height: 50px !important;
+    max-height: 50px !important;
+    min-width: 50px !important;
+    max-width: 50px !important;
+    border-radius: 50%;
+    background-color: var(--placeholder);
+    overflow: hidden;
+    margin: auto;
+    border: 2px solid var(--placeholder);
+    object-fit: fill;
+}
+
+.container-fluid .sidebar .profile .details .profile_image img {
+    width: 100%;
+}
+
+.container-fluid .sidebar .profile .logout {
+    margin-top: 15px;
+    width: 100% !important;
+}
+
+.container-fluid .sidebar .profile .logout .icon_card {
+    padding: 8px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--highlight);
+    color: var(--white);
+    font-family: Gilroy-SemiBold;
+}
+
+.container-fluid .sidebar .profile .logout .icon_card a {
+    display: flex;
+    align-items: center;
+}
+
+.container-fluid .sidebar .profile .logout .icon_card a .iconify{
+    height: 22px;
+    width: 22px;
+}
+
+/* Main */
+.container-fluid .main {
+    background-color: var(--background);
+    width: 84rem;
+    height: 100%;
+}
+
+.container-fluid .main iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background-color: var(--background);
+}
+
+/* Sidebar bg */
+.bg {
+    background-color: rgba(0,0,0,0.3);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 1;
+    transform: translateX(-100%);
+    transition: 0.3s ease-in;
+}
+
+@media screen and (max-width: 768px) {
+    .container-fluid {
+        position: relative;
+    }
+
+    /* Sidebar */
+    .container-fluid .sidebar {
+        width: 50%;
+        position: absolute;
+        z-index: 2;
+        height: 100%;
+        transform: translateX(-100%);
+        transition: 0.3s ease-in;
+    }
+    /* Main */
+    .container-fluid .main {
+        width: 100%;
+        position: absolute;
+        z-index: 0;
+        height: 100%;
+    }
+}
+
+@media screen and (max-width: 567px) {
+    /* Sidebar */
+    .container-fluid .sidebar {
+        width: 80%;
+        position: absolute;
+        z-index: 2;
+        height: 100%;
+        transform: translateX(-100%);
+        transition: 0.3s ease-in;
+    }
+}

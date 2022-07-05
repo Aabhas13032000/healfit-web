@@ -1,0 +1,106 @@
+.outer_login_box {
+    height: 100%;
+    width: 100%;
+    background-color: var(--card-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    font-family: Hellix-Regular;
+    overflow: hidden;
+}
+
+.outer_login_box .login_card {
+    width: 400px;
+    background-color: var(--white);
+    border: 0;
+    border-radius: 20px;
+    box-shadow: 4px 10px 25px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.alert {
+    border-radius: 8px;
+}
+
+.outer_login_box .login_card .heading {
+    width: 100%;
+    padding: 30px 20px;
+}
+
+.outer_login_box .login_card .heading h3 {
+    margin: 0;
+    font-family: Hellix-SemiBold;
+    color: var(--rich-black);
+}
+
+.outer_login_box .login_card .heading h6 {
+    margin: 10px 0px 0px 0px;
+    font-family: Gilroy-Regular;
+    color: var(--sub-text);
+}
+
+.outer_login_box .login_card .form {
+    width: 100%;
+    padding: 0px 20px 30px 20px;
+}
+
+.outer_login_box .login_card .form .form-input {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.outer_login_box .login_card .form .button {
+    width: 100%;
+    margin-top: 35px;
+}
+
+.outer_login_box .login_card .form .button .login_button {
+    background-color: var(--highlight);
+    color: var(--white);
+    width: 100%;
+    border-radius: 8px;
+    padding: 10px 20px;
+    border: 0;
+    font-family: Hellix-SemiBold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.outer_login_box .login_card .form .button .login_button .text {
+    font-size: 18px;
+}
+
+.outer_login_box .login_card .form .button .login_button .iconify {
+    width: 22px;
+    height: 22px;
+}
+
+.outer_login_box .login_card .form .form-input .input-label {
+    color: var(--rich-black);
+    margin-bottom: 10px;
+    font-family: Hellix-Medium;
+}
+
+.outer_login_box .login_card .form .form-input .input-class {
+    width: 100%;
+    border: 1.5px solid var(--default-input-borders);
+    padding: 13px 20px;
+    border-radius: 10px;
+    background-color: var(--white);
+    transition: 0.3s ease-in;
+    color: var(--smallText-color);
+    font-family: Gilroy-Regular;
+}
+
+.outer_login_box .login_card .form .form-input .input-class:focus {
+    border: 2px solid var(--highlight) !important;
+    outline: none !important;
+}
+
+@media screen and (max-width:567px) {
+    .outer_login_box .login_card {
+        width: 100%;
+    }
+}

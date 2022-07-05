@@ -1,0 +1,44 @@
+<%- include('../../components/header/header.ejs',{cssFile : 'adminPages'}) %> 
+
+<div id="load"></div>
+
+<div class="container-fluid" id="main">
+    <div class="top" id="topBar">
+        <form action="/admin/searchProgrm" method="POST">
+            <div class="row">
+                <div class="col-lg-9 d-flex align-items-center">
+                    <div class="form-group input-group search">
+                        <a><span class="iconify" data-icon="akar-icons:search"></span></a>
+                        <input type="text" class="form-control" id="searchText" name="searchText" placeholder="Search by title...">
+                    </div>
+                </div>
+                <div class="col-lg-2 d-flex align-items-center">
+                    <div class="form-group">
+                        <select class="form-control" id="searchCat" name="searchCat" aria-label="Categories" required>
+                            <option value="">Select a category</option>
+                            <option value="0">All</option>
+                            <option value="1">No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-1 d-flex align-items-center">
+                    <button type="submit" id="book_verify" class="btn btn-primary" style="width: 100%;">Search</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="content" id="content">
+        <div class="row">
+            <div class="col-lg-6 d-flex align-items-center">
+                <h5>Programs</h5>
+            </div>
+            <div class="col-lg-3 d-flex align-items-center">
+            </div>
+            <div class="col-lg-3 d-flex align-items-center">
+                <button type="submit" id="add" class="btn btn-primary" style="width: 100%;">Add a program</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../../components/footer/footer.ejs') %> 

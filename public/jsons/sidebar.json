@@ -1,0 +1,50 @@
+[
+    {
+        "name": "Users",
+        "path": "/admin/users?page=1",
+        "icon": "ant-design:user-outlined",
+        "sub-options":[]
+    },
+    {
+        "name": "Programs",
+        "path": "/admin/programs?page=1",
+        "icon": "ant-design:user-outlined",
+        "sub-options":[]
+    },
+    {
+        "name": "Trainers",
+        "path": "/admin/trainers?page=1",
+        "icon": "ant-design:user-outlined",
+        "sub-options":[]
+    },
+    {
+        "name": "Books",
+        "path": "/admin/books?page=1",
+        "icon": "ant-design:user-outlined",
+        "sub-options":[]
+    },
+    {
+        "name": "Coupons",
+        "path": "/admin/coupons?page=1",
+        "icon": "ant-design:user-outlined",
+        "sub-options":[]
+    },
+    {
+        "name": "Workout",
+        "path": "/admin/workout?page=1",
+        "icon": "ant-design:user-outlined",
+        "sub-options":[]
+    },
+    {
+        "name": "Food",
+        "path": "/admin/food?page=1",
+        "icon": "ant-design:user-outlined",
+        "sub-options":[]
+    },
+    {
+        "name": "Testimonials",
+        "path": "/admin/testimonials?page=1",
+        "icon": "ant-design:user-outlined",
+        "sub-options":[]
+    }
+]
