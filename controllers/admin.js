@@ -27,11 +27,14 @@ module.exports = {
                     data:req.data,
                     message: req.message,
                     alert: req.alert,
+                    searchPage: req.searchPage,
+                    searchValue: req.searchValue,
                     metadata: {
                         page: req.page,
                         offset: req.offset,
                         total_items:req.data.length,
-                        total: req.data.length > 0 ? req.data[0].total : 0 ,
+                        total: req.totalUsers,
+                        total_pages: parseInt(req.totalUsers/20) + 1,
                     }
                 });
             } else {
@@ -39,12 +42,36 @@ module.exports = {
                     data:req.data,
                     message: null,
                     alert: null,
+                    searchPage: req.searchPage,
+                    searchValue: req.searchValue,
                     metadata: {
                         page: req.page,
                         offset: req.offset,
                         total_items:req.data.length,
-                        total: req.data.length > 0 ? req.data[0].total : 0 ,
+                        total: req.totalUsers,
+                        total_pages: parseInt(req.totalUsers/20) + 1,
                     }
+                });
+            }
+        }
+    },
+    getEachUserPage: (req,res) => {
+        if(req.error) {
+            res.render(req.error);
+        } else {
+            if(req.message) {
+                res.status(200).render('admin/users/each_user',{
+                    data:req.data,
+                    subscriptions: req.subscriptions,
+                    message: req.message,
+                    alert: req.alert,
+                });
+            } else {
+                res.status(200).render('admin/users/each_user',{
+                    data:req.data,
+                    subscriptions: req.subscriptions,
+                    message: null,
+                    alert: null,
                 });
             }
         }
@@ -62,7 +89,8 @@ module.exports = {
                         page: req.page,
                         offset: req.offset,
                         total_items:req.data.length,
-                        total: req.data.length > 0 ? req.data[0].total : 0 ,
+                        total: req.totalUsers,
+                        total_pages: parseInt(req.totalUsers/20) + 1,
                     }
                 });
             } else {
@@ -74,7 +102,8 @@ module.exports = {
                         page: req.page,
                         offset: req.offset,
                         total_items:req.data.length,
-                        total: req.data.length > 0 ? req.data[0].total : 0 ,
+                        total: req.totalUsers,
+                        total_pages: parseInt(req.totalUsers/20) + 1,
                     }
                 });
             }

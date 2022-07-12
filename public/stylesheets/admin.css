@@ -9,7 +9,7 @@
 /* Sidebar */
 .container-fluid .sidebar {
     background-color: var(--white);
-    width: 16rem;
+    width: 20rem;
     border-right: 1px solid var(--default-input-borders);
     overflow: hidden;
     height: 100%;
@@ -26,7 +26,7 @@
     width: 100%;
     overflow-x: hidden;
     overflow-y: scroll;
-    height: 74%;
+    height: 82%;
 }
 
 .container-fluid .sidebar ul .list {
@@ -54,34 +54,33 @@
     font-family: Gilroy-Regular;
 }
 
-.container-fluid .sidebar ul .list:hover {
-    /* background-color: var(--light-yellow); */
+/* .container-fluid .sidebar ul .list:hover {
+    background-color: var(--light-yellow);
     background-color: var(--light-card-bg);
     padding: 10px 20px 10px 10px;
     border-radius: 8px;
-}
+} */
 
-.container-fluid .sidebar ul .list:hover .iconify,.sidebar ul .list:hover .sidebar_text{
+/* .container-fluid .sidebar ul .list:hover .iconify,.sidebar ul .list:hover .sidebar_text{
     color: var(--rich-black) !important;
     font-family: Gilroy-Regular !important;
-}
+} */
 
 .container-fluid .sidebar ul .selected {
-    /* background-color: var(--highlight); */
-    background-color: var(--card-bg);
+    background-color: var(--highlight);
+    /* background-color: var(--card-bg); */
     padding: 10px 20px 10px 10px;
     border-radius: 8px;
 }
 
 .container-fluid .sidebar ul .selected .iconify,.sidebar ul .selected .sidebar_text{
-    color: var(--rich-black) !important;
-    font-family: Gilroy-Regular !important;
+    color: var(--white) !important;
+    font-family: Gilroy-Medium !important;
 }
 
 /* Logo */
 .container-fluid .sidebar .logo {
     display: flex;
-    /* justify-content: space-between; */
     justify-content: center;
     padding: 12px 10px;
     align-items: center;
@@ -90,13 +89,14 @@
 }
 
 .container-fluid .sidebar .logo a {
-    /* margin-left: 10px; */
     margin-left: 0px;
-    width: 0;
+    display: none;
+    color: var(--rich-black);
 }
 
 .container-fluid .sidebar .logo a .iconify {
-    width: 0;
+    width: 20px;
+    height: 20px;
 }
 
 .container-fluid .sidebar .logo h5 {
@@ -106,12 +106,14 @@
 
 /* Profile */
 .container-fluid .sidebar .profile {
-    height: 18%;
+    height: 80px;
+    background-color: var(--card-bg);
     width: 100% !important;
     padding: 10px;
     display: flex;
-    align-items: end;
-    overflow: hidden;
+    align-items: center;
+    overflow-x: hidden;
+    overflow-y: scroll;
     margin: 0;
 }
 
@@ -123,13 +125,8 @@
 .container-fluid .sidebar .profile .details {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     cursor: pointer;
-    padding: 5px 5px;
-    border-radius: 8px;
-}
-
-.container-fluid .sidebar .profile .details:hover {
-    background-color: var(--light-card-bg);
     padding: 5px 5px;
     border-radius: 8px;
 }
@@ -140,16 +137,12 @@
     border-radius: 8px;
 }
 
-.container-fluid .sidebar .profile .details:hover .name h6,.container-fluid .sidebar .profile .details:hover .name p{
-    color: var(--rich-black) !important;   
-}
-
 .container-fluid .sidebar .profile .selected_profile .name h6,.container-fluid .sidebar .profile .selected_profile .name p{
     color: var(--rich-black) !important;   
 }
 
 .container-fluid .sidebar .profile .details .name {
-    display: inline-block;
+    display: inline-table;
     text-align: left;
 }
 
@@ -185,35 +178,39 @@
 }
 
 .container-fluid .sidebar .profile .logout {
-    margin-top: 15px;
-    width: 100% !important;
-}
-
-.container-fluid .sidebar .profile .logout .icon_card {
-    padding: 8px;
     border-radius: 8px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--highlight);
-    color: var(--white);
+    display: inline-table;
+    background-color: var(--white);
+    color: var(--sub-text);
     font-family: Gilroy-SemiBold;
+    max-width: 50px !important;
+    min-height: 50px !important;
+    transition: 0.3s ease-in;
+    cursor: pointer;
 }
 
-.container-fluid .sidebar .profile .logout .icon_card a {
+/* .container-fluid .sidebar .profile .logout:hover {
+    background-color: var(--card-bg);
+    color: var(--sub-text);
+} */
+
+.container-fluid .sidebar .profile .logout a {
     display: flex;
     align-items: center;
+    height: 50px;
+    width: 50px;
+    justify-content: center;
 }
 
-.container-fluid .sidebar .profile .logout .icon_card a .iconify{
-    height: 22px;
-    width: 22px;
+.container-fluid .sidebar .profile .logout a .iconify{
+    height: 24px;
+    width: 24px;
 }
 
 /* Main */
 .container-fluid .main {
     background-color: var(--background);
-    width: 84rem;
+    width: 80rem;
     height: 100%;
 }
 
@@ -225,26 +222,81 @@
 }
 
 /* Sidebar bg */
-.bg {
-    background-color: rgba(0,0,0,0.3);
+.blurbackground {
+    position: absolute;
+    z-index: 2;
+    top: 0;
     width: 100%;
     height: 100%;
-    position: absolute;
+    background-color: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(2px);
+    display: none;
+}
+
+.activeblurbackground {
+    display: none !important;
+}
+
+/* Toggle button */
+.navbar_toggle_button {
+    height: 60px;
+    width: 60px;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    border-radius: 50%;
+    background-color: var(--highlight);
+    color: var(--white);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
     z-index: 1;
-    transform: translateX(-100%);
-    transition: 0.3s ease-in;
+}
+
+.navbar_toggle_button a {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.navbar_toggle_button a .iconify {
+    height: 30px;
+    width: 30px;
+}
+
+.active_side_bar {
+    transform: translateX(0%) !important;
 }
 
 @media screen and (max-width: 768px) {
+    .navbar_toggle_button {
+        display: flex;
+    }
+
     .container-fluid {
         position: relative;
+    }
+
+    .activeblurbackground {
+        display: block !important;
+    }
+
+    .container-fluid .sidebar .logo {
+        justify-content: space-between;
+    }
+
+    .container-fluid .sidebar .logo a {
+        display: inline-block;
     }
 
     /* Sidebar */
     .container-fluid .sidebar {
         width: 50%;
         position: absolute;
-        z-index: 2;
+        z-index: 3;
         height: 100%;
         transform: translateX(-100%);
         transition: 0.3s ease-in;
@@ -261,7 +313,7 @@
 @media screen and (max-width: 567px) {
     /* Sidebar */
     .container-fluid .sidebar {
-        width: 80%;
+        width: 85%;
         position: absolute;
         z-index: 2;
         height: 100%;

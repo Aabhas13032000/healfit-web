@@ -38,6 +38,8 @@ html ,body {
     height: 100%;
     overflow: hidden;
     background-color: var(--background);
+    font-family: Gilroy-Regular;
+    color: var(--rich-black);
 }
 
 .row {
@@ -54,10 +56,7 @@ html ,body {
 a {
     text-decoration: none;
     cursor: pointer;
-}
-
-a:hover {
-    text-decoration: none;
+    color: var(--rich-black);
 }
 
 #load{
@@ -71,4 +70,23 @@ a:hover {
 
 *:focus {
     outline: 0 none !important;
+}
+
+textarea:hover, 
+input:hover, 
+textarea:active, 
+input:active, 
+textarea:focus, 
+input:focus,
+button:focus,
+button:active,
+button:hover,
+label:focus,
+select:focus,
+.btn:active,
+.btn.active
+{
+    outline:0px !important;
+    -webkit-appearance:none;
+    box-shadow: none !important;
 }
