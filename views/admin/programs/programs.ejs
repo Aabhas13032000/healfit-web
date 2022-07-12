@@ -2,43 +2,234 @@
 
 <div id="load"></div>
 
+<div class="modal fade" id="addBook" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Add Course</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <form onsubmit="addCourse(event)" id="form" method="post" enctype="multipart/form-data" autocomplete="off">
+                  <div class="row">
+                      <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                          <div class="form-group">
+                              <input type="text" id="title" name="title" class="form-control" placeholder="Enter Course Name"  style="margin-bottom: 10px;" required>
+                          </div>
+                          <div class="form-group">
+                              <select class="form-control" id="category" style="margin-bottom: 10px;" name="category" aria-label="Images Categories" required>
+                                <option value="">Select course category</option>
+                                <option value="online">Online</option>
+                                <option value="offline">Offline</option>
+                                <option value="free">Free</option>
+                                <option value="live">Live</option>
+                                <option value="Budget Friendly">Budget Friendly</option>
+                              </select>
+                          </div>
+                          <div class="form-group">
+                              <input type="url" id="promo_video" name="promo_video" class="form-control" placeholder="Enter Promo Video URL" style="margin-bottom: 10px;">
+                          </div>
+                          <div class="form-group">
+                              <input type="number" id="price" name="price" class="form-control" placeholder="Enter Course Price" style="margin-bottom: 10px;" required>
+                          </div>
+                          <div class="form-group">
+                              <input type="number" id="discount_price" name="discount_price" class="form-control" placeholder="Enter Discount Price" style="margin-bottom: 10px;" required>
+                          </div>
+                          <div class="form-group">
+                              <input type="number" id="days" name="days" class="form-control" placeholder="Enter Subscription Days" style="margin-bottom: 10px;" required>
+                          </div>
+                          <div class="form-group">
+                              
+                          </div>
+                          <div class="form-group">
+                              <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter description here.." style="margin-bottom: 10px;border-radius: 10px;" required></textarea>
+                          </div>
+                          <div class="form-group">
+                              <label for="">PDF</label>
+                              <input class="form-control" onchange="uploadPDF('add')" style="margin-bottom: 10px;height: unset;border-radius: 8px;" type="file" id="pdf" name="pdf" multiple accept="application/pdf">
+                          </div>
+                          <div id="preview_pdf">
+                              
+                          </div>
+                          <div class="form-group">
+                              <label for="">Images</label>
+                              <input class="form-control" onchange="uploadImages('add')" style="margin-bottom: 10px;height: unset;border-radius: 8px;" type="file" multiple id="course_images" name="images" accept="image/*">
+                          </div>
+                          <div id="preview" class="row preview_images">
+                              
+                          </div>
+                          <div class="button">
+                              <button type="submit" id="book_verify" class="btn btn-primary" style="width: 100%;margin-top: 20px;" >Create</button>
+                          </div>
+                      </div>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- Days/ Time /Sessions -->
+<div class="modal fade" id="dts" tabindex="-1" aria-labelledby="dts" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Days/Time/Sessions</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="tabs">
+                <a class="tab" data-tab="days" onclick="openDayTimeModal('days',true)">Days</a>
+                <a class="tab" data-tab="sessions" onclick="openDayTimeModal('sessions',true)">Sessions</a>
+                <a class="tab" data-tab="timings" onclick="openDayTimeModal('timings',true)">Timings</a>
+              </div>
+              <div class="content">
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">VALUE</th>
+                      <th scope="col">OPTION</th>
+                    </tr>
+                  </thead>
+                  <tbody id="data">
+                  </tbody>
+                </table>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
 <div class="container-fluid" id="main">
-    <div class="top" id="topBar">
-        <form action="/admin/searchProgrm" method="POST">
-            <div class="row">
-                <div class="col-lg-9 d-flex align-items-center">
-                    <div class="form-group input-group search">
-                        <a><span class="iconify" data-icon="akar-icons:search"></span></a>
-                        <input type="text" class="form-control" id="searchText" name="searchText" placeholder="Search by title...">
-                    </div>
-                </div>
-                <div class="col-lg-2 d-flex align-items-center">
-                    <div class="form-group">
-                        <select class="form-control" id="searchCat" name="searchCat" aria-label="Categories" required>
-                            <option value="">Select a category</option>
-                            <option value="0">All</option>
-                            <option value="1">No</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-lg-1 d-flex align-items-center">
-                    <button type="submit" id="book_verify" class="btn btn-primary" style="width: 100%;">Search</button>
-                </div>
-            </div>
-        </form>
-    </div>
-    <div class="content" id="content">
-        <div class="row">
-            <div class="col-lg-6 d-flex align-items-center">
-                <h5>Programs</h5>
-            </div>
-            <div class="col-lg-3 d-flex align-items-center">
-            </div>
-            <div class="col-lg-3 d-flex align-items-center">
-                <button type="submit" id="add" class="btn btn-primary" style="width: 100%;">Add a program</button>
+    <div class="top" id="content">
+        <div class="title">
+            <h5>Programs</h5>
+            <p>See all the programs here.</p>
+        </div>
+        <div class="button">
+            <div class="btn-group dropstart">
+              <button type="button" id="settings" class="btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false"><span class="iconify" data-icon="eva:menu-2-fill"></span></button>
+              <ul class="dropdown-menu">
+                <li onclick="openDayTimeModal('days',false)"><a class="dropdown-item" href="#">Days</a></li>
+                <li onclick="openDayTimeModal('sessions',false)"><a class="dropdown-item" href="#">Sessions</a></li>
+                <li onclick="openDayTimeModal('timings',false)"><a class="dropdown-item" href="#">Timings</a></li>
+              </ul>
             </div>
         </div>
     </div>
+    <br>
+    <div class="content_table">
+        <div class="search_bar">
+                <div class="row">
+                    <div class="col-lg-8 col-md-6 d-flex align-items-center">
+                      <form action="/admin/searchProgrm" method="POST">
+                        <div class="form-group input-group search">
+                            <a><span class="iconify" data-icon="akar-icons:search"></span></a>
+                            <input type="text" class="form-control" id="searchText" name="searchText" placeholder="Search by title...">
+                        </div>
+                      </form>
+                    </div>
+                    <div class="col-lg-4 col-md-6 d-flex align-items-center justify-content-md-end justify-content-start">
+                      <button id="add" class="btn btn-primary"><span class="iconify" data-icon="bx:category"></span>&nbsp;&nbsp;Categories</button>
+                      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBook"><span class="iconify" data-icon="carbon:add-alt"></span>&nbsp;&nbsp;Add program</button>
+                    </div>
+                </div>
+        </div>
+        <br>
+        <table>
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">PROGRAM</th>
+                <th scope="col">CATEGORY</th>
+                <th scope="col">TRAINERS</th>
+                <th scope="col">LIKES</th>
+                <th scope="col">IMPORTANT</th>
+                <th scope="col">VIEW</th>
+                <th scope="col">OPTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">1</th>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+                <td>Thornton</td>
+              </tr>
+              <tr>
+                <th scope="row">2</th>
+                <td>Jacob</td>
+                <td>Thornton</td>
+                <td>@fat</td>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+                <td>Thornton</td>
+              </tr>
+              <tr>
+                <th scope="row">3</th>
+                <td>Jacob</td>
+                <td>Thornton</td>
+                <td>@twitter</td>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+                <td>Thornton</td>
+              </tr>
+            </tbody>
+          </table>
+    </div>
 </div>
+
+
+<script>
+
+var dayTimeModal;
+
+$(function(){
+  // bootstraps modals
+  dayTimeModal = new bootstrap.Modal(document.getElementById('dts'));
+});
+
+  //ckeditor defination
+  CKEDITOR.replace('description',{
+    filebrowserUploadUrl: '/admin/upload',
+    filebrowserUploadMethod: 'form'
+  });
+  
+  /* Functions */
+  
+  //add course
+  function addCourse(event) {
+    event.preventDefault();
+    var data = CKEDITOR.instances['description'].getData();
+    console.log(data);
+  }
+
+  function openDayTimeModal(value,callfunction) {
+    //Onclick change selection box
+    document.querySelectorAll('.tab').forEach(item => {
+      if(item.classList.contains('selected')) {
+        item.classList.remove('selected');
+      }
+      if(item.getAttribute('data-tab') == value) {
+        item.classList.add('selected');
+      }
+    });
+    if(!callfunction) {
+      dayTimeModal.toggle();
+    }
+  }
+
+  function getDays() {
+
+  }
+
+</script>
 
 <%- include('../../components/footer/footer.ejs') %> 

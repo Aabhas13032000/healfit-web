@@ -2,8 +2,187 @@
 
 <div id="load"></div>
 
-<div class="container-fluid main">
-    <h1>Users</h1>
+<div class="container-fluid" id="main">
+    <div class="top" id="content">
+        <div class="title">
+            <h5>Users</h5>
+            <p>See all the users here.</p>
+        </div>
+        <div class="button">
+        </div>
+    </div>
+    <br>
+    <div class="content_table">
+        <div class="search_bar">
+                <div class="row">
+                    <div class="col-lg-8 col-md-6 d-flex align-items-center">
+                      <form action="/admin/getSearchUser" method="get">
+                        <div class="form-group input-group search" style="width: 300px;">
+                            <a><span class="iconify" data-icon="akar-icons:search"></span></a>
+                            <input type="text" class="form-control" id="searchText" name="phone_number" placeholder="Search by phone number..." value="<%= searchValue %>">
+                        </div>
+                        <input type="submit" hidden />
+                      </form>
+                    </div>
+                    <div class="col-lg-4 col-md-6 d-flex align-items-center justify-content-md-end justify-content-start">
+                        <% if(searchValue) { %> 
+                            <button class="btn btn-primary" onclick="location.href='/admin/users?page=1'" data-bs-toggle="modal" data-bs-target="#addBook">Reload</button>
+                        <% } %> 
+                    </div>
+                </div>
+        </div>
+        <br>
+        <table>
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th>NAME</th>
+                <th>PHONE NUMBER</th>
+                <th>GENDER</th>
+                <th>LOGGED IN</th>
+                <th>DEVICE</th>
+                <th>ACCOUNT</th>
+                <th>STATUS</th>
+                <th>BLOCKED</th>
+              </tr>
+            </thead>
+            <tbody>
+                <% if(data.length == 0) { %> 
+                    <td>No users present</td>
+                <% } else { %>
+                    <% data.forEach((user,index) => { %> 
+                        <tr>
+                          <th scope="row"><%= (index+1+metadata.offset) %></th>
+                          <td><%= user.name %></td>
+                          <td><%= user.phoneNumber %></td>
+                          <td><%= user.gender %></td>
+                          <td>
+                            <% if(user.logged_in == 1) { %> 
+                                <a class="success">YES</a>
+                            <% } else { %>
+                                <a class="warning">NO</a>
+                            <% } %> 
+                          </td>
+                          <td><%= user.device %></td>
+                          <td>
+                            <a class="btn btn-primary open" onclick="location.href='/admin/getEachUser?user_id=<%= user.id %>'">OPEN</a>
+                          </td>
+                          <td>
+                            <% if(user.status == 'ACTIVE') { %> 
+                                <a class="success">ACTIVE</a>
+                            <% } else if(user.status == 'BLOCKED') { %> 
+                                <a class="blocked">BLOCKED</a>
+                            <% } else { %>
+                                <a class="warning">DELETED</a>
+                            <% } %> 
+                          </td>
+                          <td> 
+                            <% if(user.status != 'DELETED'){ %> 
+                                <div class="form-check form-switch d-flex justify-content-center">
+                                    <% if(user.status == 'BLOCKED'){ %> 
+                                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleBlocked('<%= user.id %>')" checked>
+                                    <% } else { %>
+                                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleBlocked('<%= user.id %>')">
+                                    <% } %>
+                                </div>
+                            <% } %>
+                          </td>
+                        </tr>
+                    <% }); %> 
+                <% } %> 
+            </tbody>
+          </table>
+          <% if(!searchValue) { %> 
+            <div class="pages">
+                <div class="total_pages">
+                    <div class="form-group">
+                        <input type="number" class="form-control" id="pageNumber" name="pageNumber" placeholder="Total pages = <%= metadata.total_pages %> ">
+                    </div>
+                    <button class="btn btn-primary" onclick="goToPage()">Go</button>
+                </div>
+                <div class="inner_pages">
+                    <% if(metadata.page == 1) { %>
+                        <a id="prev" class="disabled">Prev</a>
+                    <% } else { %>
+                        <a id="prev" onclick="location.href='/admin/users?page=<%= metadata.page - 1 %>'">Prev</a>
+                    <% } %>
+                    <% if(metadata.total_pages >= 3) { %> 
+                        <% if(metadata.page == metadata.total_pages) { %> 
+                            <a class="page" onclick="location.href='/admin/users?page=<%= metadata.page - 2 %>'"><%= metadata.page - 2 %></a>
+                            <a class="page" onclick="location.href='/admin/users?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/users?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                        <% } else if(metadata.page == (metadata.total_pages - 1)) { %>
+                            <a class="page" onclick="location.href='/admin/users?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/users?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/users?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                        <% } else { %>
+                            <a class="page selected_page" onclick="location.href='/admin/users?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/users?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                            <a class="page" onclick="location.href='/admin/users?page=<%= metadata.page + 2 %>'"><%= metadata.page + 2 %></a>
+                        <% } %>
+                    <% } else if(metadata.total_pages == 2) { %>
+                        <% if(metadata.page == metadata.total_pages) { %> 
+                            <a class="page" onclick="location.href='/admin/users?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/users?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                        <% } else if(metadata.page == (metadata.total_pages - 1)) { %>
+                            <a class="page selected_page" onclick="location.href='/admin/users?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/users?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                        <% } %>
+                    <% } else if(metadata.total_pages == 1) { %>
+                        <a class="page selected_page" onclick="location.href='/admin/users?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                    <% } %>
+                    <% if(metadata.page == metadata.total_pages) { %> 
+                        <a id="next" class="disabled">Next</a>
+                    <% } else { %>
+                        <a id="next" onclick="location.href='/admin/users?page=<%= metadata.page + 1 %>'">Next</a>
+                    <% } %>
+                </div>
+            </div>
+          <% } %> 
+    </div>
 </div>
+
+<script>
+
+/* Functions */
+
+//Go to page 
+function goToPage() {
+    var page = document.getElementById('pageNumber').value;
+    var total_pages = '<%- metadata.total_pages %>';
+    if(page.length != 0) {
+        if(parseInt(page) > parseInt(total_pages)){
+            alert('Please enter a page number less than total pages');
+        } else if(parseInt(page) == 0) {
+            alert('Please enter a page number greater than 0');
+        } else {
+            location.href=`/admin/users?page=${page}`;
+        }
+    } else {
+        alert('Please enter a page number first');
+    }
+}
+
+//Block / Unblock user
+function toggleBlocked(id) {
+    $.ajax({
+        url : '/admin/markedUserBlocked',
+        dataType: "json",
+        type: "POST",
+        data:{
+            id:id
+        },
+        success: function(response){
+            alert('Edited Successfullyt!!');
+            location.reload();
+        },
+        error: function(err){
+            console.log(err);
+            alert('Some error occured !!');
+        }
+    });   
+}
+
+</script>
 
 <%- include('../../components/footer/footer.ejs') %> 
