@@ -1,0 +1,57 @@
+<%- include('../components/header/header.ejs',{cssFile : 'admin',page:'Dashboard'}) %> 
+
+<div class="blurbackground" onclick="toggleSideBar()"></div>
+
+<div class="navbar_toggle_button" onclick="toggleSideBar()">
+    <a><span class="iconify" data-icon="gala:menu-left"></span></a>
+</div>
+
+<div class="container-fluid" id="contents">
+    <div class="sidebar">
+        <div class="logo">
+            <h5>Healfit's Dashboard</h5>
+            <a onclick="toggleSideBar()"><span class="iconify" data-icon="akar-icons:cross"></span></a>
+        </div>
+        <ul>
+            <% sidebar.forEach((element,index) => { %>
+                <% if(index == 0){ %> 
+                    <li class="list selected" data-url="<%= element.path %>">
+                        <span class="iconify" data-icon="<%= element.icon %>"></span>
+                        <span class="sidebar_text"><%= element.name %></span>
+                    </li>
+                <% } else { %>
+                    <li class="list" data-url="<%= element.path %>">
+                        <span class="iconify" data-icon="<%= element.icon %>"></span>
+                        <span class="sidebar_text"><%= element.name %></span>
+                    </li>
+                <% } %> 
+            <% }) %> 
+        </ul>
+        <div class="profile">
+            <div>
+                <div class="details">
+                    <div class="profile_image" onclick="profileClicked()">
+                        <img src="<%= image_path %>" alt="">
+                    </div>
+                    <div class="name" onclick="profileClicked()">
+                        <h6><%= name %></h6>
+                        <p><%= phoneNumber %></p>
+                    </div>
+                    <div class="logout" onclick="window.location.href = '/admin/trainers/logout'">
+                        <a><span class="iconify" data-icon="ant-design:logout-outlined"></span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="main">
+        <iframe src="/admin/trainers/programs?page=1" frameborder="0" id="loaded_page"></iframe>
+    </div>
+</div>
+
+<!-- Sidebar.js -->
+<script src="/javascripts/trainer_sidebar.js"></script>
+<!---->
+
+
+<%- include('../components/footer/footer.ejs') %> 

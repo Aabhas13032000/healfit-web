@@ -1,0 +1,898 @@
+<%- include('../../components/header/header.ejs',{cssFile : 'adminPages',page:'Dashboard'}) %> 
+
+<div id="load"></div>
+
+<div class="alert alert-dismissible fade show" role="alert" id="success-alert">
+  <p id="alertMessage" style="margin: 0;">Edited successfully</p>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div class="modal fade" id="addTrainer" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Add Trainer</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <form onsubmit="addTrainer(event)" id="form" method="post" enctype="multipart/form-data" autocomplete="off">
+                  <div class="row">
+                      <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                          <div class="form-group">
+                            <label for="name">Name <span style="color: var(--warning);font-size: 16px;">*</span></label>
+                            <input type="text" id="name" name="name" class="form-control" placeholder="Enter trainer name.." style="margin: 10px 0px;" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="phoneNumber">Phone number <span style="color: var(--warning);font-size: 16px;">*</span></label>
+                            <input type="text" id="phoneNumber" name="phoneNumber" class="form-control" placeholder="Enter 10 digit phone number.." style="margin: 10px 0px;" minlength="10" maxlength="10" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="email">Email <span style="color: var(--warning);font-size: 16px;">*</span></label>
+                            <input type="email" id="email" name="email" class="form-control" placeholder="Enter email here.." style="margin: 10px 0px;" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="address" style="margin: 10px 0px;">Address <span style="color: var(--warning);font-size: 16px;">*</span></label>
+                            <textarea class="form-control" id="address" name="address" rows="3" placeholder="Enter address here.." style="margin: 10px 0px;border-radius: 10px;" required></textarea>
+                          </div>
+                          <div class="form-group">
+                            <label for="password">Password <span style="color: var(--warning);font-size: 16px;">*</span></label>
+                            <input type="pasword" id="password" name="password" class="form-control" placeholder="Enter 8 digit password.." style="margin: 10px 0px;" minlength="8" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="about" style="margin: 10px 0px;">About <span style="color: var(--warning);font-size: 16px;">*</span></label>
+                            <textarea class="form-control" id="about" name="about" rows="3" placeholder="Enter bio here.." style="margin: 10px 0px;border-radius: 10px;" required></textarea>
+                          </div>
+                          <div class="form-group">
+                            <label for="vision" style="margin: 10px 0px;">Vision <span style="color: var(--warning);font-size: 16px;">*</span></label>
+                            <textarea class="form-control" id="vision" name="vision" rows="3" placeholder="Enter vision here.." style="margin: 10px 0px;border-radius: 10px;" required></textarea>
+                          </div>
+                          <div class="form-group">
+                            <label for="qualification" style="margin: 10px 0px;">Qualification <span style="color: var(--warning);font-size: 16px;">*</span></label>
+                            <textarea class="form-control" id="qualification" name="qualification" rows="3" placeholder="Enter qualification here.." style="margin: 10px 0px;border-radius: 10px;" required></textarea>
+                          </div>
+                          <div class="form-group">
+                            <label for="expertise" style="margin: 10px 0px;">Expertise <span style="color: var(--warning);font-size: 16px;">*</span></label>
+                            <textarea class="form-control" id="expertise" name="expertise" rows="3" placeholder="Enter expertise here.." style="margin: 10px 0px;border-radius: 10px;" required></textarea>
+                          </div>
+                          <div class="form-group">
+                              <label for="program_images" style="margin: 10px 0px;">Images <span style="color: var(--warning);font-size: 16px;">*</span></label>
+                              <input class="form-control" onchange="uploadImages('add')" style="height: unset;border-radius: 8px;" type="file" multiple id="images" name="images" accept="image/*">
+                          </div>
+                          <div id="preview" class="row preview_images">
+                              
+                          </div>
+                          <div class="button">
+                              <button type="submit" id="book_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin-top: 20px;">Create</button>
+                          </div>
+                      </div>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="editTrainer" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Edit Trainer</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <form onsubmit="saveTrainer(event)" class="edit_form" id="form_" method="post" enctype="multipart/form-data" autocomplete="off">
+                  <div class="row">
+                      <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                          <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="editname" name="editname" class="form-control" placeholder="Enter trainer name.." style="margin: 10px 0px;" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="phoneNumber">Phone number</label>
+                            <input type="text" id="editphoneNumber" name="editphoneNumber" class="form-control" placeholder="Enter 10 digit phone number.." style="margin: 10px 0px;" minlength="10" maxlength="10" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="editemail" name="editemail" class="form-control" placeholder="Enter email here.." style="margin: 10px 0px;" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="editaddress" style="margin: 10px 0px;">Address <span style="color: var(--warning);font-size: 16px;">*</span></label>
+                            <textarea class="form-control" id="editaddress" name="editaddress" rows="3" placeholder="Enter address here.." style="margin: 10px 0px;border-radius: 10px;" required></textarea>
+                          </div>
+                          <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="pasword" id="editpassword" name="editpassword" class="form-control" placeholder="Enter 8 digit password.." style="margin: 10px 0px;" minlength="8" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="about" style="margin: 10px 0px;">About</label>
+                            <textarea class="form-control" id="editabout" name="editabout" rows="3" placeholder="Enter bio here.." style="margin: 10px 0px;border-radius: 10px;" required></textarea>
+                          </div>
+                          <div class="form-group">
+                            <label for="vision" style="margin: 10px 0px;">Vision</label>
+                            <textarea class="form-control" id="editvision" name="editvision" rows="3" placeholder="Enter vision here.." style="margin: 10px 0px;border-radius: 10px;" required></textarea>
+                          </div>
+                          <div class="form-group">
+                            <label for="qualification" style="margin: 10px 0px;">Qualification</label>
+                            <textarea class="form-control" id="editqualification" name="editqualification" rows="3" placeholder="Enter qualification here.." style="margin: 10px 0px;border-radius: 10px;" required></textarea>
+                          </div>
+                          <div class="form-group">
+                            <label for="expertise" style="margin: 10px 0px;">Expertise</label>
+                            <textarea class="form-control" id="editexpertise" name="editexpertise" rows="3" placeholder="Enter expertise here.." style="margin: 10px 0px;border-radius: 10px;" required></textarea>
+                          </div>
+                          <div class="form-group">
+                              <label for="program_images" style="margin: 10px 0px;">Images</label>
+                              <input class="form-control" onchange="uploadImages('edit')" style="height: unset;border-radius: 8px;" type="file" multiple id="edit_images" name="images" accept="image/*">
+                          </div>
+                          <div id="editpreview" class="row preview_images">
+                              
+                          </div>
+                          <div class="button">
+                              <button type="submit" id="book_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin-top: 20px;">Save</button>
+                          </div>
+                      </div>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="selectProfileImage" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Select Profile Image</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="row preview_allImages" id="allImages">
+
+              </div>
+            <div class="button">
+              <button onclick="saveSelectedImage()" type="submit" id="book_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin-top: 20px;">Save</button>
+            </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="container-fluid" id="main">
+    <div class="top" id="content">
+        <div class="title">
+            <h5>Trainers</h5>
+            <p>See all the trainers here.</p>
+        </div>
+        <div class="button">
+        </div>
+    </div>
+    <br>
+    <div class="content_table">
+        <div class="search_bar">
+                <div class="row">
+                    <div class="col-lg-8 col-md-6 d-flex align-items-center">
+                      <form action="/admin/experts/getSearchTrainer" method="get" class="search-form">
+                        <div class="form-group input-group search">
+                            <a><span class="iconify" data-icon="akar-icons:search"></span></a>
+                            <input type="text" class="form-control" id="searchText" name="name" placeholder="Search by name..." value="<%= searchValue %>">
+                        </div>
+                        <div class="form-group statusType">
+                            <select class="form-control type" id="statusCategory" name="statusCategory" aria-label="Images Categories" value="<%= statusValue %>">
+                              <option value="" <%- statusValue == '' ? 'selected' : '' %>>All status types</option>
+                              <option value="1" <%- statusValue == '1' ? 'selected' : '' %>>ACTIVE</option>
+                              <option value="2" <%- statusValue == '2' ? 'selected' : '' %>>BLOCKED</option>
+                              <option value="3" <%- statusValue == '3' ? 'selected' : '' %>>DELETED</option>
+                            </select>
+                        </div>
+                        <input type="submit" hidden />
+                      </form>
+                    </div>
+                    <div class="col-lg-4 col-md-6 d-flex align-items-center justify-content-md-end justify-content-start">
+                      <% if(!searchPage) { %>
+                        <button class="btn btn-primary addButton" data-bs-toggle="modal" data-bs-target="#addTrainer"><span class="iconify" data-icon="carbon:add-alt"></span>&nbsp;&nbsp;Add trainers</button>
+                      <% } else { %>
+                        <button class="btn btn-primary" onclick="location.href='/admin/experts?page=1'">Reload</button>
+                      <% } %>
+                    </div>
+                </div>
+        </div>
+        <br>
+        <table>
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">NAME</th>
+                <th scope="col">PHONE NUMBER</th>
+                <th scope="col">EMAIL</th>
+                <th scope="col">PASSWORD</th>
+                <th scope="col">STATUS</th>
+                <th scope="col">BLOCKED</th>
+                <th scope="col">IMP</th>
+                <th scope="col">OPTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if(data.length == 0) { %> 
+                <td>No trainers present</td>
+            <% } else { %>
+                <% data.forEach((user,index) => { %> 
+                    <tr>
+                      <th scope="row"><%= (index+1+metadata.offset) %></th>
+                      <td>
+                        <div class="profile_table_data">
+                            <div class="profile_image">
+                                <img src="<%= user.profile_image %>" alt="">
+                                 <div class="edit-icon" onclick="selectProfileImage('<%= user.id %>','<%= user.profile_image %>')">
+                                    <a><span class="iconify" data-icon="clarity:edit-line"></span></a>
+                                 </div>
+                            </div>
+                            <p style="margin: 0px 5px 0px 10px;"><%= user.name %></p>
+                        </div>
+                      </td>
+                      <td><%= user.phoneNumber %></td>
+                      <td><%= user.email %></td>
+                      <td><%= user.password %></td>
+                      <td>
+                        <% if(user.status == 'ACTIVE') { %> 
+                            <a class="success">ACTIVE</a>
+                        <% } else if(user.status == 'BLOCKED') { %> 
+                            <a class="blocked">BLOCKED</a>
+                        <% } else { %>
+                            <a class="warning">DELETED</a>
+                        <% } %> 
+                      </td>
+                      <td> 
+                        <% if(user.status != 'DELETED'){ %> 
+                            <div class="form-check form-switch d-flex justify-content-center">
+                                <% if(user.status == 'BLOCKED'){ %> 
+                                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleBlocked('<%= user.id %>','/admin/experts/markedUserTrainer')" checked>
+                                <% } else { %>
+                                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleBlocked('<%= user.id %>','/admin/experts/markedUserTrainer')">
+                                <% } %>
+                            </div>
+                        <% } %>
+                      </td>
+                      <td>
+                        <div class="form-check form-switch d-flex justify-content-center">
+                          <% if(user.imp == 1){ %> 
+                              <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleBlocked('<%= user.id %>','/admin/experts/markedTrainerImportant')" checked>
+                          <% } else { %>
+                              <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleBlocked('<%= user.id %>','/admin/experts/markedTrainerImportant')">
+                          <% } %>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="options">
+                            <a class="edit" onclick="editTrainer('<%= user.id %>','<%= user.name %>','<%= user.phoneNumber %>','<%= user.email %>','<%= user.password %>')"><span class="iconify" data-icon="akar-icons:edit"></span></a>
+                            <a class="delete" onclick="deleteTrainer('<%= user.id %>')"><span class="iconify" data-icon="ant-design:delete-outlined"></span></a>
+                            <input type="hidden" name="" id="ckeditoraboutvalue<%= user.id %>" value="<%= user.about %>">
+                            <input type="hidden" name="" id="ckeditorvisionvalue<%= user.id %>" value="<%= user.vision %>">
+                            <input type="hidden" name="" id="ckeditorqualificationvalue<%= user.id %>" value="<%= user.qualification %>">
+                            <input type="hidden" name="" id="ckeditorexpertisevalue<%= user.id %>" value="<%= user.expertise %>">
+                            <input type="hidden" name="" id="ckeditoraddressvalue<%= user.id %>" value="<%= user.address %>">
+                        </div>
+                      </td>
+                    </tr>
+                <% }); %> 
+            <% } %> 
+            </tbody>
+          </table>
+          <% if(!searchPage && data.length != 0 && metadata.total_pages > 1) { %> 
+            <div class="pages">
+                <div class="total_pages">
+                    <div class="form-group">
+                        <input type="number" class="form-control" id="pageNumber" name="pageNumber" placeholder="Total pages = <%= metadata.total_pages %> ">
+                    </div>
+                    <button class="btn btn-primary" onclick="goToPage()">Go</button>
+                </div>
+                <div class="inner_pages">
+                    <% if(metadata.page == 1) { %>
+                        <a id="prev" class="disabled">Prev</a>
+                    <% } else { %>
+                        <a id="prev" onclick="location.href='/admin/experts?page=<%= metadata.page - 1 %>'">Prev</a>
+                    <% } %>
+                    <% if(metadata.total_pages >= 3) { %> 
+                        <% if(metadata.page == metadata.total_pages) { %> 
+                            <a class="page" onclick="location.href='/admin/experts?page=<%= metadata.page - 2 %>'"><%= metadata.page - 2 %></a>
+                            <a class="page" onclick="location.href='/admin/experts?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/experts?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                        <% } else if(metadata.page == (metadata.total_pages - 1)) { %>
+                            <a class="page" onclick="location.href='/admin/experts?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/experts?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/experts?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                        <% } else { %>
+                            <a class="page selected_page" onclick="location.href='/admin/experts?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/experts?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                            <a class="page" onclick="location.href='/admin/experts?page=<%= metadata.page + 2 %>'"><%= metadata.page + 2 %></a>
+                        <% } %>
+                    <% } else if(metadata.total_pages == 2) { %>
+                        <% if(metadata.page == metadata.total_pages) { %> 
+                            <a class="page" onclick="location.href='/admin/experts?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/experts?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                        <% } else if(metadata.page == (metadata.total_pages - 1)) { %>
+                            <a class="page selected_page" onclick="location.href='/admin/experts?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/experts?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                        <% } %>
+                    <% } else if(metadata.total_pages == 1) { %>
+                        <a class="page selected_page" onclick="location.href='/admin/experts?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                    <% } %>
+                    <% if(metadata.page == metadata.total_pages) { %> 
+                        <a id="next" class="disabled">Next</a>
+                    <% } else { %>
+                        <a id="next" onclick="location.href='/admin/experts?page=<%= metadata.page + 1 %>'">Next</a>
+                    <% } %>
+                </div>
+            </div>
+          <% } %> 
+    </div>
+</div>
+
+<!-- Common.js -->
+<script src="/javascripts/common.js"></script>
+<!---->
+
+<script>
+
+var dayTimeModal;
+
+$(function(){
+  // bootstraps modals
+    editModal = new bootstrap.Modal(document.getElementById('editTrainer'));
+    selectProfileImageModal = new bootstrap.Modal(document.getElementById('selectProfileImage'));
+    if($('textarea#about').length){
+        //ckeditor defination
+        CKEDITOR.replace('about',{
+            filebrowserUploadUrl: '/admin/common/upload',
+            filebrowserUploadMethod: 'form',
+        });
+    }
+    if($('textarea#vision').length){
+        //ckeditor defination
+        CKEDITOR.replace('vision',{
+            filebrowserUploadUrl: '/admin/common/upload',
+            filebrowserUploadMethod: 'form'
+        });
+    }
+    if($('textarea#qualification').length){
+        //ckeditor defination
+        CKEDITOR.replace('qualification',{
+            filebrowserUploadUrl: '/admin/common/upload',
+            filebrowserUploadMethod: 'form'
+        });
+    }
+    if($('textarea#expertise').length){
+        //ckeditor defination
+        CKEDITOR.replace('expertise',{
+            filebrowserUploadUrl: '/admin/common/upload',
+            filebrowserUploadMethod: 'form'
+        });
+    }
+    if($('textarea#editabout').length){
+        //ckeditor defination
+        CKEDITOR.replace('editabout',{
+            filebrowserUploadUrl: '/admin/common/upload',
+            filebrowserUploadMethod: 'form'
+        });
+    }
+    if($('textarea#editvision').length){
+        //ckeditor defination
+        CKEDITOR.replace('editvision',{
+            filebrowserUploadUrl: '/admin/common/upload',
+            filebrowserUploadMethod: 'form'
+        });
+    }
+    if($('textarea#editqualification').length){
+        //ckeditor defination
+        CKEDITOR.replace('editqualification',{
+            filebrowserUploadUrl: '/admin/common/upload',
+            filebrowserUploadMethod: 'form'
+        });
+    }
+    if($('textarea#editexpertise').length){
+        //ckeditor defination
+        CKEDITOR.replace('editexpertise',{
+            filebrowserUploadUrl: '/admin/common/upload',
+            filebrowserUploadMethod: 'form'
+        });
+    }
+});
+  
+  /* Functions */
+
+  function saveSelectedImage() {
+    var path = document.getElementsByClassName('is-selected')[0].getAttribute('data-path');
+    var id = document.getElementsByClassName('is-selected')[0].getAttribute('data-trainerid');
+    // console.log(path);
+    // console.log(id);
+    if(confirm('Do you want to edit it?') == true){
+      $.ajax({
+            url : '/admin/experts/saveTrainerProfileImage',
+            dataType: "json",
+            type: "POST",
+            data: {
+                id:id,
+                path:path
+            },
+            success: function(response){
+              if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-success');
+                document.getElementById('alertMessage').innerHTML = 'Profile photo updated successfully';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                  $("#success-alert").slideUp(500);
+                });
+              }
+              setTimeout(() => {
+                location.reload();
+              },1000);
+            },
+            error: function(err){
+                    console.log(err);
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+      });
+    } 
+  }
+
+  //move select image box
+  function changeSelectedImage(i) {
+    var item = document.getElementsByClassName('selected_save_profile')[i];
+    var inside_selected_list = document.getElementsByClassName('is-selected')[0];
+    if(inside_selected_list) {
+      inside_selected_list.classList.remove('is-selected');
+      inside_selected_list.classList.add('is-not-selected');
+    }
+    if(item.classList.contains('is-not-selected')){
+      item.classList.remove('is-not-selected');
+    }
+    item.classList.add('is-selected');
+  }
+
+  //Select profile image
+  function selectProfileImage(id ,profile_image) {
+    selectProfileImageModal.toggle();
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    document.getElementById('allImages').innerHTML = "";
+    $.ajax({
+            url : `/admin/getImages?item_id=${id}&item_category=trainer`,
+            dataType: "json",
+            type: "GET",
+            success: function(response){
+                console.log(response);
+                for(var i=0;i<response.data.length;i++) {
+                        var path = response.data[i].path;
+                        $('#allImages').append('<div class="select" onclick="changeSelectedImage(\''+ i +'\')" id="edit_gallery_image_'+ path +'"><div class="card" id="append_image_'+ path +'" ><img src="'+ path +'" id="preview_galler_image_'+ path +'" alt=""></div><div class="selected_save_profile '+ (path == profile_image ? 'is-selected' : 'is-not-selected' ) +'" data-path="'+ path +'" data-trainerid="'+ id +'"><a><span class="iconify" data-icon="teenyicons:tick-circle-solid"></span></a></div></div>');
+                    }
+            },
+            error: function(err){
+                    console.log(err);
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+        });
+  }
+
+  //Get images
+  function getImages(id,value) {
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    $.ajax({
+            url : `/admin/getImages?item_id=${id}&item_category=trainer`,
+            dataType: "json",
+            type: "GET",
+            success: function(response){
+                console.log(response);
+                if(value == 'edit') {
+                    for(var i=0;i<response.data.length;i++) {
+                        var path = response.data[i].path;
+                        $('#editpreview').append('<div class="col-lg-4 col-md-4 col-sm-6 col-6" id="edit_gallery_image_'+ path +'"><div class="card" id="append_image_'+ path +'"><a class="delete_gallery_image" onclick="deleteEditCurrentGalleryImage(\''+ ( "edit_gallery_image_"+ path )  +'\',\''+ path +'\')"><span class="iconify" data-icon="akar-icons:cross"></span></a><img src="'+ path +'" id="preview_galler_image_'+ path +'" alt=""></div><input type="hidden" class="edit_gallery_image_path" name="gallery_image_path" id="gallery_image_path_'+ path +'" value="'+ path +'"></div>');
+                    }
+                } 
+            },
+            error: function(err){
+                    console.log(err);
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+        });
+  }
+
+  //Go to page 
+  function goToPage() {
+      var page = document.getElementById('pageNumber').value;
+      var total_pages = '<%- metadata.total_pages %>';
+      if(page.length != 0) {
+          if(parseInt(page) > parseInt(total_pages)){
+              alert('Please enter a page number less than total pages');
+          } else if(parseInt(page) == 0) {
+              alert('Please enter a page number greater than 0');
+          } else {
+              location.href=`/admin/experts?page=${page}`;
+          }
+      } else {
+          alert('Please enter a page number first');
+      }
+  }
+
+  //Edit Trainer
+  function editTrainer(id,name,phoneNumber,email,password,address) {
+    document.getElementById('editpreview').innerHTML = '';
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    getImages(id,'edit');
+      document.getElementById('editname').value = name;
+      document.getElementById('editphoneNumber').value = phoneNumber.split('+91')[1];
+      document.getElementById('editemail').value = email;
+      document.getElementById('editpassword').value = password;
+      document.getElementById('editaddress').value = document.getElementById('ckeditoraddressvalue' + id).value;
+      CKEDITOR.instances['editabout'].setData(document.getElementById('ckeditoraboutvalue' + id).value);
+      CKEDITOR.instances['editvision'].setData(document.getElementById('ckeditorvisionvalue' + id).value);
+      CKEDITOR.instances['editqualification'].setData(document.getElementById('ckeditorqualificationvalue' + id).value);
+      CKEDITOR.instances['editexpertise'].setData(document.getElementById('ckeditorexpertisevalue' + id).value);
+      document.getElementsByClassName('edit_form')[0].setAttribute('id',`form_${id}`);
+      editModal.toggle();
+  }
+
+  //Delete Trainer
+  function deleteTrainer(id) {
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    if(confirm('Do you want to delete it?') == true){
+      $.ajax({
+            url : '/admin/experts/deleteTrainer',
+            dataType: "json",
+            type: "POST",
+            data: {
+                id:id
+            },
+            success: function(response){
+              if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-success');
+                document.getElementById('alertMessage').innerHTML = 'Trainer deleted successfully';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                  $("#success-alert").slideUp(500);
+                });
+              }
+              setTimeout(() => {
+                location.reload();
+              },1000);
+            },
+            error: function(err){
+                    console.log(err);
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+      });
+    } 
+  }
+
+  //Upload image
+function uploadImages(value) {
+    document.getElementById('load').style.visibility="visible";
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+      if(value != 'edit'){
+        var imageFiles = document.getElementById('images').files;
+        var form = new FormData();
+        for(var i=0;i<imageFiles.length;i++){
+            if(imageFiles[i] != undefined){
+                form.append(`book_images`, imageFiles[i]);
+            }
+        }
+
+        $.ajax({
+            url : "/admin/common/saveBookImages",
+            type: "POST",
+            cache: false,
+            contentType: false,
+            processData: false,
+            data : form,
+            success: function(response){
+                // console.log(response.files);
+                for(var i=0;i<response.files.length;i++) {
+                    var path = response.files[i].slice(6,response.files[i].length);
+                    $('#preview').append('<div class="col-lg-4 col-md-4 col-sm-6 col-6" id="gallery_image_'+ path +'"><div class="card" id="append_image_'+ path +'"><a class="delete_gallery_image" onclick="deleteCurrentGalleryImage(\''+ ( "gallery_image_"+ path )  +'\',\'gallery_image_path_'+ path +'\')"><span class="iconify" data-icon="akar-icons:cross"></span></a><img src="'+ path +'" id="preview_galler_image_'+ path +'" alt=""><input type="hidden" class="gallery_image_path" name="gallery_image_path" id="gallery_image_path_'+ path +'" value="'+ path +'"></div></div>');
+                }
+                document.getElementById('images').value='';
+                document.getElementById('load').style.visibility="hidden";
+            },
+            error: function(err){
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+        });
+      } else {
+        var imageFiles = document.getElementById('edit_images').files;
+        var id = document.getElementsByClassName('edit_form')[0].getAttribute('id').split('_')[1];
+        //   console.log(imageFiles);
+        var form = new FormData();
+        for(var i=0;i<imageFiles.length;i++){
+            if(imageFiles[i] != undefined){
+                form.append(`book_images`, imageFiles[i]);
+            }
+        }
+
+        $.ajax({
+            url : `/admin/common/saveEditImages/${id}/trainer`,
+            type: "POST",
+            cache: false,
+            contentType: false,
+            processData: false,
+            data : form,
+            success: function(response){
+                console.log(response.files);
+                for(var i=0;i<response.files.length;i++) {
+                    var path = response.files[i].slice(6,response.files[i].length);
+                    $('#editpreview').append('<div class="col-lg-4 col-md-4 col-sm-6 col-6" id="edit_gallery_image_'+ path +'"><div class="card" id="append_image_'+ path +'"><a class="delete_gallery_image" onclick="deleteEditCurrentGalleryImage(\''+ ( "edit_gallery_image_"+ path )  +'\',\''+ path +'\')"><span class="iconify" data-icon="akar-icons:cross"></span></a><img src="'+ path +'" id="preview_galler_image_'+ path +'" alt=""></div><input type="hidden" class="edit_gallery_image_path" name="gallery_image_path" id="gallery_image_path_'+ path +'" value="'+ path +'"></div>');
+                }
+                document.getElementById('edit_images').value='';
+                document.getElementById('load').style.visibility="hidden";
+            },
+            error: function(err){
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+        });
+      }
+  }
+
+  //Add trainer
+  function addTrainer(event) {
+    event.preventDefault();
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    var about = CKEDITOR.instances['about'].getData();
+    var vision = CKEDITOR.instances['vision'].getData();
+    var qualification = CKEDITOR.instances['qualification'].getData();
+    var expertise = CKEDITOR.instances['expertise'].getData();
+    var name = document.getElementById('name').value;
+    var phoneNumber = '+91' + document.getElementById('phoneNumber').value;
+    var email = document.getElementById('email').value;
+    var password = document.getElementById('password').value;
+    var address = document.getElementById('address').value;
+    if(about.length != 0 && vision.length !=0 && qualification.length != 0 && expertise.length != 0) {
+        var gallery = document.getElementsByClassName("gallery_image_path");
+        var gallery_values = [];
+        if(gallery.length != 0) {
+            for(var i =0;i<gallery.length;i++) {
+                gallery_values.push(gallery[i].value);
+            }
+            $.ajax({
+                url : '/admin/experts/addTrainer',
+                dataType: "json",
+                type: "POST",
+                data: {
+                    name:name,
+                    phoneNumber:phoneNumber,
+                    email:email,
+                    password:password,
+                    gallery:gallery_values,
+                    about:about,
+                    vision:vision,
+                    qualification:qualification,
+                    expertise:expertise,
+                    address:address
+                },
+                success: function(response){
+                    if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-success');
+                        document.getElementById('alertMessage').innerHTML = 'Trainer added successfully';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+                    setTimeout(() => {
+                        location.reload();
+                    },1000);
+                },
+                error: function(err){
+                    console.log(err);
+                    if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+                }
+            });
+      } else {
+        if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-warning');
+                document.getElementById('alertMessage').innerHTML = 'Select an image first';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+      }
+    } else {
+        if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-warning');
+                document.getElementById('alertMessage').innerHTML = 'Please fill all the values first.';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+    }
+    // console.log(data);
+  }
+
+  //Save trainer
+  function saveTrainer(event) {
+    event.preventDefault();
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    var about = CKEDITOR.instances['editabout'].getData();
+    var vision = CKEDITOR.instances['editvision'].getData();
+    var qualification = CKEDITOR.instances['editqualification'].getData();
+    var expertise = CKEDITOR.instances['editexpertise'].getData();
+    var name = document.getElementById('editname').value;
+    var phoneNumber = '+91' + document.getElementById('editphoneNumber').value;
+    var email = document.getElementById('editemail').value;
+    var password = document.getElementById('editpassword').value;
+    var address = document.getElementById('editaddress').value;
+    var id = document.getElementsByClassName('edit_form')[0].getAttribute('id').split('_')[1];
+    if(about.length != 0 && vision.length !=0 && qualification.length != 0 && expertise.length != 0) {
+        var gallery = document.getElementsByClassName("edit_gallery_image_path");
+        var gallery_values = [];
+        if(gallery.length != 0) {
+            for(var i =0;i<gallery.length;i++) {
+                gallery_values.push(gallery[i].value);
+            }
+            $.ajax({
+                url : '/admin/experts/saveTrainer',
+                dataType: "json",
+                type: "POST",
+                data: {
+                    name:name,
+                    phoneNumber:phoneNumber,
+                    email:email,
+                    password:password,
+                    gallery:gallery_values,
+                    about:about,
+                    vision:vision,
+                    qualification:qualification,
+                    expertise:expertise,
+                    address:address,
+                    id:id,
+                },
+                success: function(response){
+                    if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-success');
+                        document.getElementById('alertMessage').innerHTML = 'Trainer edited successfully';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+                    setTimeout(() => {
+                        location.reload();
+                    },1000);
+                },
+                error: function(err){
+                    console.log(err);
+                    if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+                }
+            });
+      } else {
+        if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-warning');
+                document.getElementById('alertMessage').innerHTML = 'Select an image first';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+      }
+    } else {
+        if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-warning');
+                document.getElementById('alertMessage').innerHTML = 'Please fill all the values first.';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+    }
+    // console.log(data);
+  }
+
+</script>
+
+<%- include('../../components/footer/footer.ejs') %>

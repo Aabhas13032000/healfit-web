@@ -3,6 +3,7 @@
     padding: 20px 20px;
     overflow-x: hidden;
     overflow-y: scroll;
+    width: 100%;
 }
 
 .container-fluid .form{
@@ -13,9 +14,23 @@
     width: 100% !important;
 }
 
-#main {
-    overflow-x: scroll !important;
+.col-12, .col-6 {
+    padding: 0;
+}
+
+/* #main {
+    overflow-x: hidden !important;
     overflow-y: scroll !important;
+} */
+
+#success-alert {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    box-shadow: 0px 0px 20px rgba(0,0,0,0.08);
+    display: none;
 }
 
 .container-fluid .top {
@@ -44,13 +59,47 @@
     font-family: Gilroy-Regular;
 }
 
-.container-fluid .content_table {
+.container-fluid .content_table{
     background-color: white;
     padding: 20px;
     border-radius: 10px;
     border: 1px solid var(--default-input-borders);
     width: 100%;
-    display: inline-table;
+    /* display: inline-table; */
+}
+
+.container-fluid .profile_data {
+    margin: 0px 0px 0px 0px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid var(--default-input-borders);
+    width: 100%;
+    /* max-width: 98% !important; */
+}
+
+.container-fluid .data_row  {
+    margin: 10px 0px;
+}
+
+.container-fluid .profile_data .row {
+    width: 100%;
+}
+
+.container-fluid .profile_data p {
+    margin: 5px 0px 5px 0px;
+    color: var(--sub-text);
+}
+
+.container-fluid .profile_data h5, .container-fluid .profile_data h4 {
+    margin: 5px 0px;
+    color: var(--rich-black);
+    font-family: Hellix-Regular;
+}
+
+.container-fluid .profile_data .details {
+    display: block;
+    width: 100%;
 }
 
 .container-fluid .content_table .table {
@@ -132,7 +181,7 @@
     margin-bottom: 0;
 }
 
-.container-fluid .form .profile .alert {
+.alert {
     border-radius: 10px;
     margin: 0px 10px 20px 10px;
 }
@@ -147,6 +196,19 @@
     border: 1.5px solid var(--default-input-borders);
     height: 50px;
     outline: none;
+}
+
+.statusType {
+    width: 250px;
+    margin: 0 0 0 10px;
+    height: 40px !important;
+}
+
+.statusType .type {
+    margin: 0px 0px;
+    height: 40px !important;
+    border: 1.0px solid var(--default-input-borders);
+    border-radius: 8px;
 }
 
 .search {
@@ -270,6 +332,10 @@ textarea {
     background-color: var(--card-bg) !important;
 }
 
+.modal {
+    border: 0 !important;
+}
+
 .modal .modal-content {
     border: 0;
     border-radius: 10px;
@@ -297,6 +363,53 @@ textarea {
     font-family: Gilroy-Medium;
 }
 
+.profile_table_data {
+    display: flex;
+    align-items: center;
+    padding: 10px 10px 10px 0px;
+    border-radius: 10px;
+}
+
+.profile_table_data .profile_image {
+    min-width: 60px !important;
+    height: 60px !important;
+    overflow: hidden;
+    border-radius: 50%;
+    position: relative;
+}
+
+.profile_table_data .profile_image .edit-icon {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    top: 0;
+    left: 0;
+    padding: 0px;
+    cursor: pointer;
+}
+
+.profile_table_data .profile_image .edit-icon a {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 50%;
+}
+
+.profile_table_data .profile_image .edit-icon a .iconify {
+    width: 20px;
+    height: 20px;
+    color: var(--white);
+}
+
+.profile_table_data .profile_image img {
+    width: 60px;
+    height: 60px;
+}
+
 table {
     table-layout: auto !important;
     border-collapse: collapse;
@@ -309,17 +422,17 @@ table {
 } 
 
 thead th{
-    text-align: center !important;
-    font-family: Hellix-SemiBold;
+    font-family: Hellix-Medium;
     border-bottom: 1px solid var(--default-input-borders);
     padding: 15px 8px;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 tr {
-    text-align: center !important;
+    text-align: left !important;
     font-family: Hellix-Regular;
     border-bottom: 1px solid var(--default-input-borders);
+    font-size: 14px;
 }
 
 td {
@@ -335,7 +448,7 @@ tr .options {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: space-between;
 }
 
 tr .options .edit {
@@ -346,6 +459,8 @@ tr .options .edit {
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 50px;
+    height: 50px;
 }
 
 tr .options .delete {
@@ -360,12 +475,89 @@ tr .options .delete {
 }
 
 tr .options .delete:hover {
-    background-color: var(--deleteButton-color);
+    background-color: var(--card-bg);
     padding: 10px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+
+.delete {
+    margin: 2px auto;
+    cursor: pointer;
+    background-color: white;
+    padding: 10px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+}
+
+.delete:hover {
+    background-color: var(--card-bg) !important;
+    padding: 10px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete .iconify {
+    color: var(--sub-text) !important;
+    width:24px;
+    height: 24px;
+}
+
+.delete:hover .iconify{
+    color: white;
+}
+
+tr .options .edit:hover {
+    background-color: var(--card-bg);
+    padding: 10px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+tr .options .edit .iconify {
+    width:24px;
+    height: 24px;
+    color: var(--sub-text) !important;
+}
+
+tr .options .delete .iconify {
+    color: var(--sub-text) !important;
+    width:24px;
+    height: 24px;
+}
+
+tr .options .delete:hover .iconify{
+    color: white;
+}
+
+tr .options .edit:hover .iconify{
+    color: white;
+}
+
+tr .options .profile {
+    background-color: var(--card-bg);
+    color: white;
+    font: Hellix-Regular;
+    padding: 5px 12px;
+    border-radius: 5px;
+    margin: 2px auto;
+}
+
+tr td img{
+    width: 50%;
+    object-fit: cover;
+    border-radius: 5px;
 }
 
 .pages {
@@ -420,6 +612,10 @@ tr .options .delete:hover {
     border: 0px !important;
 }
 
+.dropdown-item {
+    color: var(--rich-black) !important;
+}
+
 .selected_page {
     background-color: var(--highlight);
     border-radius: 50%;
@@ -468,9 +664,161 @@ tr .options .delete:hover {
     cursor: unset;
 }
 
+.search-form {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.preview_allImages {
+    padding: 10px !important;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.preview_allImages .select {
+    width: 60px;
+    height: 60px;
+    margin-right: 20px;
+    position: relative;
+}
+
+.preview_allImages .select .card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.preview_allImages .select .selected_save_profile {
+    position:absolute;
+    z-index: 1;
+    top: 0;
+    left: 12px;
+    width: 60px;
+    height: 60px;
+    border: 2px solid var(--congrats);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0,0,0,0.08);
+    cursor: pointer;
+}
+
+.preview_allImages .select .is-not-selected {
+    display: none !important;
+}
+
+.preview_allImages .select .is-selected {
+    display: flex !important;
+}
+
+.preview_allImages .select .selected_save_profile a .iconify {
+    color: var(--congrats);
+    width: 24px;
+    height: 24px;
+}
+
+.preview_allImages .select .card {
+    width: 60px;
+    height: 60px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    overflow: hidden;
+    border: 0;
+}
+
+.preview_allImages .col-lg-4 .card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.preview_images .col-lg-4 {
+    padding: 10px !important;
+}
+
+.preview_images .col-lg-4 .card {
+    width: 100%;
+    background-color: var(--primary-color);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    position: relative;
+    border: 0;
+}
+
+.preview_images .col-lg-4 .card .delete_gallery_image {
+    position: absolute;
+    z-index: 1;
+    background-color: tomato;
+    color: white;
+    height: 40px;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50px;
+    overflow: hidden;
+    top: 10px;
+    right: 10px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
+}
+
+.preview_images .col-lg-4 .card .delete_gallery_image .iconify {
+    width: 20px;
+    height: 20px;
+}
+
+.preview_images .col-lg-4 .card img {
+    width: 100%;
+    position: relative;
+    z-index: 0;
+    object-fit: cover;
+}
+
+.preview_images .col-12 .card {
+    width: 100%;
+    background-color: var(--primary-color);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    position: relative;
+    border: 0;
+}
+
+.preview_images .col-12 .card .delete_gallery_image {
+    position: absolute;
+    z-index: 1;
+    background-color: tomato;
+    color: white;
+    height: 40px;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50px;
+    overflow: hidden;
+    top: 10px;
+    right: 10px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
+}
+
+.preview_images .col-12 .card .delete_gallery_image .iconify {
+    width: 20px;
+    height: 20px;
+}
+
+.preview_images .col-12 .card img {
+    width: 100%;
+    position: relative;
+    z-index: 0;
+    object-fit: cover;
+}
+
 @media screen and (max-width: 768px) {
     .container-fluid {
-        padding: 20px 20px;;
+        padding: 20px 20px;
+        overflow-x: scroll;
     }
 
     .pages {
@@ -498,14 +846,39 @@ tr .options .delete:hover {
     }    
 
     .search {
-        margin: 10px;
+        margin: 0px;
+    }
+
+    .addButton {
+        margin-top: 10px;
     }
 
     .container-fluid .top h5 {
         margin-bottom: 10px;
     }
 
-    .container-fluid .content_table {
+    .container-fluid .content_table,.container-fluid .profile_data {
         display: inline-table;
+        margin-right: 20px;
+    }
+}
+
+@media print {
+    /* styles here */
+
+    .search_bar {
+        display: none;
+    }
+
+    #content {
+        display: none !important;
+    }
+
+    .options {
+        display: none !important;
+    }
+
+    #optionTag {
+        display: none !important;
     }
 }

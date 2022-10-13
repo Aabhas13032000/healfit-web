@@ -1,0 +1,185 @@
+<%- include('../components/header/website_header.ejs',{cssFile : 'index',page:page}) %> 
+
+<div id="load"></div>
+
+<div class="main-container">
+    <br><br><br><br>
+    <div class="container">
+        <div class="row d-flex align-items-center">
+            <div class="col-lg-9 col-md-8 col-sm-4 col-12" style="padding: 0px 0px 0px 10px !important;">
+                <div class="heading">
+                    <h5>Experts</h5>
+                    <p>Meet our team of experts.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-8 col-12" style="padding: 0px 10px 0px 10px !important;">
+                <div>
+                    <form onsubmit="getSearchedTrainers(event)" method="get" class="search-form">
+                        <div class="form-group input-group search">
+                            <a><span class="iconify" data-icon="akar-icons:search"></span></a>
+                            <input type="text" class="form-control" id="searchText" name="searchedTitle" placeholder="Search by name...">
+                        </div>
+                        <input type="submit" hidden />
+                      </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row experts" id="experts">
+            
+        </div>
+    </div>
+    <br>
+    <div class="load_more" id="load_more">
+        <div class="button">
+            <button class="btn btn-primary d-flex justify-content-center" onclick="getMoreTrainers()">Load more</button>
+        </div>
+    </div>
+    <br>
+    <%- include('footer.ejs',{showContactExpert: false}) %>
+</div>
+
+<script>
+    var offset = 0;
+    var isDevelopment = '<%- isDevelopment %>' == 'true' ? true : false;
+
+    function getMoreTrainers() {
+        offset = offset + 20;
+        getTrainers(offset);
+    }
+
+    function getSearchedTrainers(event) {
+        event.preventDefault();
+        document.getElementById('load').style.visibility="visible";
+        document.getElementById('experts').innerHTML = '';
+        var value = document.getElementById('searchText').value;
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('currentUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        if(value.length != 0){
+            $.ajax({
+                url : `/api/experts/getSearchTrainers?name=${value}`,
+                dataType: "json",
+                type: "GET",
+                headers: {
+                    'token':token ? token : 'testing',
+                    'Content-Type':'application/json',
+                    'platform': 'WEB'
+                },
+                success: function(response){
+                    if(isDevelopment) {
+                    console.log(response);
+                }
+                    if(response.data.length != 0){
+                        for(var i=0;i<response.data.length;i++){
+                            $('#experts').append('<div class="col-lg-3 col-md-4 col-sm-6 col-12 expert-cards"><div class="cards" onclick="window.location.href=\'/expert-profile/'+ response.data[i].id +'\'"><img src="'+ response.data[i].profile_image +'"><div class="name"><h6>'+ response.data[i].name +'</h6></div></div></div>');
+                        }
+                    } else {
+                        if(offset == 0){
+                            $('#experts').append('<div class="col-12 text-center"><h6>No experts present</h6></div>');
+                        }
+                    }
+                    document.getElementById('load_more').style.display = 'none';
+                    document.getElementById('load').style.visibility="hidden";
+                },
+                error: function(err){
+                    if(isDevelopment) {
+                    console.log(err);
+                }
+                    alert('Some error occured !!');
+                }
+            });
+        } else {
+            getTrainers(0);
+        }
+    }
+
+
+    function getTrainers(offset) {
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('currentUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        document.getElementById('load').style.visibility="visible";
+        if(offset == 0) {
+            document.getElementById('experts').innerHTML = '';
+        }
+        $.ajax({
+            url : `/api/experts?offset=${offset}`,
+            dataType: "json",
+            type: "GET",
+            headers: {
+                'token':token ? token : 'testing',
+                'Content-Type':'application/json',
+                'platform': 'WEB'
+            },
+            success: function(response){
+              if(isDevelopment) {
+                    console.log(response);
+                }
+                if(response.data.length != 0){
+                  for(var i=0;i<response.data.length;i++){
+                    $('#experts').append('<div class="col-lg-3 col-md-4 col-sm-6 col-12 expert-cards"><div class="cards" onclick="window.location.href=\'/expert-profile/'+ response.data[i].id +'\'"><img src="'+ response.data[i].profile_image +'"><div class="name"><h6>'+ response.data[i].name +'</h6></div></div></div>');
+                  }
+                } else {
+                    if(offset == 0){
+                        $('#experts').append('<div class="col-12 text-center"><h6>No experts present</h6></div>');
+                    }
+                }
+                if(response.total <= 20) {
+                    document.getElementById('load_more').style.display = 'none';
+                } else if(document.getElementsByClassName('expert-cards').length == response.total) {
+                    document.getElementById('load_more').style.display = 'none';
+                }
+                document.getElementById('load').style.visibility="hidden";
+            },
+            error: function(err){
+                if(isDevelopment) {
+                    console.log(err);
+                }
+                alert('Some error occured !!');
+            }
+        });
+    }
+    setTimeout(() => {
+        getTrainers(offset);
+    },500);
+</script>
+
+<%- include('../components/footer/website_footer.ejs') %>

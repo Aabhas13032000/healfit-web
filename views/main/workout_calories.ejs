@@ -1,0 +1,393 @@
+<%- include('../components/header/website_header.ejs',{cssFile : 'index',page:page}) %> 
+
+<div id="load"></div>
+
+<div class="modal fade" id="searchExercise" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div id="close" data-bs-dismiss="modal">
+                    <a><span class="iconify" data-icon="eva:close-fill"></span></a>
+                </div>
+                <div class="calorie">
+                    <div class="date">
+                        <p>Search Your Exercise</p>
+                    </div>
+                    <div class="form-group input-group search" style="margin:20px 0px 10px 0px;height: 50px !important;">
+                        <a style="width: 45px !important;"><span class="iconify" data-icon="akar-icons:search"></span></a>
+                        <input type="text" class="form-control" id="searchText" onkeyup="searchExercise(this.value)" style="background-color: var(--white);" name="searchedTitle" placeholder="Search by exercise name..." autocomplete="off">
+                    </div>
+                    <div class="items" style="padding: 10px 0px 0px 0px !important;" id="exerciseContent">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="main-container">
+    <br><br><br><br>
+    <div class="container">
+        <div class="row d-flex align-items-center">
+            <div class="col-lg-9 col-md-8 col-sm-4 col-12" style="padding: 0px 0px 0px 10px !important;">
+                <div class="heading">
+                    <h5>Workout log</h5>
+                    <p>See all the your exercises log here.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-8 col-12" style="padding: 0px 10px 0px 10px !important;">
+                <div class="date">
+                    <input type="date" id="currentDateExercise" class="form-control" onchange="getCalorieCounterData()" name="SelectedDate" value="Today"/>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="row" id="cartTotal">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-12 order-1 order-md-0" style="padding: 0px 10px 0px 10px !important;">
+                <div class="items" style="padding: 0 !important" id="cartItems">
+
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-12 order-0 order-md-1" id="final_price" style="padding: 0px 10px 0px 10px !important;">
+                <div class="final_price card" style="margin-bottom: 20px">
+                    <div class="total">
+                        <h5>Add new entry</h5>
+                    </div>
+                    <div class="form-group search" style="margin:20px 0px 10px 0px;height: 50px !important;border-radius: 10px !important;">
+                        <input type="text" class="form-control" onclick="openSearchExerciseModal()" style="background-color: var(--white);height: 100% !important;border: 0.5px solid var(--default-input-borders) !important;border-radius: 10px !important;"  placeholder="Click here to add exercise ..." readonly value="">
+                    </div>
+                    <div class="selectedValue" id="selectedExercise" data-exerciseId="0" data-exerciseCalories="0" data-exerciseSet="0" data-exercisePerset="0" data-exerciseWeight="0">
+                        
+                    </div>
+                    <form onsubmit="addExercise(event)" id="form" method="post" autocomplete="off">
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12" style="padding-right: 0px !important;">
+                                <div class="form-group">
+                                    <label for="set" style="margin:10px 0px 10px 0px;">Number of sets</label>
+                                    <input type="number" step=1 class="form-control" name="set" id="set" placeholder="Enter number of sets" required min="1"/>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12" style="padding-left: 0px !important;">
+                                <div class="form-group">
+                                    <label for="perset" style="margin:10px 0px 10px 0px;">Number of repetations</label>
+                                    <input type="number" step=1 class="form-control" name="perset" id="perset" placeholder="Enter number of repetations" min="0" value="0"/>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12" style="padding-left: 0px !important;">
+                                <div class="form-group">
+                                    <label for="min" style="margin:10px 0px 10px 0px;">Total duration</label>
+                                    <input type="number" step=0.01 class="form-control" name="min" id="min" placeholder="Enter total duration (in mins)" min="1"/>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12" style="padding-left: 0px !important;">
+                                <div class="form-group">
+                                  <label for="weightUsed" style="margin:20px 0px 10px 0px;">Weight(if not enter 0)</label>
+                                  <input type="number" step=0.01 class="form-control" name="weightUsed" id="weightUsed" placeholder="Enter total weight used (in kgs)" min="0"/>
+                                </div>
+                            </div>
+                            <div class="button" style="padding: 0;">
+                                <button type="submit" id="exerciser_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin-top: 20px;">Add</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <%- include('footer.ejs',{showContactExpert: true}) %>
+</div>
+
+<script>
+
+var date = '<%- date %>';
+    var isDevelopment = '<%- isDevelopment %>' == 'true' ? true : false;
+
+var addExerciseModal;
+    $(function(){
+        addExerciseModal = new bootstrap.Modal(document.getElementById('searchExercise'));
+    });
+
+    function openSearchExerciseModal() {
+        var value = document.getElementById('selectedExercise').innerHTML;
+        if(value.trim().length == 0){
+            addExerciseModal.toggle();
+        } else {
+            alert('First remove the selected exercise');
+        }
+    }
+
+function searchExercise(value) {
+    if(value.length != 0) {
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('currentUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        document.getElementById('exerciseContent').innerHTML = '';
+        document.getElementById('selectedExercise').innerHTML = '';
+        $.ajax({
+            url : `/api/getSearchExercise?searchedTitle=${value}`,
+            dataType: "json",
+            type: "GET",
+            headers: {
+                'token':token ? token : 'testing',
+                'Content-Type':'application/json',
+                'platform': 'WEB'
+            },
+            success: function(response){
+              if(isDevelopment) {
+                    console.log(response);
+                }
+              if(response.data.length !=0){
+                for(var i = 0;i<response.data.length;i++) {
+                    $('#exerciseContent').append('<div onclick="onSelectExerciseItem(\''+ response.data[i].name +'\',\''+ response.data[i].cover_photo +'\',\''+ response.data[i].set +'\',\''+ response.data[i].perset +'\',\''+ response.data[i].calories +'\',\''+ response.data[i].id +'\',\''+ response.data[i].weight +'\')" class="item"><div class="image"><img src="'+ response.data[i].cover_photo +'" alt=""></div><div class="content"><div class="name"><p>'+ response.data[i].name +'</p></div></div></div>');
+                }
+              } else {
+                document.getElementById('exerciseContent').innerHTML = '<div class="col-12 text-center"><h6>No exercise available</h6></div>';
+              }
+            },
+            error: function(err){
+                if(isDevelopment) {
+                    console.log(err);
+                }
+                alert('Some error occured !!');
+            }
+        });
+    } else {
+
+    }
+}
+
+function onSelectExerciseItem(name,cover_photo,set,perset,calories,id,weight) {
+    document.getElementById('selectedExercise').setAttribute('data-exerciseId',id);
+    document.getElementById('selectedExercise').setAttribute('data-exerciseCalories',calories);
+    document.getElementById('selectedExercise').setAttribute('data-exerciseSet',set);
+    document.getElementById('selectedExercise').setAttribute('data-exercisePerset',perset);
+    document.getElementById('selectedExercise').setAttribute('data-exerciseWeight',weight);
+    $('#selectedExercise').append('<div class="item"><div class="top"><div class="image"><img src="'+ cover_photo +'" alt=""></div><div class="content"> <div class="name"><p>'+ name +'</p></div><div id="delete-icon3" onclick="removeSelectedExerciseItem()" style="margin-left: 10px;"><a><span class="iconify" data-icon="ant-design:delete-outlined"></span></a></div></div></div></div>');
+    document.getElementById('searchText').value = '';
+    document.getElementById('exerciseContent').innerHTML = '';
+    addExerciseModal.toggle();
+}
+
+function removeSelectedExerciseItem() {
+    if(confirm('Are you sure you want to remove selected exercise?') == true){
+        document.getElementById('selectedExercise').innerHTML = '';
+    }
+}
+
+function removeFromUserExerciseCalories(id) {
+    if(confirm('Are you sure you want to remove this data?') == true){
+        document.getElementById('load').style.visibility="visible";
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('currentUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        $.ajax({
+            url : `/api/removeFromUserExerciseCalories`,
+            dataType: "json",
+            type: "POST",
+            headers: {
+                'token':token ? token : 'testing',
+                'platform': 'WEB'
+            },
+            data:{
+                id: id,
+            },
+            success: function(response){
+                if(isDevelopment) {
+                    console.log(response);
+                }
+                if(response.message == 'success') {
+                    location.reload();
+                }
+            },
+            error: function(err){
+                if(isDevelopment) {
+                    console.log(err);
+                }
+                alert('Some error occured !!');
+              document.getElementById('load').style.visibility="hidden";
+            }
+        });
+    }
+}
+
+//Add Exercise
+function addExercise(event) {
+    event.preventDefault();
+    var value = document.getElementById('selectedExercise').innerHTML;
+    var newDate = document.getElementById('currentDateExercise').value;
+    if(value.trim().length != 0){
+        document.getElementById('load').style.visibility="visible";
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('currentUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        var exercise_id = document.getElementById('selectedExercise').getAttribute('data-exerciseId');
+        var exerciseCalories = document.getElementById('selectedExercise').getAttribute('data-exerciseCalories');
+        var exerciseSet = document.getElementById('selectedExercise').getAttribute('data-exerciseSet');
+        var exercisePerset = document.getElementById('selectedExercise').getAttribute('data-exercisePerset');
+        var exerciseWeight = document.getElementById('selectedExercise').getAttribute('data-exerciseWeight');
+        var set = document.getElementById('set').value;
+        var perset = document.getElementById('perset').value;
+        var weight = document.getElementById('weightUsed').value;
+        var min = document.getElementById('min').value;
+
+        if(weight != 0 && weight != '0' && exerciseWeight != 0 && exerciseWeight != '0') {
+            var calories = Math.ceil(Math.ceil(perset) / parseInt(exercisePerset)) * exerciseCalories * Math.ceil(Math.ceil(set) / parseInt(exerciseSet)) * ((weight) / parseFloat(exerciseWeight));
+        } else {
+            var calories = Math.ceil(Math.ceil(perset) / parseInt(exercisePerset)) * exerciseCalories * Math.ceil(Math.ceil(set) / parseInt(exerciseSet));
+        }
+
+        $.ajax({
+            url : '/api/addExercise',
+            dataType: "json",
+            type: "POST",
+            data: {
+                user_id:user_id,
+                exercise_id:exercise_id,
+                set:set,
+                perset:perset.length != 0 ? perset : '0',
+                calories:calories,
+                date:newDate + ' 00:00:00',
+                weight:weight.length != 0 ? weight : '0',
+                min:min.length != 0 ? min : '0'
+            },
+            success: function(response){
+                location.reload();
+            },
+            error: function(err){
+                if(isDevelopment) {
+                    console.log(err);
+                }
+                alert('Some error occured !!');
+            }
+        });
+    } else {
+            alert('Please select a exercise first');
+    }
+  }
+
+    function getCalorieCounterData() {
+        var newDate = document.getElementById('currentDateExercise').value;
+        // getWorkoutCalorieData(newDate);
+        window.location.href = `/workout_calories?date=${newDate}`;
+    }
+    
+    function getWorkoutCalorieData(date) {
+        document.getElementById('currentDateExercise').value = date;
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('currentUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        document.getElementById('load').style.visibility="visible";
+        document.getElementById('cartItems').innerHTML = '';
+        $.ajax({
+            url : `/api/getWorkoutCalorieData?user_id=${user_id}&date=${date}`,
+            dataType: "json",
+            type: "GET",
+            headers: {
+                'token':token ? token : 'testing',
+                'Content-Type':'application/json',
+                'platform': 'WEB'
+            },
+            success: function(response){
+              if(isDevelopment) {
+                    console.log(response);
+                }
+                    var total = 0;
+                if(response.user_exercise.length != 0){
+                    for(var i = 0;i<response.user_exercise.length;i++) {
+                        total = total + response.user_exercise[i].calories;
+                        $('#cartItems').append('<div class="item workoutItem"><div class="image"><img src="'+ response.user_exercise[i].cover_photo +'" alt=""></div><div class="content"><div class="name"><p>'+ response.user_exercise[i].name +'</p><p>'+ (response.user_exercise[i].set != 0 ? response.user_exercise[i].set == 1 ? `${response.user_exercise[i].set} set` : `${response.user_exercise[i].set} sets` : '') +''+ (response.user_exercise[i].perset != 0 ? `, ${response.user_exercise[i].perset} repetations` : '') +''+ (response.user_exercise[i].min != 0 ? `, ${response.user_exercise[i].min} mins` : '') +''+ (response.user_exercise[i].weight != 0 ? `, ${response.user_exercise[i].weight} kgs weight` : '') +'</p></div><div id="delete-icon3" onclick="removeFromUserExerciseCalories(\''+ response.user_exercise[i].id +'\')" style="margin-left: 10px;"><a><span class="iconify" data-icon="ant-design:delete-outlined"></span></a></div></div></div>');
+                    }
+                } else {
+                    document.getElementById('cartItems').innerHTML = '<div class="col-12 text-center"><h6>No data present for selected date</h6></div>';
+                }
+                   
+                    // document.getElementById('totalValue').innerHTML = `${total} kcal`;
+                    document.getElementById('load').style.visibility="hidden";
+            },
+            error: function(err){
+                if(isDevelopment) {
+                    console.log(err);
+                }
+                alert('Some error occured !!');
+            }
+        });
+    }
+    setTimeout(() => {
+        getWorkoutCalorieData(date);
+    },500);
+</script>
+<%- include('../components/footer/website_footer.ejs') %>

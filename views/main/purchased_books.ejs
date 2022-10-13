@@ -1,0 +1,106 @@
+<%- include('../components/header/website_header.ejs',{cssFile : 'index',page:page}) %> 
+
+<div id="load"></div>
+
+<div class="main-container">
+    <br><br><br><br>
+    <div class="container">
+        <div class="row d-flex align-items-center">
+            <div class="col-lg-9 col-md-8 col-sm-4 col-12" style="padding: 0px 0px 0px 10px !important;">
+                <div class="heading">
+                    <h5>Purchased books</h5>
+                    <p>See all the purchasd books here.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-8 col-12" style="padding: 0px 10px 0px 10px !important;">
+                
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row experts" id="experts">
+        </div>
+    </div>
+    <br><br>
+    <%- include('footer.ejs',{showContactExpert: true}) %>
+</div>
+
+<script>
+    var message = '<%- message %>';
+    var isDevelopment = '<%- isDevelopment %>' == 'true' ? true : false;
+
+    function getPurchasedBooks() {
+        if(message == 'payment_failed') {
+            alert('Payment failed try again');
+            window.location.href = '/purchasedBooks';
+        } else if(message == 'payment_successfull') {
+            alert('Payment Successfull , Now you can download your book from this page');
+            window.location.href = '/purchasedBooks';
+        } 
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('currentUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        document.getElementById('load').style.visibility="visible";
+        document.getElementById('experts').innerHTML = '';
+        $.ajax({
+            url : `/api/books/purchasedBooks?user_id=${user_id}`,
+            dataType: "json",
+            type: "GET",
+            headers: {
+                'token':token ? token : 'testing',
+                'Content-Type':'application/json',
+                'platform': 'WEB'
+            },
+            success: function(response){
+                    if(isDevelopment) {
+                        console.log(response);
+                    }
+                    var counter = 0;
+                    if(response.books.length != 0){
+                        for(var i=0;i<response.books.length;i++){
+                            if(response.books[i].subscribeddays > 0 && response.books[i].subscribeddays != null){
+                                counter++;
+                                $('#experts').append('<div class="col-lg-4 col-md-4 col-sm-6 col-12"><div class="book"><div class="image"><img src="'+ response.books[i].cover_photo +'"><a><span class="iconify" data-icon="bi:bookmark-fill"></span></a></div><div class="inside_container"><div><h5>'+ response.books[i].title +'</h5><p>'+ response.books[i].author +'</p><p class="downloads"><span class="iconify" data-icon="ant-design:fire-filled"></span>&nbsp;&nbsp;'+ response.books[i].downloads +' Downloads</p><h6><span class="discount_price">Rs '+ response.books[i].price +'</span>&nbsp;&nbsp;<span class="price">Rs '+ response.books[i].discount_price +'</span></h6></div><div class="button"><button class="btn btn-primary d-flex justify-content-center align-items-center" onclick="checkDownloadPdf(\''+ response.books[i].id +'\',\''+ response.books[i].title +'\',\''+ response.books[i].pdf +'\',\''+ response.books[i].discount_price +'\')">Download Pdf</button></div></div></div></div>');
+                            }
+                        }
+                        if(counter == 0) {
+                            $('#experts').append('<div class="col-12 text-center"><h6>Purchase some book first</h6></div>');
+                        }
+                    } else {
+                        if(offset == 0){
+                            $('#experts').append('<div class="col-12 text-center"><h6>No books present</h6></div>');
+                        }
+                    }
+                document.getElementById('load').style.visibility="hidden";
+            },
+            error: function(err){
+                if(isDevelopment) {
+                    console.log(err);
+                }
+                alert('Some error occured !!');
+            }
+        });
+    }
+    setTimeout(() => {
+        getPurchasedBooks();
+    },500);
+</script>
+<%- include('../components/footer/website_footer.ejs') %>

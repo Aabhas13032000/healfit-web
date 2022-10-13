@@ -1,0 +1,216 @@
+<%- include('../components/header/website_header.ejs',{cssFile : 'index',page:page}) %> 
+
+<div id="load"></div>
+
+<div class="main-container">
+    <br><br><br><br>
+    <div class="container">
+        <div class="row d-flex align-items-center">
+            <div class="col-lg-9 col-md-8 col-sm-4 col-12" style="padding: 0px 0px 0px 10px !important;">
+                <div class="heading">
+                    <h5>Programs</h5>
+                    <p>See all the programs here.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-8 col-12" style="padding: 0px 10px 0px 10px !important;">
+                <div>
+                    <form onsubmit="getSearchedPrograms(event)" method="get" class="search-form">
+                        <div class="form-group input-group search">
+                            <a><span class="iconify" data-icon="akar-icons:search"></span></a>
+                            <input type="text" class="form-control" id="searchText" name="searchedTitle" placeholder="Search by title...">
+                        </div>
+                        <input type="submit" hidden />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="programs topSelling container" id="topSelling">
+        <div class="heading">
+            <h2 style="margin-left: 0px;">Top selling programs</h2>
+            <!-- <p>View All&nbsp;&nbsp;<span class="iconify" data-icon="cil:arrow-right"></span></p> -->
+        </div>
+        <div class="external-container">
+            <div class="arrow-left icon" id="left" onclick="leftButtonClicked('slider','box',event)">
+                <a><span class="iconify" data-icon="eva:arrow-ios-back-fill"></span></a>
+            </div>
+            <div class="arrow-right icon" id="right" onclick="rightButtonClicked('slider','box',event)">
+                <a><span class="iconify" data-icon="eva:arrow-ios-forward-fill"></span></a>
+            </div>
+            <div class="cards" id="slider">
+                
+            </div>
+        </div>
+    </div>
+    <div class="container" id="morePrograms">
+        <div class="heading">
+            <h2 style="margin-left: 0px;" id="searchedTitle">More programs</h2>
+            <!-- <p>View All&nbsp;&nbsp;<span class="iconify" data-icon="cil:arrow-right"></span></p> -->
+        </div>
+        <div class="row experts" id="experts">
+            
+        </div>
+    </div>
+    <br>
+    <div class="load_more" id="load_more">
+        <div class="button">
+            <button class="btn btn-primary d-flex justify-content-center" onclick="getMorePrograms()">Load more</button>
+        </div>
+    </div>
+    <br><br>
+    <%- include('footer.ejs',{showContactExpert: true}) %> 
+</div>
+
+
+<script>
+    var offset = 0;
+    var isDevelopment = '<%- isDevelopment %>' == 'true' ? true : false;
+
+    function getMorePrograms() {
+        offset = offset + 20;
+        getPrograms(offset);
+    }
+
+    function getSearchedPrograms(event) {
+        event.preventDefault();
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('currentUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        document.getElementById('load').style.visibility="visible";
+        var value = document.getElementById('searchText').value;
+        if(value.length != 0){
+        document.getElementById('experts').innerHTML = '';
+        document.getElementById('slider').innerHTML = '';
+            $.ajax({
+                url : `/api/programs/getSearchPrograms?title=${value}`,
+                dataType: "json",
+                type: "GET",
+                headers: {
+                    'token':token ? token : 'testing',
+                    'Content-Type':'application/json',
+                    'platform': 'WEB'
+                },
+                success: function(response){
+                    if(isDevelopment) {
+                    console.log(response);
+                }
+                    document.getElementById('topSelling').style.display = 'none';
+                    document.getElementById('searchedTitle').innerHTML = 'Searched programs';
+                    if(response.morePrograms.length != 0) {
+                        for(var i=0;i<response.morePrograms.length;i++){
+                            $('#experts').append('<div class="col-lg-3 col-md-4 col-sm-6 col-12"><div class="box3" style="margin: 0;" onclick="window.location.href=\'/each-program/'+ response.morePrograms[i].id +'\'"><div class="image"><img src="'+ response.morePrograms[i].cover_photo +'" alt=""></div><div class="inside_container"><div class="text"><h5>'+ response.morePrograms[i].title +'</h5><p>Starting from Rs '+ response.morePrograms[i].price +'</p></div><div class="arrow-right icon2"><a><span class="iconify" data-icon="eva:arrow-ios-forward-fill"></span></a></div></div></div></div>');
+                        }
+                    } else {
+                        document.getElementById('experts').innerHTML = '<div class="col-12 text-center"><h6>No Programs present</h6></div>';
+                    }
+                    document.getElementById('load_more').style.display = 'none';
+                    document.getElementById('load').style.visibility="hidden";
+                },
+                error: function(err){
+                    if(isDevelopment) {
+                    console.log(err);
+                }
+                    alert('Some error occured !!');
+                }
+            });
+        } else {
+            getPrograms(0);
+        }
+    }
+
+    function getPrograms(offset) {
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('currentUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        document.getElementById('load').style.visibility="visible";
+        if(offset == 0) {
+            document.getElementById('topSelling').style.display = 'block';
+            document.getElementById('slider').innerHTML = '';
+            document.getElementById('experts').innerHTML = '';
+            document.getElementById('searchedTitle').innerHTML = 'More programs';
+        }
+        $.ajax({
+            url : `/api/programs?offset=${offset}`,
+            dataType: "json",
+            type: "GET",
+            headers: {
+                'token':token ? token : 'testing',
+                'Content-Type':'application/json',
+                'platform': 'WEB'
+            },
+            success: function(response){
+              if(isDevelopment) {
+                    console.log(response);
+                }
+              if(response.topSelling.length != 0) {
+                for(var i=0;i<response.topSelling.length;i++){
+                    $('#slider').append('<div class="box-top" onclick="window.location.href=\'/each-program/'+ response.topSelling[i].id +'\'"><div class="image"><img src="'+ response.topSelling[i].cover_photo +'" alt=""></div><div class="inside_container"><div class="text"><h5>'+ response.topSelling[i].title +'</h5><p>Starting from Rs '+ response.topSelling[i].price +'</p></div><div class="button"><button type="submit" style="border: 0;width: 100%;display: flex;align-items: center;justify-content: center;" class="btn btn-primary">Book Now</button></div></div></div>');
+                }
+              }
+              if(response.morePrograms.length != 0) {
+                for(var i=0;i<response.morePrograms.length;i++){
+                    $('#experts').append('<div class="col-lg-3 col-md-4 col-sm-6 col-12"><div class="box3" style="margin: 0;" onclick="window.location.href=\'/each-program/'+ response.morePrograms[i].id +'\'"><div class="image"><img src="'+ response.morePrograms[i].cover_photo +'" alt=""></div><div class="inside_container"><div class="text"><h5>'+ response.morePrograms[i].title +'</h5><p>Starting from Rs '+ response.morePrograms[i].price +'</p></div><div class="arrow-right icon2"><a><span class="iconify" data-icon="eva:arrow-ios-forward-fill"></span></a></div></div></div></div>');
+                }
+              }
+              if(response.total == 0){
+                $('#topSelling').append('<div class="col-12 text-center"><h6>No Programs present</h6></div>');
+                document.getElementById('morePrograms').innerHTML = '';
+              }
+                if(response.total <= 20) {
+                    document.getElementById('load_more').style.display = 'none';
+                } else if(document.getElementsByClassName('expert-cards').length == response.totalBlogs) {
+                    document.getElementById('load_more').style.display = 'none';
+                }
+                document.getElementById('load').style.visibility="hidden";
+            },
+            error: function(err){
+                if(isDevelopment) {
+                    console.log(err);
+                }
+                alert('Some error occured !!');
+            }
+        });
+    }
+    setTimeout(() => {
+        getPrograms(offset);
+    },500);
+</script>
+
+<%- include('../components/footer/website_footer.ejs') %>

@@ -1,0 +1,819 @@
+<%- include('../../components/header/header.ejs',{cssFile : 'adminPages',page:'Dashboard'}) %> 
+
+<div id="load"></div>
+
+<div class="alert alert-dismissible fade show" role="alert" id="success-alert">
+  <p id="alertMessage" style="margin: 0;">Edited successfully</p>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div class="modal fade" id="addExercise" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Add exercise</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <form onsubmit="addExercise(event)" id="form" method="post" enctype="multipart/form-data" autocomplete="off">
+                  <div class="row">
+                      <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                          <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" class="form-control" placeholder="Enter exercise name.." style="margin: 10px 0px;" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="description" style="margin: 10px 0px;">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter description here.." style="margin: 10px 0px;border-radius: 10px;" required></textarea>
+                          </div>
+                          <div class="form-group">
+                            <label for="cat" style="margin-top: 10px;">Category</label>
+                            <select class="form-control" id="cat" name="cat" aria-label="Images Categories" required>
+                              <option value="">Select category</option>
+                              <option value="1">LEG</option>
+                              <option value="2">CHEST</option>
+                              <option value="3">CARDIO</option>
+                              <option value="4">BACK</option>
+                              <option value="5">SHOULDERS</option>
+                              <option value="6">TRICEPS</option>
+                              <option value="7">BICEPS</option>
+                              <option value="8">ABS</option>
+                              <option value="9">LOW BACK & CORE</option>
+                              <option value="10">ABDOMINAL</option>
+                              <option value="11">CALVES</option>
+                              <option value="12">YOGA</option>
+                            </select>
+                        </div>
+                          <div class="form-group">
+                            <label for="calories" style="margin-top: 10px;">Calories</label>
+                            <input type="number" step=0.01 id="calories" name="calories" class="form-control" placeholder="Enter amount of calories.." value="0" style="margin: 10px 0px;" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="set">Sets</label>
+                            <input type="number" id="set" name="set" class="form-control" placeholder="Enter number of sets.." style="margin: 10px 0px;" value="1" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="perset">Perset</label>
+                            <input type="number" id="perset" name="perset" class="form-control" placeholder="Enter number of repetations.." style="margin: 10px 0px;" value="1" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="weight">Weight(if not enter 0)</label>
+                            <input type="number" step=0.01 id="weight" name="weight" class="form-control" placeholder="Enter amount of weight.." style="margin: 10px 0px;" value="0" required>
+                          </div>
+                          <div class="form-group">
+                              <label for="exercise_images" style="margin: 10px 0px;">Images</label>
+                              <input class="form-control" onchange="uploadImages('add')" style="height: unset;border-radius: 8px;" type="file" multiple id="exercise_images" name="exercise_images" accept="image/*">
+                          </div>
+                          <div id="preview" class="row preview_images">
+                              
+                          </div>
+                          <div class="button">
+                              <button type="submit" id="exercise_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin-top: 20px;">Create</button>
+                          </div>
+                      </div>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="editExercise" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Edit exercise</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <form onsubmit="saveExercise(event)" class="edit_form" id="form_" method="post" enctype="multipart/form-data" autocomplete="off">
+                  <div class="row">
+                      <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="form-group">
+                          <label for="editname">Name</label>
+                          <input type="text" id="editname" name="editname" class="form-control" placeholder="Enter exercise name.." style="margin: 10px 0px;" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="editdescription" style="margin: 10px 0px;">Description</label>
+                          <textarea class="form-control" id="editdescription" name="editdescription" rows="3" placeholder="Enter description here.." style="margin: 10px 0px;border-radius: 10px;" required></textarea>
+                        </div>
+                        <div class="form-group">
+                          <label for="editcat" style="margin-top: 10px;">Category</label>
+                          <select class="form-control" id="editcat" name="editmeals" aria-label="Images Categories" required>
+                            <option value="" id="editcat_option">Select category</option>
+                            <option value="1">LEG</option>
+                            <option value="2">CHEST</option>
+                            <option value="3">CARDIO</option>
+                            <option value="4">BACK</option>
+                            <option value="5">SHOULDERS</option>
+                            <option value="6">TRICEPS</option>
+                            <option value="7">BICEPS</option>
+                            <option value="8">ABS</option>
+                            <option value="9">LOW BACK & CORE</option>
+                            <option value="10">ABDOMINAL</option>
+                            <option value="11">CALVES</option>
+                            <option value="12">YOGA</option>
+                          </select>
+                      </div>
+                        <div class="form-group">
+                          <label for="editcalories">Calories</label>
+                          <input type="number" step=0.01 id="editcalories" name="editcalories" class="form-control" placeholder="Enter amount of calories.." style="margin: 10px 0px;" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="editset">Sets</label>
+                          <input type="number" id="editset" name="editset" class="form-control" placeholder="Enter number of sets.." style="margin: 10px 0px;" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="editperset">Perset</label>
+                          <input type="number" id="editperset" name="editperset" class="form-control" placeholder="Enter number of repetations.." style="margin: 10px 0px;" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="editweight">Weight(if not enter 0)</label>
+                          <input type="number" step=0.01 id="editweight" name="editweight" class="form-control" placeholder="Enter amount of weight.." style="margin: 10px 0px;" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_exercise_images" style="margin: 10px 0px;">Images</label>
+                            <input class="form-control" onchange="uploadImages('edit')" style="height: unset;border-radius: 8px;" type="file" multiple id="edit_exercise_images" name="edit_exercise_images" accept="image/*">
+                        </div>
+                          <div id="editpreview" class="row preview_images">
+                              
+                          </div>
+                          <div class="button">
+                              <button type="submit" id="exercise_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin-top: 20px;">Save</button>
+                          </div>
+                      </div>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="selectCoverPhoto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Select Cover Photo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="row preview_allImages" id="allImages">
+
+              </div>
+            <div class="button">
+              <button onclick="saveSelectedImage()" type="submit" id="exercise_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin-top: 20px;">Save</button>
+            </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="container-fluid" id="main">
+    <div class="top" id="content">
+        <div class="title">
+            <h5>Exercise</h5>
+            <p>See all the exercises here.</p>
+        </div>
+        <div class="button">
+        </div>
+    </div>
+    <br>
+    <div class="content_table">
+        <div class="search_bar">
+                <div class="row">
+                    <div class="col-lg-8 col-md-6 d-flex align-items-center">
+                      <form action="/admin/workout/getSearchExercise" method="get" class="search-form">
+                        <div class="form-group input-group search">
+                            <a><span class="iconify" data-icon="akar-icons:search"></span></a>
+                            <input type="text" class="form-control" id="searchText" name="searchedTitle" placeholder="Search by name..." value="<%= searchValue %>">
+                        </div>
+                        <input type="submit" hidden />
+                      </form>
+                    </div>
+                    <div class="col-lg-4 col-md-6 d-flex align-items-center justify-content-md-end justify-content-start">
+                      <% if(!searchPage) { %>
+                        <button class="btn btn-primary addButton" data-bs-toggle="modal" data-bs-target="#addExercise"><span class="iconify" data-icon="carbon:add-alt"></span>&nbsp;&nbsp;Add Exercise</button>
+                      <% } else { %>
+                        <button class="btn btn-primary" onclick="location.href='/admin/workout?page=1'">Reload</button>
+                      <% } %>
+                    </div>
+                </div>
+        </div>
+        <br>
+        <table>
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">EXERCISE</th>
+                <th scope="col">CATEGORY</th>
+                <th scope="col">CALORIES</th>
+                <th scope="col">SET</th>
+                <th scope="col">PERSET</th>
+                <th scope="col">WEIGHT</th>
+                <th scope="col">OPTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if(data.length == 0) { %> 
+                <td>No exercises present</td>
+            <% } else { %>
+                <% data.forEach((exercise,index) => { %> 
+                    <tr>
+                      <th scope="row"><%= (index+1+metadata.offset) %></th>
+                      <td>
+                        <div class="profile_table_data">
+                            <div class="profile_image">
+                                <img src="<%= exercise.cover_photo %>" alt="">
+                                 <div class="edit-icon" onclick="selectCoverPhoto('<%= exercise.id %>','<%= exercise.cover_photo %>')">
+                                    <a><span class="iconify" data-icon="clarity:edit-line"></span></a>
+                                 </div>
+                            </div>
+                            <p style="margin: 0px 5px 0px 10px;"><%= exercise.name %></p>
+                        </div>
+                      </td>
+                      <td><%= exercise.cat %></td>
+                      <td><%= exercise.calories %></td>
+                      <td><%= exercise.set %></td>
+                      <td><%= exercise.perset %></td>
+                      <td><%= exercise.weight %></td>
+                      <td>
+                        <div class="options">
+                            <a class="edit" onclick="editExercise('<%= exercise.id %>','<%= exercise.name %>','<%= exercise.cat %>','<%= exercise.calories %>','<%= exercise.set %>','<%= exercise.perset %>','<%= exercise.weight %>')"><span class="iconify" data-icon="akar-icons:edit"></span></a>
+                            <a class="delete" onclick="deleteExercise('<%= exercise.id %>')"><span class="iconify" data-icon="ant-design:delete-outlined"></span></a>
+                            <input type="hidden" name="" id="ckeditordescriptionvalue<%= exercise.id %>" value="<%= exercise.description %>">
+                        </div>
+                      </td>
+                    </tr>
+                <% }); %> 
+            <% } %> 
+            </tbody>
+          </table>
+          <% if(!searchPage && data.length != 0 && metadata.total_pages > 1) { %> 
+            <div class="pages">
+                <div class="total_pages">
+                    <div class="form-group">
+                        <input type="number" class="form-control" id="pageNumber" name="pageNumber" placeholder="Total pages = <%= metadata.total_pages %> ">
+                    </div>
+                    <button class="btn btn-primary" onclick="goToPage()">Go</button>
+                </div>
+                <div class="inner_pages">
+                    <% if(metadata.page == 1) { %>
+                        <a id="prev" class="disabled">Prev</a>
+                    <% } else { %>
+                        <a id="prev" onclick="location.href='/admin/workout?page=<%= metadata.page - 1 %>'">Prev</a>
+                    <% } %>
+                    <% if(metadata.total_pages >= 3) { %> 
+                        <% if(metadata.page == metadata.total_pages) { %> 
+                            <a class="page" onclick="location.href='/admin/workout?page=<%= metadata.page - 2 %>'"><%= metadata.page - 2 %></a>
+                            <a class="page" onclick="location.href='/admin/workout?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/workout?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                        <% } else if(metadata.page == (metadata.total_pages - 1)) { %>
+                            <a class="page" onclick="location.href='/admin/workout?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/workout?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/workout?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                        <% } else { %>
+                            <a class="page selected_page" onclick="location.href='/admin/workout?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/workout?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                            <a class="page" onclick="location.href='/admin/workout?page=<%= metadata.page + 2 %>'"><%= metadata.page + 2 %></a>
+                        <% } %>
+                    <% } else if(metadata.total_pages == 2) { %>
+                        <% if(metadata.page == metadata.total_pages) { %> 
+                            <a class="page" onclick="location.href='/admin/workout?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/workout?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                        <% } else if(metadata.page == (metadata.total_pages - 1)) { %>
+                            <a class="page selected_page" onclick="location.href='/admin/workout?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/workout?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                        <% } %>
+                    <% } else if(metadata.total_pages == 1) { %>
+                        <a class="page selected_page" onclick="location.href='/admin/workout?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                    <% } %>
+                    <% if(metadata.page == metadata.total_pages) { %> 
+                        <a id="next" class="disabled">Next</a>
+                    <% } else { %>
+                        <a id="next" onclick="location.href='/admin/workout?page=<%= metadata.page + 1 %>'">Next</a>
+                    <% } %>
+                </div>
+            </div>
+          <% } %> 
+    </div>
+</div>
+
+<!-- Common.js -->
+<script src="/javascripts/common.js"></script>
+<!---->
+
+<script>
+
+var dayTimeModal;
+
+$(function(){
+  // bootstraps modals
+    editModal = new bootstrap.Modal(document.getElementById('editExercise'));
+    selectCoverPhotoModal = new bootstrap.Modal(document.getElementById('selectCoverPhoto'));
+    if($('textarea#description').length){
+        //ckeditor defination
+        CKEDITOR.replace('description',{
+            filebrowserUploadUrl: '/admin/common/upload',
+            filebrowserUploadMethod: 'form',
+        });
+    }
+    if($('textarea#editdescription').length){
+        //ckeditor defination
+        CKEDITOR.replace('editdescription',{
+            filebrowserUploadUrl: '/admin/common/upload',
+            filebrowserUploadMethod: 'form'
+        });
+    }
+});
+  
+  /* Functions */
+
+  function saveSelectedImage() {
+    var path = document.getElementsByClassName('is-selected')[0].getAttribute('data-path');
+    var id = document.getElementsByClassName('is-selected')[0].getAttribute('data-exerciseid');
+    // console.log(path);
+    // console.log(id);
+    if(confirm('Do you want to edit it?') == true){
+      $.ajax({
+            url : '/admin/workout/saveExerciseCoverImage',
+            dataType: "json",
+            type: "POST",
+            data: {
+                id:id,
+                path:path
+            },
+            success: function(response){
+              if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-success');
+                document.getElementById('alertMessage').innerHTML = 'Cover photo updated successfully';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                  $("#success-alert").slideUp(500);
+                });
+              }
+              setTimeout(() => {
+                location.reload();
+              },1000);
+            },
+            error: function(err){
+                    console.log(err);
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+      });
+    } 
+  }
+
+  //move select image box
+  function changeSelectedImage(i) {
+    var item = document.getElementsByClassName('selected_save_profile')[i];
+    var inside_selected_list = document.getElementsByClassName('is-selected')[0];
+    if(inside_selected_list) {
+      inside_selected_list.classList.remove('is-selected');
+      inside_selected_list.classList.add('is-not-selected');
+    }
+    if(item.classList.contains('is-not-selected')){
+      item.classList.remove('is-not-selected');
+    }
+    item.classList.add('is-selected');
+  }
+
+  //Select profile image
+  function selectCoverPhoto(id ,profile_image) {
+    selectCoverPhotoModal.toggle();
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    document.getElementById('allImages').innerHTML = "";
+    $.ajax({
+            url : `/admin/getImages?item_id=${id}&item_category=exercise`,
+            dataType: "json",
+            type: "GET",
+            success: function(response){
+                console.log(response);
+                for(var i=0;i<response.data.length;i++) {
+                        var path = response.data[i].path;
+                        $('#allImages').append('<div class="select" onclick="changeSelectedImage(\''+ i +'\')" id="edit_gallery_image_'+ path +'"><div class="card" id="append_image_'+ path +'" ><img src="'+ path +'" id="preview_galler_image_'+ path +'" alt=""></div><div class="selected_save_profile '+ (path == profile_image ? 'is-selected' : 'is-not-selected' ) +'" data-path="'+ path +'" data-exerciseid="'+ id +'"><a><span class="iconify" data-icon="teenyicons:tick-circle-solid"></span></a></div></div>');
+                    }
+            },
+            error: function(err){
+                    console.log(err);
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+        });
+  }
+
+  //Get images
+  function getImages(id,value) {
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    $.ajax({
+            url : `/admin/getImages?item_id=${id}&item_category=exercise`,
+            dataType: "json",
+            type: "GET",
+            success: function(response){
+                console.log(response);
+                if(value == 'edit') {
+                    for(var i=0;i<response.data.length;i++) {
+                        var path = response.data[i].path;
+                        $('#editpreview').append('<div class="col-lg-4 col-md-4 col-sm-6 col-6" id="edit_gallery_image_'+ path +'"><div class="card" id="append_image_'+ path +'"><a class="delete_gallery_image" onclick="deleteEditCurrentGalleryImage(\''+ ( "edit_gallery_image_"+ path )  +'\',\''+ path +'\')"><span class="iconify" data-icon="akar-icons:cross"></span></a><img src="'+ path +'" id="preview_galler_image_'+ path +'" alt=""></div><input type="hidden" class="edit_gallery_image_path" name="gallery_image_path" id="gallery_image_path_'+ path +'" value="'+ path +'"></div>');
+                    }
+                } 
+            },
+            error: function(err){
+                    console.log(err);
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+        });
+  }
+
+  //Go to page 
+  function goToPage() {
+      var page = document.getElementById('pageNumber').value;
+      var total_pages = '<%- metadata.total_pages %>';
+      if(page.length != 0) {
+          if(parseInt(page) > parseInt(total_pages)){
+              alert('Please enter a page number less than total pages');
+          } else if(parseInt(page) == 0) {
+              alert('Please enter a page number greater than 0');
+          } else {
+              location.href=`/admin/workout?page=${page}`;
+          }
+      } else {
+          alert('Please enter a page number first');
+      }
+  }
+
+  //Edit Exercise
+  function editExercise(id,name,cat,calories,set,perset,weight) {
+    document.getElementById('editpreview').innerHTML = '';
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    getImages(id,'edit');
+      document.getElementById('editname').value = name;
+    document.getElementById('editcat_option').innerHTML = cat;
+    document.getElementById('editcat_option').setAttribute('value',cat);
+      document.getElementById('editcalories').value = calories;
+      document.getElementById('editset').value = set;
+      document.getElementById('editperset').value = perset;
+      document.getElementById('editweight').value = weight;
+      CKEDITOR.instances['editdescription'].setData(document.getElementById('ckeditordescriptionvalue' + id).value);
+      document.getElementsByClassName('edit_form')[0].setAttribute('id',`form_${id}`);
+      editModal.toggle();
+  }
+
+  //Delete exercise
+  function deleteExercise(id) {
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    if(confirm('Do you want to delete it?') == true){
+      $.ajax({
+            url : '/admin/workout/deleteExercise',
+            dataType: "json",
+            type: "POST",
+            data: {
+                id:id
+            },
+            success: function(response){
+              if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-success');
+                document.getElementById('alertMessage').innerHTML = 'Exercise deleted successfully';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                  $("#success-alert").slideUp(500);
+                });
+              }
+              setTimeout(() => {
+                location.reload();
+              },1000);
+            },
+            error: function(err){
+                    console.log(err);
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+      });
+    } 
+  }
+
+  //Upload image
+function uploadImages(value) {
+    document.getElementById('load').style.visibility="visible";
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+      if(value != 'edit'){
+        var imageFiles = document.getElementById('exercise_images').files;
+        var form = new FormData();
+        for(var i=0;i<imageFiles.length;i++){
+            if(imageFiles[i] != undefined){
+                form.append(`book_images`, imageFiles[i]);
+            }
+        }
+
+        $.ajax({
+            url : "/admin/common/saveBookImages",
+            type: "POST",
+            cache: false,
+            contentType: false,
+            processData: false,
+            data : form,
+            success: function(response){
+                // console.log(response.files);
+                for(var i=0;i<response.files.length;i++) {
+                    var path = response.files[i].slice(6,response.files[i].length);
+                    $('#preview').append('<div class="col-lg-4 col-md-4 col-sm-6 col-6" id="gallery_image_'+ path +'"><div class="card" id="append_image_'+ path +'"><a class="delete_gallery_image" onclick="deleteCurrentGalleryImage(\''+ ( "gallery_image_"+ path )  +'\',\'gallery_image_path_'+ path +'\')"><span class="iconify" data-icon="akar-icons:cross"></span></a><img src="'+ path +'" id="preview_galler_image_'+ path +'" alt=""><input type="hidden" class="gallery_image_path" name="gallery_image_path" id="gallery_image_path_'+ path +'" value="'+ path +'"></div></div>');
+                }
+                document.getElementById('exercise_images').value='';
+                document.getElementById('load').style.visibility="hidden";
+            },
+            error: function(err){
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+        });
+      } else {
+        var imageFiles = document.getElementById('edit_exercise_images').files;
+        var id = document.getElementsByClassName('edit_form')[0].getAttribute('id').split('_')[1];
+        //   console.log(imageFiles);
+        var form = new FormData();
+        for(var i=0;i<imageFiles.length;i++){
+            if(imageFiles[i] != undefined){
+                form.append(`book_images`, imageFiles[i]);
+            }
+        }
+
+        $.ajax({
+            url : `/admin/common/saveEditImages/${id}/exercise`,
+            type: "POST",
+            cache: false,
+            contentType: false,
+            processData: false,
+            data : form,
+            success: function(response){
+                // console.log(response.files);
+                for(var i=0;i<response.files.length;i++) {
+                  var path = response.files[i].slice(6,response.files[i].length);
+                    $('#editpreview').append('<div class="col-lg-4 col-md-4 col-sm-6 col-6" id="edit_gallery_image_'+ path +'"><div class="card" id="append_image_'+ path +'"><a class="delete_gallery_image" onclick="deleteEditCurrentGalleryImage(\''+ ( "edit_gallery_image_"+ path )  +'\',\''+ path +'\')"><span class="iconify" data-icon="akar-icons:cross"></span></a><img src="'+ path +'" id="preview_galler_image_'+ path +'" alt=""></div><input type="hidden" class="edit_gallery_image_path" name="gallery_image_path" id="gallery_image_path_'+ path +'" value="'+ path +'"></div>');
+                }
+                document.getElementById('edit_exercise_images').value='';
+                document.getElementById('load').style.visibility="hidden";
+            },
+            error: function(err){
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+        });
+      }
+  }
+
+  //Add exercise
+  function addExercise(event) {
+    event.preventDefault();
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    var description = CKEDITOR.instances['description'].getData();
+    var name = document.getElementById('name').value;
+    var cat = document.getElementById('cat').value;
+    var calories = document.getElementById('calories').value;
+    var set = document.getElementById('set').value;
+    var perset = document.getElementById('perset').value;
+    var weight = document.getElementById('weight').value;
+    if(description.length != 0) {
+        var gallery = document.getElementsByClassName("gallery_image_path");
+        var gallery_values = [];
+        if(gallery.length != 0) {
+            for(var i =0;i<gallery.length;i++) {
+                gallery_values.push(gallery[i].value);
+            }
+            $.ajax({
+                url : '/admin/workout/addExercise',
+                dataType: "json",
+                type: "POST",
+                data: {
+                    name:name,
+                    cat:cat,
+                    description:description,
+                    calories:calories,
+                    gallery:gallery_values,
+                    set:set,
+                    perset:perset,
+                    weight:weight
+                },
+                success: function(response){
+                    if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-success');
+                        document.getElementById('alertMessage').innerHTML = 'Exercise added successfully';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+                    setTimeout(() => {
+                        location.reload();
+                    },1000);
+                },
+                error: function(err){
+                    console.log(err);
+                    if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+                }
+            });
+      } else {
+        if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-warning');
+                  document.getElementById('alertMessage').innerHTML = 'Select an image first';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+      }
+    } else {
+        if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-warning');
+                document.getElementById('alertMessage').innerHTML = 'Please fill all the values first.';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+    }
+    // console.log(data);
+  }
+
+  //Save Exercise
+  function saveExercise(event) {
+    event.preventDefault();
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    var description = CKEDITOR.instances['editdescription'].getData();
+    var name = document.getElementById('editname').value;
+    var cat = document.getElementById('editcat').value;
+    var calories = document.getElementById('editcalories').value;
+    var set = document.getElementById('editset').value;
+    var perset = document.getElementById('editperset').value;
+    var weight = document.getElementById('editweight').value;
+    var id = document.getElementsByClassName('edit_form')[0].getAttribute('id').split('_')[1];
+    if(description.length != 0) {
+        var gallery = document.getElementsByClassName("edit_gallery_image_path");
+        var gallery_values = [];
+        if(gallery.length != 0) {
+            for(var i =0;i<gallery.length;i++) {
+                gallery_values.push(gallery[i].value);
+            }
+            $.ajax({
+                url : '/admin/workout/saveExercise',
+                dataType: "json",
+                type: "POST",
+                data: {
+                    name:name,
+                    cat:cat,
+                    description:description,
+                    calories:calories,
+                    gallery:gallery_values,
+                    set:set,
+                    perset:perset,
+                    id:id,
+                    weight:weight
+                },
+                success: function(response){
+                    if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-success');
+                        document.getElementById('alertMessage').innerHTML = 'Exercise edited successfully';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+                    setTimeout(() => {
+                        location.reload();
+                    },1000);
+                },
+                error: function(err){
+                    console.log(err);
+                    if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+                }
+            });
+      } else {
+        if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-warning');
+                document.getElementById('alertMessage').innerHTML = 'Select an image first';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+      }
+    } else {
+        if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-warning');
+                document.getElementById('alertMessage').innerHTML = 'Please fill all the values first.';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+    }
+    // console.log(data);
+  }
+
+</script>
+
+<%- include('../../components/footer/footer.ejs') %> 

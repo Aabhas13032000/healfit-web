@@ -1,0 +1,230 @@
+<%- include('../components/header/website_header.ejs',{cssFile : 'index',page:page}) %> 
+
+<div id="load"></div>
+
+<div class="main-container">
+    <br><br><br><br>
+    <div class="container">
+        <div class="row d-flex align-items-center">
+            <div class="col-lg-9 col-md-8 col-sm-4 col-12" style="padding: 0px 0px 0px 10px !important;">
+                <div class="heading">
+                    <h5>Checkout</h5>
+                    <p>See all the cart items here.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-8 col-12" style="padding: 0px 10px 0px 10px !important;">
+            </div>
+        </div>
+        <br>
+        <div class="row" id="cartTotal">
+            <div class="col-lg-6 col-md-8 col-sm-12 col-12" style="padding: 0px 10px 0px 10px !important;" id="cartItems">
+                
+            </div>
+            <div class="col-lg-6 col-md-4 col-sm-12 col-12" id="final_price" style="padding: 0px 10px 0px 10px !important;">
+                <div class="final_price card">
+                    <div class="total">
+                        <h5>Total : </h5>
+                        <h5>Rs <span id="totalPrice">0</span></h5>
+                    </div>
+                    <hr>
+                    <div class="details">
+                        <p>Items : </p>
+                        <p id="totalItems">0</p>
+                    </div>
+                    <div class="details">
+                        <p>Shipping Cost : </p>
+                        <p>Rs 0</p>
+                    </div>
+                    <div class="button" style="margin:0px 0px 0px 0px;">
+                        <button type="submit" style="border: 0;width: 100%;display: flex;align-items: center;justify-content: center" class="btn btn-primary" onclick="callRazorPayFunctionForCart()">
+                            Proceed to pay
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <%- include('footer.ejs',{showContactExpert: true}) %>
+</div>
+
+<script>
+    var isDevelopment = '<%- isDevelopment %>' == 'true' ? true : false;
+
+function callRazorPayFunctionForCart(){
+    var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('currentUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+    var price = document.getElementById('totalPrice').innerHTML;
+    var data = {
+        total: price,
+        name:"",
+        email:"",
+        phone:"",
+        user_id:user_id,
+        companyName:'HealFit',
+        description:"Payment for the cart"
+    }
+    $.ajax({
+        url:"/subscription/paymentInitiate",
+        dataType: "json",
+        type:"POST",
+        headers: {
+            'token':token ? token : 'testing',
+            'platform': 'WEB'
+        },
+        data: data,
+        success: function(info){
+            document.getElementById('load').style.visibility="hidden";
+            
+            info["callback_url"] = `/subscription/purchaseCartItem?user_id=${user_id}`;
+            var rzp1 = new Razorpay(info);
+            rzp1.open();
+        },
+        error: function(err){
+            if(isDevelopment) {
+                    console.log(err);
+            }
+            alert('Some Error occurred!');
+            // location.reload();
+        }
+    });
+}
+
+
+function removeFromCart(id) {
+    if(confirm('Are you sure you want to remove this item from cart?') == true){
+        document.getElementById('load').style.visibility="visible";
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('currentUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        $.ajax({
+            url : `/api/cart/removeFromCart`,
+            dataType: "json",
+            type: "POST",
+            headers: {
+                'token':token ? token : 'testing',
+                'platform': 'WEB'
+            },
+            data:{
+                cart_id: id,
+            },
+            success: function(response){
+                if(isDevelopment) {
+                    console.log(response);
+                }
+                if(response.message == 'success') {
+                    location.reload();
+                }
+            },
+            error: function(err){
+                if(isDevelopment) {
+                    console.log(err);
+                }
+                alert('Some error occured !!');
+            }
+        });
+    }
+}
+    
+    function getUserCart() {
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('currentUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        document.getElementById('load').style.visibility="visible";
+        document.getElementById('cartItems').innerHTML = '';
+        $.ajax({
+            url : `/api/cart/getUserCart?user_id=${user_id}`,
+            dataType: "json",
+            type: "GET",
+            headers: {
+                'token':token ? token : 'testing',
+                'Content-Type':'application/json',
+                'platform': 'WEB'
+            },
+            success: function(response){
+              if(isDevelopment) {
+                    console.log(response);
+                }
+              if(response.data.length != 0){
+                var total = 0;
+                for(var i=0;i<response.data.length;i++){
+                    total = total + response.data[i].price;
+                    $('#cartItems').append('<div class="cart-item card"><div class="top"><div class="image"><img src="'+ response.data[i].cover_photo +'" alt=""></div><div class="name"><h4>'+ response.data[i].title +'</h4></div></div><hr><div class="details"><p>Trainer Name : </p><p>'+ response.data[i].trainerName +'</p></div><div class="details"><p>Days : </p><p>'+ response.data[i].day_id +'</p></div><div class="details"><p>Sessions : </p><p>'+ response.data[i].session_id +'</p></div><div class="details"><p>Session Type : </p><p>'+ response.data[i].session_type +'</p></div><div class="details"><p>Time : </p><p>'+ response.data[i].time_id +'</p></div><hr><div class="bottom-total"><h6>Total : Rs '+ response.data[i].price +'</h6><div id="delete-icon3" onclick="removeFromCart(\''+ response.data[i].cartId +'\')"><a><span class="iconify" data-icon="ant-design:delete-outlined"></span></a></div></div></div>');
+                }
+                document.getElementById('totalPrice').innerHTML = total;
+                document.getElementById('totalItems').innerHTML = response.data.length;
+              } else {
+                document.getElementById('final_price').style.display = 'none';
+                document.getElementById('cartItems').style.display = 'none';
+                document.getElementById('cartTotal').innerHTML = '<div class="col-12 text-center"><h6>No Items present</h6></div>';
+              }
+              document.getElementById('load').style.visibility="hidden";
+            },
+            error: function(err){
+                if(isDevelopment) {
+                    console.log(err);
+                }
+                alert('Some error occured !!');
+            }
+        });
+    }
+    setTimeout(() => {
+        getUserCart();
+    },500);
+</script>
+<%- include('../components/footer/website_footer.ejs') %>

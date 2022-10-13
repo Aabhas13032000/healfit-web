@@ -8,43 +8,55 @@
     {
         "name": "Programs",
         "path": "/admin/programs?page=1",
-        "icon": "ant-design:user-outlined",
+        "icon": "bi:p-circle",
         "sub-options":[]
     },
     {
         "name": "Trainers",
-        "path": "/admin/trainers?page=1",
-        "icon": "ant-design:user-outlined",
+        "path": "/admin/experts?page=1",
+        "icon": "icon-park-outline:fitness",
         "sub-options":[]
     },
     {
         "name": "Books",
         "path": "/admin/books?page=1",
-        "icon": "ant-design:user-outlined",
+        "icon": "cil:book",
         "sub-options":[]
     },
     {
-        "name": "Coupons",
-        "path": "/admin/coupons?page=1",
-        "icon": "ant-design:user-outlined",
+        "name": "Products",
+        "path": "/admin/products?page=1",
+        "icon": "la:product-hunt",
         "sub-options":[]
     },
     {
-        "name": "Workout",
+        "name": "Blogs",
+        "path": "/admin/blogs?page=1",
+        "icon": "carbon:blog",
+        "sub-options":[]
+    },
+    {
+        "name": "Exercises",
         "path": "/admin/workout?page=1",
-        "icon": "ant-design:user-outlined",
+        "icon": "ion:fitness-outline",
         "sub-options":[]
     },
     {
         "name": "Food",
         "path": "/admin/food?page=1",
-        "icon": "ant-design:user-outlined",
+        "icon": "fluent:food-toast-16-regular",
         "sub-options":[]
     },
     {
         "name": "Testimonials",
         "path": "/admin/testimonials?page=1",
-        "icon": "ant-design:user-outlined",
+        "icon": "carbon:review",
+        "sub-options":[]
+    },
+    {
+        "name": "Subscriptions",
+        "path": "/admin/subscriptions?page=1",
+        "icon": "codicon:list-ordered",
         "sub-options":[]
     }
 ]

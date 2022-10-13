@@ -1,0 +1,175 @@
+<%- include('../components/header/website_header.ejs',{cssFile : 'index',page:page}) %> 
+
+<div id="load"></div>
+
+<div class="main-container">
+    <br><br><br><br>
+    <div class="container">
+        <div class="row d-flex align-items-center">
+            <div class="col-lg-9 col-md-8 col-sm-4 col-12" style="padding: 0px 0px 0px 10px !important;">
+                <div class="heading">
+                    <h5>Books</h5>
+                    <p>See all the Books here.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-8 col-12" style="padding: 0px 10px 0px 10px !important;">
+                <div>
+                    <form onsubmit="getSearchedBooks(event)" method="get" class="search-form">
+                        <div class="form-group input-group search">
+                            <a><span class="iconify" data-icon="akar-icons:search"></span></a>
+                            <input type="text" class="form-control" id="searchText" name="searchedTitle" placeholder="Search by title...">
+                        </div>
+                        <input type="submit" hidden />
+                      </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row experts" id="experts">
+        </div>
+    </div>
+    <br>
+    <div class="load_more" id="load_more">
+        <div class="button">
+            <button class="btn btn-primary d-flex justify-content-center" onclick="getMoreBooks()">Load more</button>
+        </div>
+    </div>
+    <br><br>
+    <%- include('footer.ejs',{showContactExpert: true}) %>
+</div>
+
+<script>
+    var offset = 0;
+    var isDevelopment = '<%- isDevelopment %>' == 'true' ? true : false;
+
+    function getMoreBooks() {
+        offset = offset + 20;
+        getBooks(offset);
+    }
+
+    function getSearchedBooks(event) {
+        event.preventDefault();
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('currentUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        document.getElementById('load').style.visibility="visible";
+        document.getElementById('experts').innerHTML = '';
+        var value = document.getElementById('searchText').value;
+        if(value.length != 0){
+            $.ajax({
+                url : `/api/books/getSearchBooks?title=${value}`,
+                dataType: "json",
+                type: "GET",
+                headers: {
+                    'token':token ? token : 'testing',
+                    'Content-Type':'application/json',
+                    'platform': 'WEB'
+                },
+                success: function(response){
+                if(isDevelopment) {
+                    console.log(response);
+                }
+                    if(response.books.length != 0){
+                        for(var i=0;i<response.books.length;i++){
+                            $('#experts').append('<div class="col-lg-4 col-md-4 col-sm-6 col-12"><div class="book"><div class="image"><img src="'+ response.books[i].cover_photo +'"><a><span class="iconify" data-icon="bi:bookmark-fill"></span></a></div><div class="inside_container"><div><h5>'+ response.books[i].title +'</h5><p>'+ response.books[i].author +'</p><p class="downloads"><span class="iconify" data-icon="ant-design:fire-filled"></span>&nbsp;&nbsp;'+ response.books[i].downloads +' Downloads</p><h6><span class="discount_price">Rs '+ response.books[i].price +'</span>&nbsp;&nbsp;<span class="price">Rs '+ response.books[i].discount_price +'</span></h6></div><div class="button"><button class="btn btn-primary d-flex justify-content-center align-items-center" onclick="checkDownloadPdf(\''+ response.books[i].id +'\',\''+ response.books[i].title +'\',\''+ response.books[i].pdf +'\',\''+ response.books[i].discount_price +'\')">Download Pdf</button></div></div></div></div>');
+                        }
+                    } else {
+                        if(offset == 0){
+                            $('#experts').append('<div class="col-12 text-center"><h6>No books present</h6></div>');
+                        }
+                    } 
+                    document.getElementById('load_more').style.display = 'none';
+                    document.getElementById('load').style.visibility="hidden";
+                },
+                error: function(err){
+                    if(isDevelopment) {
+                        console.log(err);
+                    }
+                    alert('Some error occured !!');
+                }
+            });
+        } else {
+            getBooks(0);
+        }
+    }
+
+    function getBooks(offset) {
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('currentUserToken=')){
+                counter++;
+                index = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+        }
+        document.getElementById('load').style.visibility="visible";
+        if(offset == 0) {
+            document.getElementById('experts').innerHTML = '';
+        }
+        $.ajax({
+            url : `/api/books?offset=${offset}`,
+            dataType: "json",
+            type: "GET",
+            headers: {
+                'token':token ? token : 'testing',
+                'Content-Type':'application/json',
+                'platform': 'WEB'
+            },
+            success: function(response){
+                    if(isDevelopment) {
+                        console.log(response);
+                    }
+                    if(response.books.length != 0){
+                        for(var i=0;i<response.books.length;i++){
+                            $('#experts').append('<div class="col-lg-4 col-md-4 col-sm-6 col-12"><div class="book"><div class="image"><img src="'+ response.books[i].cover_photo +'"><a><span class="iconify" data-icon="bi:bookmark-fill"></span></a></div><div class="inside_container"><div><h5>'+ response.books[i].title +'</h5><p>'+ response.books[i].author +'</p><p class="downloads"><span class="iconify" data-icon="ant-design:fire-filled"></span>&nbsp;&nbsp;'+ response.books[i].downloads +' Downloads</p><h6><span class="discount_price">Rs '+ response.books[i].price +'</span>&nbsp;&nbsp;<span class="price">Rs '+ response.books[i].discount_price +'</span></h6></div><div class="button"><button class="btn btn-primary d-flex justify-content-center align-items-center" onclick="checkDownloadPdf(\''+ response.books[i].id +'\',\''+ response.books[i].title +'\',\''+ response.books[i].pdf +'\',\''+ response.books[i].discount_price +'\')">Download Pdf</button></div></div></div></div>');
+                        }
+                    } else {
+                        if(offset == 0){
+                            $('#experts').append('<div class="col-12 text-center"><h6>No books present</h6></div>');
+                        }
+                    } 
+                if(response.totalBooks <= 20) {
+                    document.getElementById('load_more').style.display = 'none';
+                } else if(document.getElementsByClassName('expert-cards').length == response.totalBooks) {
+                    document.getElementById('load_more').style.display = 'none';
+                }
+                document.getElementById('load').style.visibility="hidden";
+            },
+            error: function(err){
+                if(isDevelopment) {
+                    console.log(err);
+                }
+                alert('Some error occured !!');
+            }
+        });
+    }
+    setTimeout(() => {
+        getBooks(offset);
+    },500);
+</script>
+<%- include('../components/footer/website_footer.ejs') %>

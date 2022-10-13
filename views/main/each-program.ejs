@@ -1,0 +1,546 @@
+<%- include('../components/header/website_header.ejs',{cssFile : 'index',page:page}) %> 
+
+<div id="load"></div>
+
+
+<div class="modal fade" id="programTrainers" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="programTrainerModalLabel">Select a comibnation to proceed</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div>
+                <form class="program_trainer_form" id="program_trainer_form_" method="post" autocomplete="off">
+                    <div class="row">
+                        <div class="col-12" style="padding: 0px 5px !important;">
+                          <div class="form-group">
+                            <label for="trainer_id">Select trainer</label>
+                              <select onchange="openModal(false)" class="form-control" id="trainer_id" style="margin: 10px 0px;" name="trainer_id" aria-label="Days" required>
+                                <option value="">Select trainer</option>
+                              </select>
+                          </div>
+                            <div class="form-group">
+                              <label for="day_id" style="margin-top: 10px;">Select days</label>
+                                <select onchange="onDropDownChange()" class="form-control" id="day_id" style="margin: 10px 0px;" name="day_id" aria-label="Days" required>
+                                  <option value="">Select day</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                              <label for="session_id" style="margin-top: 10px;">Select session</label>
+                                <select onchange="onDropDownChange()" class="form-control" id="session_id" style="margin: 10px 0px;" name="session_id" aria-label="Days" required>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="time_id" style="margin-top: 10px;">Select time</label>
+                                  <select onchange="onDropDownChange()" class="form-control" id="time_id" style="margin: 10px 0px;" name="time_id" aria-label="Days" required>
+                                    <option value="">Select time</option>
+                                  </select>
+                            </div>
+                            <p id="mainPrice"></p>
+                            <p id="address"></p>
+                            <div class="button d-flex">
+                                <button type="button" onclick="callRazorPayFunctionForCart()" id="book_verify" class="btn btn-primary d-flex justify-content-center" style="margin-top: 20px;flex: 1;margin-right: 5px;">Purchase now</button>
+                                <button type="button" onclick="addToCart()" id="book_verify" class="btn btn-primary d-flex justify-content-center" style="margin-top: 20px;flex: 1;margin-left: 5px;background-color: var(--white) !important;color: var(--highlight);">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+              </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+<div class="main-container">
+    <br><br><br>
+    <div class="container eachblogContainer">
+        <div class="row">
+            <div class="col-12">
+                <div class="profileImage" id="profileImage">
+                    <div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner" id="profile-slider">
+                        </div>
+                      </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                        <div class="title" id="title">
+        
+                        </div>
+                        <div class="info">
+                            <p class="downloads"><span class="iconify" data-icon="ant-design:fire-filled"></span>&nbsp;&nbsp;<span id="views"></span></p>
+                            <p class="date" id="date"></p>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-flex justify-content-start justify-content-md-end align-items-center" style="padding: 10px 0px 10px 10px !important">
+                        <div class="button" style="margin:0px 0px 0px 0px;">
+                            <button style="border: 0;width: 100%;display: flex;align-items: center;justify-content: center;padding: 8px 15px;" class="btn btn-primary" onclick="openModal(true)">
+                                Book now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="description" id="description">
+
+                </div>
+            </div>
+            <div class="col-12" id="trainers" style="padding: 10px !important;">
+                <br>
+                <div class="heading" id="heading">
+                    <h5>All Trainers</h5>
+                </div>
+                <br>
+                <div class="row experts" id="alltrainers">
+                    
+                </div>
+            </div>
+            <div class="col-12" id="trainerPrograms" style="padding: 10px !important;">
+                <br>
+                <div class="heading" id="heading">
+                    <h5>More Programs</h5>
+                </div>
+                <br>
+                <div class="row experts" id="morePrograms">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <%- include('footer.ejs',{showContactExpert: true}) %>
+</div>
+
+<script>
+    var isDevelopment = '<%- isDevelopment %>' == 'true' ? true : false;
+    var programTrainersModal;
+    var showAddress;
+    
+    $(function(){
+        programTrainersModal = new bootstrap.Modal(document.getElementById('programTrainers'));
+    });
+
+    function openModal(toggleModal) {
+        var element = document.getElementById('login_button_topbar');
+        var element2 = document.getElementById('login_button');
+        if(element.style.display == "block" || element2.style.display =="block" || element.style.display == "" || element2.style.display =="") {
+            alert('Please login first');
+        } else {
+            var select = document.getElementById("trainer_id");
+            var length = select.options.length;
+            if(select.options[0].value != '') {
+                document.getElementById('load').style.visibility="visible";
+                var id = '<%- id %>';
+                var trainerId = document.getElementById('trainer_id').value;
+                $.ajax({
+                    url : `/api/programs/getTDS?id=${id}&trainerId=${trainerId}`,
+                    dataType: "json",
+                    type: "GET",
+                    success: async function(response){
+                    if(isDevelopment) {
+                        console.log(response);
+                    }
+                    var select = document.getElementById("day_id");
+                    var select1 = document.getElementById("session_id");
+                    var select2 = document.getElementById("time_id");
+                    var length = select.options.length;
+                    var length1 = select1.options.length;
+                    var length2 = select2.options.length;
+                        for (var i = length-1; i >= 0; i--) {
+                            select.options[i] = null;
+                        }
+                        for (var i = length1-1; i >= 0; i--) {
+                            select1.options[i] = null;
+                        }
+                        for (var i = length2-1; i >= 0; i--) {
+                            select2.options[i] = null;
+                        }
+                    if(response.days.length !=0){
+                        for(var i=0;i<response.days.length;i++){
+                            var option = document.createElement("option");
+                            option.text = response.days[i].day_id;
+                            option.value = response.days[i].day_id;
+                            select.add(option);
+                        }
+                    } else {
+                        var option = document.createElement("option");
+                        option.text = "No days present";
+                        option.value= "";
+                        select.add(option);
+                    }
+                    if(response.sessions.length !=0){
+                        for(var i=0;i<response.sessions.length;i++){
+                            var option = document.createElement("option");
+                            option.text = response.sessions[i].session_id;
+                            option.value = response.sessions[i].session_id;
+                            select1.add(option);
+                        }
+                    } else {
+                        var option = document.createElement("option");
+                        option.text = "No sessions present";
+                        option.value= "";
+                        select1.add(option);
+                    }
+                    if(response.timings.length !=0){
+                        for(var i=0;i<response.timings.length;i++){
+                            var option = document.createElement("option");
+                            option.text = response.timings[i].time_id;
+                            option.value = response.timings[i].time_id;
+                            select2.add(option);
+                        }
+                    } else {
+                        var option = document.createElement("option");
+                        option.text = "No timings present";
+                        option.value= "";
+                        select2.add(option);
+                    }
+                    await checkCombinaton(function(response) {
+                        if(toggleModal) {
+                            programTrainersModal.toggle();
+                        }
+                    });
+                    document.getElementById('load').style.visibility="hidden";
+                    },
+                    error: function(err){
+                        if(isDevelopment) {
+                        console.log(err);
+                    }
+                        alert('Some error occured !!');
+                    }
+                });
+            } else {
+                alert('No trainers present');
+            }
+        }
+    }
+
+    async function onDropDownChange() {
+        await checkCombinaton(function(response) {});
+    }
+
+    function checkCombinaton(callback) {
+        document.getElementById('load').style.visibility="visible";
+        var id = '<%- id %>';
+        var dayId = document.getElementById("day_id").value;
+        var sessionId = document.getElementById("session_id").value;
+        var timeId = document.getElementById("time_id").value;
+        var trainerId = document.getElementById("trainer_id").value;
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('currentUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        $.ajax({
+            url : `/api/programs/checkProgramCombination?id=${id}&dayId=${dayId}&timeId=${timeId}&sessionId=${sessionId}&trainerId=${trainerId}&user_id=${user_id}`,
+            dataType: "json",
+            type: "GET",
+            headers: {
+                'token':token ? token : 'testing',
+                'Content-Type':'application/json',
+                'platform': 'WEB'
+            },
+            success: function(response){
+              if(isDevelopment) {
+                    console.log(response);
+                    console.log(showAddress);
+                }
+                if(response.data.length != 0){
+                    document.getElementById('mainPrice').innerHTML = `Rs. ${response.data[0].price}`;
+                    if(showAddress == 1 && (response.data[0].address != null || response.data[0].address.length!=0 )) {
+                        document.getElementById('address').innerHTML = `Address :- ${response.data[0].address}`
+                    } else {
+                        document.getElementById('address').style.padding = '0';
+                        document.getElementById('address').style.height = '0';
+                        document.getElementById('address').style.visibility = 'hidden';
+                    }
+                } else {
+                    document.getElementById('address').style.padding = '0';
+                    document.getElementById('address').style.height = '0';
+                    document.getElementById('address').style.visibility = 'hidden';
+                }
+                if(!response.present) {
+                    document.getElementById('mainPrice').innerHTML = `Selected combination not available`;
+                }
+              callback(response);
+              document.getElementById('load').style.visibility="hidden";
+            },
+            error: function(err){
+                if(isDevelopment) {
+                    console.log(err);
+                }
+                alert('Some error occured !!');
+            }
+        });
+    }
+
+    async function addToCart() {
+        var id = '<%- id %>';
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('currentUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        await checkCombinaton(function(response) {
+            if(isDevelopment) {
+                    console.log(response);
+                }
+            if(response.present) {
+                if(response.alreadySubscribed) {
+                    alert('Already purchased , some sessions left. Please go to my programs page!! or Please try a different one');
+                } else {
+                    $.ajax({
+                        url : `/api/cart/addToCart`,
+                        dataType: "json",
+                        type: "POST",
+                        headers: {
+                            'token':token ? token : 'testing',
+                            'platform': 'WEB'
+                        },
+                        data:{
+                            item_category: 'program',
+                            item_id:id,
+                            user_id: user_id,
+                            trainer_program_id: response.data[0].id
+                        },
+                        success: function(response){
+                            if(isDevelopment) {
+                                console.log(response);
+                            }
+                            if(response.message == 'success') {
+                                alert('Added to cart successfully');
+                                location.reload();
+                            } else if(response.message == 'already_added') {
+                                alert('Already added to cart , check there');
+                                programTrainersModal.toggle();
+                            } else {
+                                alert('Some error occured !!');
+                                location.reload();
+                            }
+                        },
+                        error: function(err){
+                            if(isDevelopment) {
+                    console.log(err);
+                }
+                            alert('Some error occured !!');
+                        }
+                    });
+                }
+            } else {
+                alert('Selected combination is not available , Please try a different one');
+            } 
+        });
+    }
+
+    async function callRazorPayFunctionForCart(){
+        var id = '<%- id %>';
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('currentUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        await checkCombinaton(function(response) {
+            if(isDevelopment) {
+                    console.log(response);
+                }
+            if(response.present) {
+                if(response.alreadySubscribed) {
+                    alert('Already purchased , some sessions left. Please go to my programs page!! or Please try a different one');
+                } else {
+                    var title = document.getElementById('finalTitle').innerHTML;
+                    var price = response.data[0].price;
+                    var data = {
+                        total: price,
+                        name:"",
+                        email:"",
+                        phone:"",
+                        user_id:user_id,
+                        companyName:title,
+                        description:"Payment for the program"
+                    }
+                    $.ajax({
+                        url:"/subscription/paymentInitiate",
+                        dataType: "json",
+                        type:"POST",
+                        headers: {
+                            'token':token ? token : 'testing',
+                            'platform': 'WEB'
+                        },
+                        data: data,
+                        success: function(info){
+                            document.getElementById('load').style.visibility="hidden";
+                            
+                            info["callback_url"] = `/subscription/purchaseSingleItem?user_id=${user_id}&item_id=${id}&trainer_program_id=${response.data[0].id}`;
+                            var rzp1 = new Razorpay(info);
+                            rzp1.open();
+                        },
+                        error: function(err){
+                            if(isDevelopment) {
+                                console.log(err);
+                            }
+                            alert('Some Error occurred!');
+                            // location.reload();
+                        }
+                    });
+                }
+            } else {
+                alert('Selected combination is not available , Please try a different one');
+            } 
+        });
+    }
+
+    function getEachProgram() {
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('currentUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        document.getElementById('load').style.visibility="visible";
+        document.getElementById('title').innerHTML = '';
+        document.getElementById('description').innerHTML = '';
+        document.getElementById('morePrograms').innerHTML = '';
+        document.getElementById('views').innerHTML = '';
+        document.getElementById('date').innerHTML = '';
+        document.getElementById('profile-slider').innerHTML = '';
+        var id = '<%- id %>';
+        $.ajax({
+            url : `/api/programs/getEachPrograms?id=${id}`,
+            dataType: "json",
+            type: "GET",
+            headers: {
+                'token':token ? token : 'testing',
+                'Content-Type':'application/json',
+                'platform': 'WEB'
+            },
+            success: function(response){
+              if(isDevelopment) {
+                    console.log(response);
+                }
+                document.getElementById('title').innerHTML = '<h2 id="finalTitle">'+ response.data[0].title +'</h2>';
+                document.getElementById('description').innerHTML = response.data[0].description;
+                document.getElementById('views').innerHTML = response.data[0].views;
+                document.getElementById('date').innerHTML = response.data[0].created_at.slice(0,10);
+                showAddress = response.data[0].include_address;
+              if(response.images.length !=0) {
+                    for(var i=0;i<response.images.length;i++){
+                        if(i == 0) {
+                            $('#profile-slider').append('<div class="carousel-item active"><img src="'+ response.images[i].path +'" class="d-block w-100" alt=""></div>');
+                        } else {
+                            $('#profile-slider').append('<div class="carousel-item"><img src="'+ response.images[i].path +'" class="d-block w-100" alt=""></div>');
+                        }
+                    }
+                } else {
+                    document.getElementById('profileImage').innerHTML  = '';
+                    document.getElementsByClassName('profileImage')[0].style.height  = '0px !important';
+                }
+                if(response.morePrograms.length !=0) {
+                    for(var i=0;i<response.morePrograms.length;i++){
+                        $('#morePrograms').append('<div class="col-lg-3 col-md-4 col-sm-6 col-12"><div class="box3" style="margin: 0 0 15px 0;" onclick="window.location.href=\'/each-program/'+ response.morePrograms[i].id +'\'"><div class="image"><img src="'+ response.morePrograms[i].cover_photo +'" alt=""></div><div class="inside_container"><div class="text"><h5>'+ response.morePrograms[i].title +'</h5><p>Starting from Rs '+ response.morePrograms[i].price +'</p></div><div class="arrow-right icon2"><a><span class="iconify" data-icon="eva:arrow-ios-forward-fill"></span></a></div></div></div></div>');
+                    }
+                } else {
+                    document.getElementById('trainerPrograms').style.display = 'none';
+                }
+                var select = document.getElementById("trainer_id");
+                var length = select.options.length;
+                for (var i = length-1; i >= 0; i--) {
+                    select.options[i] = null;
+                }
+                if(response.trainers.length !=0) {
+                    for(var i=0;i<response.trainers.length;i++){
+                        var option = document.createElement("option");
+                        option.text = response.trainers[i].name;
+                        option.value = response.trainers[i].id;
+                        select.add(option);
+                        $('#alltrainers').append('<div class="col-lg-3 col-md-4 col-sm-6 col-12 expert-cards"><div class="cards" style="margin: 0 0 15px 0;" onclick="window.location.href=\'/expert-profile/'+ response.trainers[i].id +'\'"><img src="'+ response.trainers[i].profile_image +'"><div class="name"><h6>'+ response.trainers[i].name +'</h6></div></div></div>');
+                    }
+                } else {
+                    document.getElementById('trainers').style.display = 'none';
+                    var option = document.createElement("option");
+                    option.text = "No trainers present";
+                    option.value= "";
+                    select.add(option);
+                }
+              document.getElementById('load').style.visibility="hidden";
+            },
+            error: function(err){
+                if(isDevelopment) {
+                    console.log(err);
+                }
+                alert('Some error occured !!');
+            }
+        });
+    }
+    setTimeout(() => {
+        getEachProgram();
+    },500);
+</script>
+
+<%- include('../components/footer/website_footer.ejs') %>

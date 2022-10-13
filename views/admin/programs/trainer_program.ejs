@@ -1,0 +1,222 @@
+<%- include('../../components/header/header.ejs',{cssFile : 'adminPages',page:'Dashboard'}) %> 
+
+<div id="load"></div>
+
+<div class="modal fade" id="programTrainers" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="programTrainerModalLabel">Name Program Trainers</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="content" style="margin-top: 0px;">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">SESSION TYPE</th>
+                        <th scope="col">SESSIONS</th>
+                        <th scope="col">DAYS</th>
+                        <th scope="col">TIMINGS</th>
+                        <th scope="col">MEETING URL</th>
+                      </tr>
+                    </thead>
+                    <tbody id="data_trainer_programs">
+                    </tbody>
+                  </table>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+<div class="container-fluid" id="main">
+    <div class="top" id="content">
+        <div class="title">
+            <h5>Programs</h5>
+            <p>See all the programs here.</p>
+        </div>
+    </div>
+    <br>
+    <div class="content_table">
+        <div class="search_bar">
+                <div class="row">
+                    <div class="col-lg-8 col-md-6 d-flex align-items-center">
+                      <form action="/admin/trainers/searchProgrm" method="get" class="search-form">
+                        <div class="form-group input-group search">
+                            <a><span class="iconify" data-icon="akar-icons:search"></span></a>
+                            <input type="text" class="form-control" id="searchText" name="searchText" placeholder="Search by title..." value="<%= searchValue %>">
+                        </div>
+                        <div class="form-group statusType">
+                          <select class="form-control type" id="category" name="category" aria-label="Images Categories" value="<%= statusValue %>">
+                            <option value="" <%- statusValue == '' ? 'selected' : '' %>>All categories</option>
+                            <% categories.forEach((category,index) => { %>
+                              <option value="<%= category.name %>" <%- statusValue == category.name ? 'selected' : '' %>><%= category.name %></option>
+                            <% }); %> 
+                          </select>
+                      </div>
+                        <input type="submit" hidden />
+                      </form>
+                    </div>
+                    <div class="col-lg-4 col-md-6 d-flex align-items-center justify-content-md-end justify-content-start">
+                        <% if(searchPage) { %>
+                            <button class="btn btn-primary" onclick="location.href='/admin/trainers/programs?page=1'">Reload</button>
+                        <% } %>
+                    </div>
+                </div>
+        </div>
+        <br>
+        <table>
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">PROGRAM</th>
+                <th scope="col">CATEGORY</th>
+                <th scope="col">LIKES</th>
+                <th scope="col">MEETINGS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if(data.length == 0) { %> 
+                <td>No programs present</td>
+            <% } else { %>
+                <% data.forEach((program,index) => { %> 
+                    <tr>
+                      <th scope="row"><%= (index+1+metadata.offset) %></th>
+                      <td>
+                        <div class="profile_table_data">
+                          <div class="profile_image">
+                              <img src="<%= program.cover_photo %>" alt="">
+                          </div>
+                          <p style="margin: 0px 5px 0px 10px;"><%= program.title %></p>
+                        </div>
+                      </td>
+                      <td><%= program.category %></td>
+                      <td><%= program.views %></td>
+                      <td>
+                        <a class="btn btn-primary open" onclick="programTrainers('<%= program.id %>','<%= program.title %>')">OPEN</a>
+                      </td>
+                    </tr>
+                <% }); %> 
+            <% } %> 
+            </tbody>
+          </table>
+          <% if(!searchPage && data.length != 0 && metadata.total_pages > 1) { %> 
+            <div class="pages">
+                <div class="total_pages">
+                    <div class="form-group">
+                        <input type="number" class="form-control" id="pageNumber" name="pageNumber" placeholder="Total pages = <%= metadata.total_pages %> ">
+                    </div>
+                    <button class="btn btn-primary" onclick="goToPage()">Go</button>
+                </div>
+                <div class="inner_pages">
+                    <% if(metadata.page == 1) { %>
+                        <a id="prev" class="disabled">Prev</a>
+                    <% } else { %>
+                        <a id="prev" onclick="location.href='/admin/trainers/programs?page=<%= metadata.page - 1 %>'">Prev</a>
+                    <% } %>
+                    <% if(metadata.total_pages >= 3) { %> 
+                        <% if(metadata.page == metadata.total_pages) { %> 
+                            <a class="page" onclick="location.href='/admin/trainers/programs?page=<%= metadata.page - 2 %>'"><%= metadata.page - 2 %></a>
+                            <a class="page" onclick="location.href='/admin/trainers/programs?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/trainers/programs?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                        <% } else if(metadata.page == (metadata.total_pages - 1)) { %>
+                            <a class="page" onclick="location.href='/admin/trainers/programs?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/trainers/programs?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/trainers/programs?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                        <% } else { %>
+                            <a class="page selected_page" onclick="location.href='/admin/trainers/programs?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/trainers/programs?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                            <a class="page" onclick="location.href='/admin/trainers/programs?page=<%= metadata.page + 2 %>'"><%= metadata.page + 2 %></a>
+                        <% } %>
+                    <% } else if(metadata.total_pages == 2) { %>
+                        <% if(metadata.page == metadata.total_pages) { %> 
+                            <a class="page" onclick="location.href='/admin/trainers/programs?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/trainers/programs?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                        <% } else if(metadata.page == (metadata.total_pages - 1)) { %>
+                            <a class="page selected_page" onclick="location.href='/admin/trainers/programs?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/trainers/programs?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                        <% } %>
+                    <% } else if(metadata.total_pages == 1) { %>
+                        <a class="page selected_page" onclick="location.href='/admin/trainers/programs?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                    <% } %>
+                    <% if(metadata.page == metadata.total_pages) { %> 
+                        <a id="next" class="disabled">Next</a>
+                    <% } else { %>
+                        <a id="next" onclick="location.href='/admin/trainers/programs?page=<%= metadata.page + 1 %>'">Next</a>
+                    <% } %>
+                </div>
+            </div>
+          <% } %> 
+    </div>
+</div>
+
+<!-- Common.js -->
+<script src="/javascripts/common.js"></script>
+<!---->
+
+<script>
+
+
+$(function(){
+  // bootstraps modals
+  programTrainersModal = new bootstrap.Modal(document.getElementById('programTrainers'));
+});
+
+  function programTrainers(id,title) {
+    // programTrainersModal.toggle();
+    document.getElementById('programTrainerModalLabel').innerHTML = `${title} program sessions and trainers`;
+    getDTS('trainer_programs',false,id);
+  }
+
+
+  //Get day time sessions
+  function getDTS(value,callfunction,id) {
+    document.getElementById('data_trainer_programs').innerHTML = '';
+      $.ajax({
+        url : `/admin/trainers/getProgramTrainers?program_id=${id}`,
+        dataType: "json",
+        type: "GET",
+        success: function(response){
+          console.log(response);
+          for(var i=0;i<response.data.length;i++){
+              $('#data_trainer_programs').append('<tr><td>'+ (i+1) +'</td><td>'+ response.data[i].session_type +'</td><td>'+ response.data[i].session_id +'</td><td>'+ response.data[i].day_id +'</td><td>'+ response.data[i].time_id +'</td><td>'+ (response.data[i].meeting_url.length == 0 ? '' : '<a href="'+ response.data[i].meeting_url +'" target="_blank">URL</a>') +'</td></tr>');
+            }
+          if(!callfunction) {
+            programTrainersModal.toggle();
+          }
+        },
+        error: function(err){
+                    console.log(err);
+          if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-danger');
+                document.getElementById('alertMessage').innerHTML = 'Some error occurred';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+        }
+      });
+  }
+
+  //Go to page 
+  function goToPage() {
+      var page = document.getElementById('pageNumber').value;
+      var total_pages = '<%- metadata.total_pages %>';
+      if(page.length != 0) {
+          if(parseInt(page) > parseInt(total_pages)){
+              alert('Please enter a page number less than total pages');
+          } else if(parseInt(page) == 0) {
+              alert('Please enter a page number greater than 0');
+          } else {
+              location.href=`/admin/trainers/programs?page=${page}`;
+          }
+      } else {
+          alert('Please enter a page number first');
+      }
+  }
+
+</script>
+
+<%- include('../../components/footer/footer.ejs') %> 

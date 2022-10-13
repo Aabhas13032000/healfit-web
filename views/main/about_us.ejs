@@ -1,0 +1,30 @@
+<%- include('../components/header/website_header.ejs',{cssFile : 'index',page:page}) %> 
+
+<div id="load"></div>
+
+<div class="main-container">
+    <br><br><br><br>
+    <div class="container-fluid">
+        <div class="container d-flex align-items-end">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-center">
+                    <h2>Welcome to HealFit !!</h2>
+                    <p>Welcome to HealFit. You may not be familiar with us, but we are certainly not new to the game. We hope to use the wealth of experience that each of our specialists have to help you succeed in your fitness goals.</p>
+                    <!-- <br>
+                    <iframe width="90%" id="youtube" style="border-radius: 10px;margin: auto;" src="https://www.youtube.com/embed/qqBG84Hrj5Y" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" scrolling="yes" allowfullscreen></iframe> -->
+                    <br>
+                    <h4>WHY HEALFIT?</h4>
+                    <p>Fitness to us is the ability to get around even the toughest of days pain free, without losing one's breath or feeling sluggish. It is to be able to hold your newborn or play with your kid without tiring out. We want you to go out on that trek, scuba trip or even shaadi shopping without second guessing yourself. Too many people make money but in the course of time lose the ability to enjoy the fruits of their labor. We aim to change that for everyone around the world.<br><br>HealFit's goal is to ignite the ambition of individuals all over the world. We aim to be the greatest in the Health and Wellness industry by making you the best version of yourself. We take pleasure in offering a diverse range of products and services at affordable prices. We have a vast and growing community too, and that is how we disseminate the most recent and vital Health & Fitness information throughout our blogs and social media platforms.<br><br>We don't want to be in an experimental situation when it comes to Health & Fitness. However, we continue to explore for low-cost options. Since the health and wellness industry has become limited to such a type of audience who can afford its expensive fees. Inferior pricing does not always imply low quality, but it may pose a threat to high-end products/services. We approach the table as a partner rather than a service provider, combining our knowledge with the latest know-how and the capacity to implement it expeditiously. Whether you're a novice or an advanced level athlete, HealFit not only keeps you up to date on the latest research but also offers you with the insights of years of expertise in the Health & Wellness Industry, resulting in the greatest outcomes. HealFit is more than the sum of our service/product offerings; we are a team of professionals you can rely on to help you give the finest solutions for your Health & Fitness challenges.<br><br>What we provide here is more than just scientific knowledge though. Our team and community provides you with all the tools you need to turn your life around. From sleep habits to midnight cravings, we will help you get in touch with your healthier side. We don't just transform you but make sure you stay that way. Our experts are not just people who are well versed in their field. But they are coaches, who will urge you till health and wellness becomes second nature to you.<br><br>If you need any assistance, our team are always here to help you.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <%- include('footer.ejs',{showContactExpert: true}) %> 
+</div>
+
+<script>
+    var isDevelopment = '<%- isDevelopment %>' == 'true' ? true : false;
+</script>
+
+<%- include('../components/footer/website_footer.ejs') %>

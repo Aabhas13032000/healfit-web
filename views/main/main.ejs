@@ -1,0 +1,748 @@
+<%- include('../components/header/website_header.ejs',{cssFile : 'index',page:page}) %> 
+
+<div id="load"></div>
+
+<!-- Link Modal -->
+<div class="modal fade" id="commentModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Comments</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+        <div class="modal-body">
+          <div class="commentContent" id="commentContent" data-commentId="0" data-totalComments="0" onscroll="getMoreBlogComments()">
+            
+          </div>
+          <div class="commentInput">
+            <div class="form-group input-group search">
+                <input type="text" class="form-control" style="border: 0;height: 100%;border-radius: 10px 0px 0px 10px !important;" name="message" id="message" placeholder="Write your comment here..."/>
+                <a onclick="addMessage()"><span class="iconify" data-icon="fluent:send-16-regular"></span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div class="modal fade" id="calorieCounter" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div id="close" data-bs-dismiss="modal">
+                    <a><span class="iconify" data-icon="eva:close-fill"></span></a>
+                </div>
+                <div class="calorie">
+                    <div class="date">
+                        <p>04/09/2022</p>
+                    </div>
+                    <div class="form-group input-group search" style="margin:30px 0px 10px 0px;height: 50px !important;">
+                        <a style="width: 45px !important;"><span class="iconify" data-icon="akar-icons:search"></span></a>
+                        <input type="text" class="form-control" id="searchText" name="searchedTitle" placeholder="Search by food name..." value="">
+                    </div>
+                    <div class="selectedFood">
+                        
+                    </div>
+                    <form onsubmit="addFood(event)" id="form" method="post" autocomplete="off">
+                        <div class="row">
+                            <input type="hidden" name="food_id" id="food_id">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group">
+                                    <label for="meal" style="margin:10px 0px 10px 0px;">Meal</label>
+                                    <select class="form-control" id="meal" name="meal" aria-label="Images Categories" required>
+                                        <option value="BREAKFAST">BREAKFAST</option>
+                                        <option value="SNACKS">SNACKS</option>
+                                        <option value="LUNCH">LUNCH</option>
+                                        <option value="DINNER">DINNER</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-6" style="padding-right: 5px !important;">
+                                <div class="form-group">
+                                    <label for="quantity" style="margin:10px 0px 10px 0px;">Quantity</label>
+                                    <input type="number" step=0.01 class="form-control" name="quantity" id="quantity" placeholder="Enter quantity" required/>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-6" style="padding-left: 5px !important;">
+                                <div class="form-group">
+                                    <label for="unit" style="margin:10px 0px 10px 0px;">Unit</label>
+                                    <input type="text" class="form-control" name="unit" id="unit" placeholder="Unit" readonly required/>
+                                </div>
+                            </div>
+                            <div class="button" style="padding: 0;">
+                                <button type="submit" id="food_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin-top: 20px;">Add</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="main-container">
+    <div class="container-fluid hero-section">
+        <div class="container" id="beforeLoginHeroSection">
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-flex align-items-center justify-content-center justify-content-md-start">
+                    <div class="heading text-center text-lg-start text-md-start">
+                        <h1 class=""><span>Reclaim</span> your<br>birth right to<br><span>Radical</span> health</h1>
+                        <div class="buttons d-flex align-items-center justify-content-center justify-content-md-start">
+                            <div class="button" data-bs-toggle="modal" data-bs-target="#login">
+                                <p>Get started</p>
+                                <div class="arrow">
+                                    <a><span class="iconify" data-icon="charm:arrow-right"></span></a>
+                                </div>
+                            </div>
+                            <div class="button" onclick="window.location.href='/about'">
+                                <p>About us</p>
+                                <div class="arrow">
+                                    <a><span class="iconify" data-icon="charm:arrow-right"></span></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-flex align-items-center justify-content-center">
+                    <img src="/images/local/mockup.png">
+                </div>
+            </div>
+        </div>
+        <div class="container" id="afterLoginHeroSection">
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-flex align-items-center justify-content-center justify-content-md-start">
+                    <div class="heading text-center text-lg-start text-md-start">
+                        <h4>Count your calories</h4>
+                        <h2>Check your calorie data<br>and access your purchased programs</h2>
+                        <br>
+                        <div class="buttons d-flex align-items-center justify-content-center justify-content-md-start" style="margin: 0px 0px 30px 0px;">
+                            <div class="button" onclick="window.location.href='/about'">
+                                <p>About us</p>
+                                <div class="arrow">
+                                    <a><span class="iconify" data-icon="charm:arrow-right"></span></a>
+                                </div>
+                            </div>
+                            <div class="button" onclick="window.location.href='/myPrograms'">
+                                <p>My programs</p>
+                                <div class="arrow">
+                                    <a><span class="iconify" data-icon="charm:arrow-right"></span></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-flex align-items-center">
+                    <div class="contact_form calorieCounter w-100">
+                        <div class="today">
+                            <div class="leftArrow" onclick="getPreviousDate()">
+                                <a><span class="iconify" data-icon="ep:arrow-left-bold"></span></a>
+                            </div>
+                            <div class="date">
+                                <input type="date" id="currentDate" style="height: unset;border: 0;background-color: transparent;outline: 0 !important;" class="form-control" onchange="openCalender()" name="SelectedDate" value="Today"/>
+                            </div>
+                            <div class="rightArrow" onclick="getNextDate()">
+                                <a><span class="iconify" data-icon="ep:arrow-right-bold"></span></a>
+                            </div>
+                        </div>
+                        <div class="counter">
+                            <div class="mealCounter" onclick="openFoodCalories()">
+                                <div class="value">
+                                    <div class="circularProgressbar">
+                                        <div class="circle-wrap">
+                                            <div class="circle">
+                                                <div class="mask half">
+                                                    <div class="fill"></div>
+                                                </div>
+                                                <div class="mask full">
+                                                    <div class="fill"></div>
+                                                 </div>
+                                                 <div class="inside-circle">
+                                                    <img src="/images/local/fork.png">
+                                                 </div>
+                                            </div>
+                                          </div>                                     
+                                    </div>
+                                    <div class="number">
+                                        <p id="calorieCounterValue" data-calorieBurned=""><span id="totalCalorie">0</span> kcal</p>
+                                        <p>Calories Eaten</p>
+                                    </div>     
+                                    <div class="icons">
+                                        <!-- <a id="graph" data-bs-toggle="modal" data-bs-target="#calorieCounter"><span class="iconify" data-icon="uis:graph-bar"></span></a> -->
+                                        <a id="add-calorie"><span class="iconify" data-icon="fluent:add-24-filled"></span></a>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin: 0 !important;padding: 0 !important;">
+                                    <div class="col-6" style="padding: 20px 10px 0px 0px;">
+                                        <div class="card">
+                                            <img src="/images/local/breakfast.png">
+                                            <div class="values">
+                                                <p>Breakfast</p>
+                                                <p><span id="breakfastValue">0</span> kcal</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6" style="padding: 20px 0px 0px 10px;">
+                                        <div class="card">
+                                            <img src="/images/local/snacks.png">
+                                            <div class="values">
+                                                <p>Snacks</p>
+                                                <p><span id="snacksValue">0</span> kcal</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6" style="padding: 20px 10px 0px 0px;">
+                                        <div class="card">
+                                            <img src="/images/local/lunch.png">
+                                            <div class="values">
+                                                <p>Lunch</p>
+                                                <p><span id="lunchValue">0</span> kcal</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6" style="padding: 20px 0px 0px 10px;">
+                                        <div class="card">
+                                            <img src="/images/local/dinner.png">
+                                            <div class="values">
+                                                <p>Dinner</p>
+                                                <p><span id="dinnerValue">0</span> kcal</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="exerciseCounter" onclick="openWorkoutCalories()">
+                                <!-- <div class="value">
+                                    <div class="circularProgressbar">
+                                        <div class="circle-wrap1">
+                                            <div class="circle">
+                                                <div class="mask half">
+                                                    <div class="fill"></div>
+                                                </div>
+                                                <div class="mask full">
+                                                    <div class="fill"></div>
+                                                 </div>
+                                                 <div class="inside-circle">
+                                                    <img src="/images/local/fire.png">
+                                                 </div>
+                                            </div>
+                                          </div>                                     
+                                    </div>
+                                    <div class="number">
+                                        <p id="exerciseCounterValue"><span id="totalWorkoutValue">0</span> kcal</p>
+                                        <p>Calories burned</p>
+                                    </div>     
+                                    <div class="icons">
+                                        <a id="graph"><span class="iconify" data-icon="uis:graph-bar"></span></a>
+                                        <a id="add-calorie"><span class="iconify" data-icon="fluent:add-24-filled"></span></a>
+                                    </div>
+                                </div> -->
+                                <div class="row" style="margin: 0 !important;padding: 0 !important;">
+                                    <div class="col-12" style="padding: 0px 0px 0px 0px;">
+                                        <div class="card">
+                                            <p>To Check your workout logs<br><span id="clickHere">Click here</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <div class="whyChooseUs container">
+        <div class="heading">
+            <h2>Why choose us?</h2>
+            <p>We don't want to be in an experimental situation when it comes to Health & Fitness. However, we continue to explore for low-cost options. Since the health and wellness industry has become limited to a certain type of audience who can afford its expensive fees. Inferior pricing does not necessarily indicate low quality, but it may pose a threat to high-end products/services.We approach the table as a partner rather than a service provider, combining our knowledge with the most latest know-how and the capacity to implement it expeditiously. Whether you're a novice or an advanced level athlete, HealFit not only keeps you up to date on the newest research but also offers you with the insights of years of expertise in the Health & Wellness Industry, resulting in the greatest outcomes. HealFit is more than the sum of our service/product offerings; we are a team of professionals you can rely on to help you give the finest solutions for your Health & Fitness challenges.</p>
+        </div>
+        <br>
+        <div class="row points">
+            <div class="col-lg-3 col-md-6 col-sm-12 col-12">
+                <div class="card">
+                    <h4>Health & Wellness<br>Experts</h4>
+                    <img src="/images/local/img1.png" alt="">
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-12 col-12">
+                <div class="card">
+                    <h4>Expert is just a<br>call away</h4>
+                    <img src="/images/local/img2.png" alt="">
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-12 col-12">
+                <div class="card">
+                    <h4>Reversing lifestyle<br>disorders</h4>
+                    <img src="/images/local/3.png" alt="">
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-12 col-12">
+                <div class="card">
+                    <h4>Personal touch<br>for you</h4>
+                    <img src="/images/local/img4.png" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <br><br>
+    <div class="spotlightPrograms">
+        <div class="container">
+            <div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                  <div class="carousel-item active">
+                    <div class="spotlightCard">
+                        <img src="https://cdn.mos.cms.futurecdn.net/KLZwUWe4JwyyXY7pV7CpaU.jpg" class="d-block w-100" alt="">
+                        <div class="program-info">
+    
+                        </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+    <br>
+    <div class="programs container" id="exclusivePrograms">
+        <div class="heading">
+            <h2>Exclusive programs</h2>
+            <p onclick="window.location.href='/programs'">View All&nbsp;&nbsp;<span class="iconify" data-icon="cil:arrow-right"></span></p>
+        </div>
+        <div class="external-container">
+            <div class="arrow-left icon" id="left" onclick="leftButtonClicked('slider','box',event)">
+                <a><span class="iconify" data-icon="eva:arrow-ios-back-fill"></span></a>
+            </div>
+            <div class="arrow-right icon" id="right" onclick="rightButtonClicked('slider','box',event)">
+                <a><span class="iconify" data-icon="eva:arrow-ios-forward-fill"></span></a>
+            </div>
+            <div class="cards" id="slider">
+                
+            </div>
+        </div>
+    </div>
+    <div class="programs books container" id="ourBooks">
+        <div class="heading">
+            <h2>Our books</h2>
+            <p onclick="window.location.href='/books'">View All&nbsp;&nbsp;<span class="iconify" data-icon="cil:arrow-right"></span></p>
+        </div>
+        <div class="external-container">
+            <div class="arrow-left icon" id="left1" onclick="leftButtonClicked('slider1','book',event)">
+                <a><span class="iconify" data-icon="eva:arrow-ios-back-fill"></span></a>
+            </div>
+            <div class="arrow-right icon" id="right1" onclick="rightButtonClicked('slider1','book',event)">
+                <a><span class="iconify" data-icon="eva:arrow-ios-forward-fill"></span></a>
+            </div>
+            <div class="cards" id="slider1">
+
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="programs blogs container" id="popularBlogs">
+        <div class="heading">
+            <h2>Popular blogs</h2>
+            <p onclick="window.location.href='/blogs'">View All&nbsp;&nbsp;<span class="iconify" data-icon="cil:arrow-right"></span></p>
+        </div>
+        <div class="external-container">
+            <div class="arrow-left icon" id="left" onclick="leftButtonClicked('slider2','box',event)">
+                <a><span class="iconify" data-icon="eva:arrow-ios-back-fill"></span></a>
+            </div>
+            <div class="arrow-right icon" id="right" onclick="rightButtonClicked('slider2','box',event)">
+                <a><span class="iconify" data-icon="eva:arrow-ios-forward-fill"></span></a>
+            </div>
+            <div class="cards" id="slider2">
+
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="textimonials container" id="testimonials">
+        <h2>What people say about us</h2>
+        <br>
+        <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner" id="testimonials-items">
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                <a><span class="iconify" data-icon="eva:arrow-ios-back-fill"></span></a>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                <a><span class="iconify" data-icon="eva:arrow-ios-forward-fill"></span></a>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+    </div>
+    <br>
+    <div class="programs blogs container" id="ourExperts">
+        <div class="heading">
+            <h2>Meet our experts</h2>
+            <p onclick="window.location.href='/experts'">View All&nbsp;&nbsp;<span class="iconify" data-icon="cil:arrow-right"></span></p>
+        </div>
+        <div class="external-container">
+            <div class="arrow-left icon" id="left" onclick="leftButtonClicked('slider3','box',event)">
+                <a><span class="iconify" data-icon="eva:arrow-ios-back-fill"></span></a>
+            </div>
+            <div class="arrow-right icon" id="right" onclick="rightButtonClicked('slider3','box',event)">
+                <a><span class="iconify" data-icon="eva:arrow-ios-forward-fill"></span></a>
+            </div>
+            <div class="cards" id="slider3">
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <%- include('footer.ejs',{showContactExpert: true}) %> 
+</div>
+
+<!-- Link Modal -->
+<div class="modal fade" id="sendingNotification" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+          <h3>Generating Share Link, Please Wait!!</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+    var isDevelopment = '<%- isDevelopment %>' == 'true' ? true : false;
+    
+    function getPreviousDate() {
+        var date = new Date(document.getElementById('currentDate').value);
+        date = new Date(date.setDate(date.getDate() - 1));
+        document.getElementById('currentDate').value = date.toISOString().toString().split('T')[0];
+        getCalorieCounterData();
+    }
+
+    function getNextDate() {
+        var date = new Date(document.getElementById('currentDate').value);
+        var today = new Date();
+        if(date.toISOString().toString().split('T')[0] != today.toISOString().toString().split('T')[0]) {
+            date = new Date(date.setDate(date.getDate() + 1));
+            document.getElementById('currentDate').value = date.toISOString().toString().split('T')[0];
+            getCalorieCounterData();
+        } else {
+            alert('You can only see the data till today')
+        }
+    }
+
+    function openCalender() {
+        getCalorieCounterData();
+    }
+
+    function openFoodCalories() {
+        var date = document.getElementById('currentDate').value;
+        window.location.href = `/food_calories?date=${date}`;
+    }
+
+    function openWorkoutCalories() {
+        var date = document.getElementById('currentDate').value;
+        window.location.href = `/workout_calories?date=${date}`;
+    }
+
+    function getCalorieCounterData() {
+        var date = document.getElementById('currentDate').value;
+        if(date.length != 0){
+            var array = document.cookie.split(';');
+            var counter = 0;
+            var index = 0;
+            var userIndex = 0;
+            for(var i=0;i<array.length;i++) {
+                if(array[i].includes('currentUserToken=')){
+                    counter++;
+                    index = i;
+                }
+                if(array[i].includes('user_id=')){
+                    counter++;
+                    userIndex = i;
+                }
+            }
+            if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+                var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+                var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+            } else {
+                var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+                var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+            }
+            document.getElementById('load').style.visibility="visible";
+            $.ajax({
+                url : `/api/getCalorieData?user_id=${user_id}&date=${date}`,
+                dataType: "json",
+                type: "GET",
+                headers: {
+                    'token':token ? token : 'testing',
+                    'Content-Type':'application/json',
+                    'platform': 'WEB'
+                },
+                success: function(response){
+                    if(isDevelopment) {
+                    console.log(response);
+                }
+                    var breakfast = 0;
+                    var snacks = 0;
+                    var lunch = 0;
+                    var dinner = 0;
+                    var total = 0;
+                    var totalWorkout = 0;
+                    for(var i = 0;i<response.user_calories.length;i++) {
+                        if(response.user_calories[i].meal == 'BREAKFAST') {
+                            breakfast = breakfast + response.user_calories[i].calories;
+                        }
+                        if(response.user_calories[i].meal == 'LUNCH') {
+                            lunch = lunch + response.user_calories[i].calories;
+                        }
+                        if(response.user_calories[i].meal == 'DINNER') {
+                            dinner = dinner + response.user_calories[i].calories;
+                        }
+                        if(response.user_calories[i].meal == 'SNACKS') {
+                            snacks = snacks + response.user_calories[i].calories;
+                        }
+                    }
+                    for(var i = 0;i<response.user_exercise.length;i++) {
+                        totalWorkout = totalWorkout + response.user_exercise[i].calories;
+                    }
+                    total = breakfast + dinner + snacks + lunch;
+                    var totalBurnOut = document.getElementById('calorieCounterValue').getAttribute('data-calorieBurned');
+                    var deg = (total/totalBurnOut) * 360;
+                    var deg2 = (totalWorkout/totalBurnOut) * 360;
+                    document.querySelector('.circle-wrap .circle .fill').style.transform = `rotate(${deg}deg)`;
+                    // document.querySelector('.circle-wrap1 .circle .fill').style.transform = `rotate(${deg2}deg)`;
+                    document.getElementById('breakfastValue').innerHTML = breakfast;
+                    document.getElementById('snacksValue').innerHTML = snacks;
+                    document.getElementById('lunchValue').innerHTML = lunch;
+                    document.getElementById('dinnerValue').innerHTML = dinner;
+                    document.getElementById('totalCalorie').innerHTML = Math.ceil(total);
+                    // document.getElementById('totalWorkoutValue').innerHTML = Math.ceil(totalWorkout);
+                    document.getElementById('load').style.visibility="hidden";
+                },
+                error: function(err){
+                    if(isDevelopment) {
+                    console.log(err);
+                }
+                    alert('Some error occured !!');
+                }
+            });
+        }
+    }
+
+    function getInitialData() {
+        var today = new Date();
+        document.getElementById('currentDate').value = today.toISOString().toString().split('T')[0];
+        document.getElementById('currentDate').max = today.toISOString().toString().split('T')[0];
+        if(document.cookie.length != 0){
+            var array = document.cookie.split(';');
+            var counter = 0;
+            var index = 0;
+            var userIndex = 0;
+            for(var i=0;i<array.length;i++) {
+                if(array[i].includes('currentUserToken=')){
+                    counter++;
+                    index = i;
+                }
+                if(array[i].includes('user_id=')){
+                    counter++;
+                    userIndex = i;
+                }
+            }
+            if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+                var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+                var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+            } else {
+                var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+                var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+            }
+            document.getElementById('load').style.visibility="visible";
+            $.ajax({
+                url : `/api/getInitialData?user_id=${user_id}&date=${today.toISOString().toString().split('T')[0]}`,
+                dataType: "json",
+                type: "GET",
+                headers: {
+                    'token':token ? token : 'testing',
+                    'Content-Type':'application/json',
+                    'platform': 'WEB'
+                },
+                success: function(response){
+                    if(isDevelopment) {
+                    console.log(response);
+                }
+                    document.getElementById('slider').innerHTML = '';
+                    document.getElementById('slider1').innerHTML = '';
+                    document.getElementById('slider2').innerHTML = '';
+                    document.getElementById('slider3').innerHTML = '';
+                    document.getElementById('testimonials-items').innerHTML = '';
+                    if(response.exclusivePrograms.length != 0) {
+                        for(var i=0;i<response.exclusivePrograms.length;i++){
+                            $('#slider').append('<div class="box" onclick="window.location.href=\'/each-program/'+ response.exclusivePrograms[i].id +'\'" style="background-image: url(\''+ response.exclusivePrograms[i].cover_photo +'\');"><div class="inside_container"><h5>'+ response.exclusivePrograms[i].title +'</h5><p>Starting from Rs '+ response.exclusivePrograms[i].price +'</p></div></div>');
+                        }
+                    } else {
+                        document.getElementById('exclusivePrograms').innerHTML = '';
+                    }
+                    if(response.ourBooks.length != 0) {
+                        for(var i=0;i<response.ourBooks.length;i++){
+                            $('#slider1').append('<div class="book"><div class="image"><img src="'+ response.ourBooks[i].cover_photo +'"><a><span class="iconify" data-icon="bi:bookmark-fill"></span></a></div><div class="inside_container"><div><h5>'+ response.ourBooks[i].title +'</h5><p>'+ response.ourBooks[i].author +'</p><p class="downloads"><span class="iconify" data-icon="ant-design:fire-filled"></span>&nbsp;&nbsp;'+ response.ourBooks[i].downloads +' Downloads</p><h6><span class="discount_price">Rs '+ response.ourBooks[i].price +'</span>&nbsp;&nbsp;<span class="price">Rs '+ response.ourBooks[i].discount_price +'</span></h6></div><div class="button"><button class="btn btn-primary d-flex justify-content-center align-items-center" onclick="checkDownloadPdf(\''+ response.ourBooks[i].id +'\',\''+ response.ourBooks[i].title +'\',\''+ response.ourBooks[i].pdf +'\',\''+ response.ourBooks[i].discount_price +'\')">Download Pdf</button></div></div></div>');
+                        }
+                    } else {
+                        document.getElementById('ourBooks').innerHTML = '';
+                    }
+                    if(response.popular.length != 0) {
+                        // for(var i=0;i<response.popular.length;i++){
+                        //     var description = response.popular[i].description;
+                        //     var desc = description.replace(/<[^>]+>/g, '');
+                        //     $('#slider2').append('<div class="box" onclick="window.location.href=\'/each-blog/'+ response.popular[i].id +'\'" style="background-image: url(\''+ response.popular[i].cover_photo +'\');"><div class="inside_container"><div><h5>'+ response.popular[i].title +'</h5><p>'+ desc +'</p></div><div class="info"><p class="downloads"><span class="iconify" data-icon="ant-design:fire-filled"></span>&nbsp;&nbsp;'+ response.popular[i].views +'</p><p class="date">'+ response.popular[i].created_at.toString().slice(0,10) +'</p></div></div></div>');
+                        // }
+                        for(var i=0;i<response.popular.length;i++){
+                            var description = response.popular[i].description;
+                            var desc = description.replace(/<[^>]+>/g, '');
+                            var color;
+                            var icon;
+                            if(response.popular[i].isLiked == 1) {
+                                color = 'var(--highlight)';
+                                icon = 'bxs:like';
+                            } else {
+                                color = 'var(--sub-text)';
+                                icon = 'bx:like';
+                            }
+                            $('#slider2').append('<div class="box" style="background-image: url(\''+ response.popular[i].cover_photo +'\');"><div class="inside_container"><div onclick="window.location.href=\'/each-blog/'+ response.popular[i].id +'\'"><p class="date">'+ response.popular[i].created_at.toString().slice(0,10) +'</p><h5>'+ response.popular[i].title +'</h5><p>'+ desc +'</p></div><div class="info"><p class="downloads" onclick="likeDislike(\''+ response.popular[i].id +'\')" style="color: '+ color +'" data-liked="'+ response.popular[i].isLiked +'" id="icon_update_'+ response.popular[i].id +'"><span class="iconify" id="icon_to_update_'+ response.popular[i].id +'" data-icon="'+ icon +'"></span>&nbsp;&nbsp;<span id="total_likes_'+ response.popular[i].id +'">'+ response.popular[i].totalLikes +'</span></p><p class="date"><span class="iconify" data-icon="akar-icons:comment" onclick="getComments(\''+ response.popular[i].id +'\',0)"></span>&nbsp;&nbsp;<span class="iconify" data-icon="ci:share" onclick="generateShareLink(\''+ response.popular[i].id +'\',\'blog\',\''+ ('/each-blog/'+ response.popular[i].id +'?item_id='+ response.popular[i].id +'') +'\',\''+ response.popular[i].share_url +'\')"></span></p></div></div></div>');
+                        }
+                    } else {
+                        document.getElementById('popularBlogs').innerHTML = '';
+                    }
+                    if(response.experts.length != 0){
+                    for(var i=0;i<response.experts.length;i++){
+                        $('#slider3').append('<div class="box" onclick="window.location.href=\'/expert-profile/'+ response.experts[i].id +'\'"><img src="'+ response.experts[i].profile_image +'"><div class="name"><h6>'+ response.experts[i].name +'</h6></div></div>');
+                    }
+                    } else {
+                        document.getElementById('ourExperts').innerHTML = '';
+                    }
+                    if(response.testimonials.length != 0){
+                    for(var i=0;i<response.testimonials.length;i++){
+                        $('#testimonials-items').append('<div class="carousel-item'+ (i==0 ? ' active' : '') +'"><div class="testimonial-card"><div class="profile"><div class="profile-image"><img src="'+ response.testimonials[i].profile_image +'" alt=""></div><div class="name"><h5>'+ response.testimonials[i].name +'</h5><p>'+ response.testimonials[i].tag_line +'</p></div></div><br><div id="message">'+ response.testimonials[i].message +'</div><div class="stars"><a><span class="iconify" data-icon="ant-design:star-filled" style="color: var(--highlight);"></span></a><a><span class="iconify" data-icon="ant-design:star-filled" style="color: var(--highlight);"></span></a><a><span class="iconify" data-icon="ant-design:star-filled" style="color: var(--highlight);"></span></a><a><span class="iconify" data-icon="ant-design:star-filled" style="color: var(--highlight);"></span></a><a><span class="iconify" data-icon="ant-design:star-filled" style="color: var(--highlight);"></span></a></div></div></div>');
+                    }
+                    } else {
+                        document.getElementById('testimonials').innerHTML = '';
+                    }
+                    var breakfast = 0;
+                    var snacks = 0;
+                    var lunch = 0;
+                    var dinner = 0;
+                    var total = 0;
+                    var totalWorkout = 0;
+                    for(var i = 0;i<response.user_calories.length;i++) {
+                        if(response.user_calories[i].meal == 'BREAKFAST') {
+                            breakfast = breakfast + response.user_calories[i].calories;
+                        }
+                        if(response.user_calories[i].meal == 'LUNCH') {
+                            lunch = lunch + response.user_calories[i].calories;
+                        }
+                        if(response.user_calories[i].meal == 'DINNER') {
+                            dinner = dinner + response.user_calories[i].calories;
+                        }
+                        if(response.user_calories[i].meal == 'SNACKS') {
+                            snacks = snacks + response.user_calories[i].calories;
+                        }
+                    }
+                    for(var i = 0;i<response.user_exercise.length;i++) {
+                        totalWorkout = totalWorkout + response.user_exercise[i].calories;
+                    }
+                    total = breakfast + dinner + snacks + lunch;
+                    var totalBurnOut = document.getElementById('calorieCounterValue').getAttribute('data-calorieBurned');
+                    var deg = (total/totalBurnOut) * 360;
+                    var deg2 = (totalWorkout/totalBurnOut) * 360;
+                    document.querySelector('.circle-wrap .circle .fill').style.transform = `rotate(${deg}deg)`;
+                    // document.querySelector('.circle-wrap1 .circle .fill').style.transform = `rotate(${deg2}deg)`;
+                    document.getElementById('breakfastValue').innerHTML = breakfast;
+                    document.getElementById('snacksValue').innerHTML = snacks;
+                    document.getElementById('lunchValue').innerHTML = lunch;
+                    document.getElementById('dinnerValue').innerHTML = dinner;
+                    document.getElementById('totalCalorie').innerHTML = Math.ceil(total);
+                    // document.getElementById('totalWorkoutValue').innerHTML = Math.ceil(totalWorkout);
+                    document.getElementById('load').style.visibility="hidden";
+                },
+                error: function(err){
+                    if(isDevelopment) {
+                    console.log(err);
+                }
+                    alert('Some error occured !!');
+                }
+            });
+        } else {
+            document.getElementById('load').style.visibility="visible";
+            $.ajax({
+                url : `/api/getInitialData`,
+                dataType: "json",
+                type: "GET",
+                headers: {
+                    'Content-Type':'application/json',
+                    'platform': 'WEB'
+                },
+                success: function(response){
+                    if(isDevelopment) {
+                    console.log(response);
+                }
+                    document.getElementById('slider').innerHTML = '';
+                    document.getElementById('slider1').innerHTML = '';
+                    document.getElementById('slider2').innerHTML = '';
+                    document.getElementById('slider3').innerHTML = '';
+                    document.getElementById('testimonials-items').innerHTML = '';
+                    if(response.exclusivePrograms.length != 0) {
+                        for(var i=0;i<response.exclusivePrograms.length;i++){
+                            $('#slider').append('<div class="box" onclick="window.location.href=\'/each-program/'+ response.exclusivePrograms[i].id +'\'" style="background-image: url(\''+ response.exclusivePrograms[i].cover_photo +'\');"><div class="inside_container"><h5>'+ response.exclusivePrograms[i].title +'</h5><p>Starting from Rs '+ response.exclusivePrograms[i].price +'</p></div></div>');
+                        }
+                    } else {
+                        document.getElementById('exclusivePrograms').innerHTML = '';
+                    }
+                    if(response.ourBooks.length != 0) {
+                        for(var i=0;i<response.ourBooks.length;i++){
+                            $('#slider1').append('<div class="book"><div class="image"><img src="'+ response.ourBooks[i].cover_photo +'"><a><span class="iconify" data-icon="bi:bookmark-fill"></span></a></div><div class="inside_container"><div><h5>'+ response.ourBooks[i].title +'</h5><p>'+ response.ourBooks[i].author +'</p><p class="downloads"><span class="iconify" data-icon="ant-design:fire-filled"></span>&nbsp;&nbsp;'+ response.ourBooks[i].downloads +' Downloads</p><h6><span class="discount_price">Rs '+ response.ourBooks[i].price +'</span>&nbsp;&nbsp;<span class="price">Rs '+ response.ourBooks[i].discount_price +'</span></h6></div><div class="button"><button class="btn btn-primary d-flex justify-content-center align-items-center">Download Pdf</button></div></div></div>');
+                        }
+                    } else {
+                        document.getElementById('ourBooks').innerHTML = '';
+                    }
+                    if(response.popular.length != 0) {
+                        for(var i=0;i<response.popular.length;i++){
+                            var description = response.popular[i].description;
+                            var desc = description.replace(/<[^>]+>/g, '');
+                            var color;
+                            var icon;
+                            if(response.popular[i].isLiked == 1) {
+                                color = 'var(--highlight)';
+                                icon = 'bxs:like';
+                            } else {
+                                color = 'var(--sub-text)';
+                                icon = 'bx:like';
+                            }
+                            $('#slider2').append('<div class="col-lg-3 col-md-4 col-sm-6 col-12"><div class="box2" style="background-image: url(\''+ response.popular[i].cover_photo +'\');margin: 0;"><div class="inside_container"><div onclick="window.location.href=\'/each-blog/'+ response.popular[i].id +'\'"><p class="date">'+ response.popular[i].created_at.toString().slice(0,10) +'</p><h5>'+ response.popular[i].title +'</h5><p>'+ desc +'</p></div><div class="info"><p class="downloads" onclick="likeDislike(\''+ response.popular[i].id +'\')" style="color: '+ color +'" data-liked="'+ response.popular[i].isLiked +'" id="icon_update_'+ response.popular[i].id +'"><span class="iconify" id="icon_to_update_'+ response.popular[i].id +'" data-icon="'+ icon +'"></span>&nbsp;&nbsp;<span id="total_likes_'+ response.popular[i].id +'">'+ response.popular[i].totalLikes +'</span></p><p class="date"><span class="iconify" data-icon="akar-icons:comment" onclick="getComments(\''+ response.popular[i].id +'\',0)"></span>&nbsp;&nbsp;<span class="iconify" data-icon="ci:share" onclick="generateShareLink(\''+ response.popular[i].id +'\',\'blog\',\''+ ('/each-blog/'+ response.popular[i].id +'?item_id='+ response.popular[i].id +'') +'\',\''+ response.popular[i].share_url +'\')"></span></p></div></div></div></div>');
+                        }
+                    } else {
+                        document.getElementById('popularBlogs').innerHTML = '';
+                    }
+                    if(response.experts.length != 0){
+                    for(var i=0;i<response.experts.length;i++){
+                        $('#slider3').append('<div class="box" onclick="window.location.href=\'/expert-profile/'+ response.experts[i].id +'\'"><img src="'+ response.experts[i].profile_image +'"><div class="name"><h6>'+ response.experts[i].name +'</h6></div></div>');
+                    }
+                    } else {
+                        document.getElementById('ourExperts').innerHTML = '';
+                    }
+                    if(response.testimonials.length != 0){
+                    for(var i=0;i<response.testimonials.length;i++){
+                        $('#testimonials-items').append('<div class="carousel-item'+ (i==0 ? ' active' : '') +'"><div class="testimonial-card"><div class="profile"><div class="profile-image"><img src="'+ response.testimonials[i].profile_image +'" alt=""></div><div class="name"><h5>'+ response.testimonials[i].name +'</h5><p>'+ response.testimonials[i].tag_line +'</p></div></div><br><div id="message">'+ response.testimonials[i].message +'</div><div class="stars"><a><span class="iconify" data-icon="ant-design:star-filled" style="color: var(--highlight);"></span></a><a><span class="iconify" data-icon="ant-design:star-filled" style="color: var(--highlight);"></span></a><a><span class="iconify" data-icon="ant-design:star-filled" style="color: var(--highlight);"></span></a><a><span class="iconify" data-icon="ant-design:star-filled" style="color: var(--highlight);"></span></a><a><span class="iconify" data-icon="ant-design:star-filled" style="color: var(--highlight);"></span></a></div></div></div>');
+                    }
+                    } else {
+                        document.getElementById('testimonials').innerHTML = '';
+                    }
+                    document.getElementById('load').style.visibility="hidden";
+                },
+                error: function(err){
+                    if(isDevelopment) {
+                    console.log(err);
+                }
+                    alert('Some error occured !!');
+                }
+            });
+        }
+    }
+    setTimeout(() => {
+        getInitialData();
+    },500);
+</script>
+
+<%- include('../components/footer/website_footer.ejs') %>

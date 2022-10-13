@@ -1,0 +1,892 @@
+<%- include('../../components/header/header.ejs',{cssFile : 'adminPages',page:'Dashboard'}) %> 
+
+<div id="load"></div>
+
+<div class="alert alert-dismissible fade show" role="alert" id="success-alert">
+  <p id="alertMessage" style="margin: 0;">Edited successfully</p>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div class="modal fade" id="addSubscription" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Add Subscription</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <form onsubmit="addSubscription(event)" id="form" method="post" enctype="multipart/form-data" autocomplete="off">
+                  <div class="row">
+                      <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="form-group">
+                          <label for="users">User</label>
+                          <select class="form-control" id="users" style="margin-bottom: 10px;margin-top: 10px;" name="users" aria-label="Users Categories" required>
+                            <option value="">Select User</option>
+                          </select>
+                      </div>
+                      <% if(!bookPage) { %> 
+                        <div class="form-group">
+                          <label for="trainer_program_id" style="margin-top: 10px;">Trainer Programs</label>
+                            <select class="form-control" id="trainer_program_id" style="margin: 10px 0px;" name="trainer_program_id" aria-label="Time" required>
+                              <option value="">Select trainer program</option>
+                              <% trainer_programs.forEach((trainer_program,index) => { %>
+                                <option value="<%= trainer_program.id %>_<%= trainer_program.program_id %>"><%= trainer_program.trainerName %>, <%= trainer_program.programName %>, <%= trainer_program.session_type %>, <%= trainer_program.day_id %>, <%= trainer_program.session_id %>, <%= trainer_program.time_id %></option>
+                              <% }); %> 
+                            </select>
+                        </div>
+                      <% } else { %>
+                        <div class="form-group">
+                          <label for="item_id" style="margin-top: 10px;">Books</label>
+                            <select class="form-control" id="item_id" style="margin: 10px 0px;" name="book" aria-label="Time" required>
+                              <option value="">Select book</option>
+                              <% books.forEach((book,index) => { %>
+                                <option value="<%= book.id %>"><%= book.title %></option>
+                              <% }); %> 
+                            </select>
+                        </div>
+                      <% } %> 
+                      <div class="form-group">
+                          <label for="end_date" style="margin-top: 10px;">End Date</label>
+                          <input type="date" id="end_date" name="end_date" class="form-control" placeholder="Select end date" style="margin-top: 10px;" required>
+                      </div>
+                          <div class="button">
+                              <button type="submit" id="subscriptions_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin-top: 20px;">Add</button>
+                          </div>
+                      </div>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="editSubscription" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Edit Subscriptions</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <form onsubmit="saveSubscription(event)" class="edit_form" id="form_" method="post" enctype="multipart/form-data" autocomplete="off">
+                  <div class="row">
+                      <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="form-group">
+                            <label for="editsessions" style="margin-top: 10px;">Number of sessions</label>
+                            <input type="number" id="editsessions" name="editsessions" class="form-control" placeholder="Enter number of sessions" style="margin-top: 10px;" min="0" step="1" required>
+                        </div>
+                      <div class="form-group">
+                          <label for="editend_date" style="margin-top: 10px;">End Date</label>
+                          <input type="date" id="editend_date" name="editend_date" class="form-control" placeholder="Select end date" style="margin-top: 10px;" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="edit_subscription_pdf" style="margin: 10px 0px;">PDF</label>
+                        <input class="form-control" onchange="uploadPDF('edit')" style="height: unset;border-radius: 8px;" type="file" id="edit_subscription_pdf" name="edit_subscription_pdf" accept="application/pdf">
+                    </div>
+                    <div id="editpreview_pdf">
+                        
+                    </div>
+                          <div class="button">
+                              <button type="submit" id="subscriptions_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin-top: 20px;">Save</button>
+                          </div>
+                      </div>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="searchSubscriptions" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title">Search subscriptions</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div>
+              <form action="<%- (bookPage ? '/admin/subscriptions/getSearchBookSubscription' : '/admin/subscriptions/getSearchSubscriptions') %>" method="get" class="search-form">
+                  <div class="row">
+                      <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="padding: 0px 5px !important;">
+                        <div class="form-group">
+                          <label for="userName" style="margin-top: 10px;">User name</label>
+                          <input type="text" class="form-control" id="userName" name="userName" placeholder="Search by user name" value="<%= userName %>">
+                        </div>
+                        <div class="form-group">
+                          <label for="dateFrom" style="margin-top: 10px;">Date From</label>
+                          <input type="date" class="form-control" id="dateFrom" name="dateFrom" placeholder="Select from date" value="<%= dateFrom %>">
+                        </div>
+                        <% if(!bookPage) { %> 
+                          <div class="form-group">
+                            <label for="trainer_id" style="margin-top: 10px;">Trainers</label>
+                              <select class="form-control" id="trainer_id" style="margin: 10px 0px;" name="trainer" aria-label="Trainer">
+                                <% if(trainer.length != 0) {%>
+                                  <option value="<%= trainer %>"><%= trainer %></option>
+                                <% } else { %>
+                                  <option value="">Select trainer</option>
+                                <% } %>
+                                <% trainers.forEach((trainer,index) => { %>
+                                  <option value="<%= trainer.name %>"><%= trainer.name %></option>
+                                <% }); %> 
+                              </select>
+                          </div>
+                            <div class="form-group">
+                              <label for="day_id" style="margin-top: 10px;">Days</label>
+                                <select class="form-control" id="day_id" style="margin: 10px 0px;" name="dayId" aria-label="Days">
+                                  <% if(dayId.length != 0) {%>
+                                    <option value="<%= dayId  %>"><%= dayId  %></option>
+                                  <% } else { %>
+                                    <option value="">Select day</option>
+                                  <% } %>
+                                  <% days.forEach((day,index) => { %>
+                                    <option value="<%= day.value %>"><%= day.value %></option>
+                                  <% }); %> 
+                                </select>
+                            </div>
+                            <div class="form-group">
+                              <label for="session_id" style="margin-top: 10px;">Sessions</label>
+                                <select class="form-control" id="session_id" style="margin: 10px 0px;" name="sessionId" aria-label="Sessions">
+                                  <% if(sessionId.length != 0) {%>
+                                    <option value="<%= sessionId %>"><%= sessionId %></option>
+                                  <% } else { %>
+                                    <option value="">Select session</option>
+                                  <% } %>
+                                  <% sessions.forEach((session,index) => { %>
+                                    <option value="<%= session.days %>"><%= session.days %></option>
+                                  <% }); %> 
+                                </select>
+                            </div>
+                          <% } %>
+                      </div>
+                      <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="padding: 0px 5px !important;">
+                        <div class="form-group">
+                          <label for="phoneNumber" style="margin-top: 10px;">Phone number</label>
+                          <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="Search by phone number" value="<%= phoneNumber %>">
+                        </div>
+                        <div class="form-group">
+                          <label for="dateTo" style="margin-top: 10px;">Date To</label>
+                          <input type="date" class="form-control" id="dateTo" name="dateTo" placeholder="Select to date" value="<%= dateTo %>">
+                        </div>
+                        <% if(!bookPage) { %> 
+                          <div class="form-group">
+                            <label for="session_type" style="margin-top: 10px;">Session Type</label>
+                              <select class="form-control" id="session_type" style="margin: 10px 0px;" name="sessionType" aria-label="Session Type">
+                                <% if(sessionType.length != 0) {%>
+                                  <option value="<%= sessionType  %>"><%= sessionType  %></option>
+                                <% } else { %>
+                                  <option value="">Select session type</option>
+                                <% } %>
+                                <option value="SINGLE">SINGLE</option>
+                                <option value="PACKAGE">PACKAGE</option>
+                              </select>
+                          </div>
+                          <div class="form-group">
+                            <label for="time_id" style="margin-top: 10px;">Time</label>
+                              <select class="form-control" id="time_id" style="margin: 10px 0px;" name="timingId" aria-label="Time">
+                                  <% if(timingId.length != 0) {%>
+                                    <option value="<%= timingId  %>"><%= timingId  %></option>
+                                  <% } else { %>
+                                    <option value="">Select time</option>
+                                  <% } %>
+                                <% timings.forEach((time,index) => { %>
+                                  <option value="<%= time.value %>"><%= time.value %></option>
+                                <% }); %> 
+                              </select>
+                          </div>
+                          <div class="form-group">
+                            <label for="program_id" style="margin-top: 10px;">Programs</label>
+                              <select class="form-control" id="program_id" style="margin: 10px 0px;" name="program" aria-label="Time">
+                                  <% if(program.length != 0) {%>
+                                    <option value="<%= program  %>"><%= program  %></option>
+                                  <% } else { %>
+                                    <option value="">Select Program</option>
+                                  <% } %>
+                                <% programs.forEach((program,index) => { %>
+                                  <option value="<%= program.title %>"><%= program.title %></option>
+                                <% }); %> 
+                              </select>
+                          </div>
+                        <% } %>
+                      </div>
+                      <div class="col-lg-12 col-md-12 col-sm-12 col-12" style="padding: 0px 5px !important;">
+                        <% if(bookPage) { %> 
+                          <div class="form-group">
+                            <label for="book_id" style="margin-top: 10px;">Books</label>
+                              <select class="form-control" id="book_id" style="margin: 10px 0px;" name="book" aria-label="Time">
+                                  <% if(book.length != 0) {%>
+                                    <option value="<%= book %>"><%= book %></option>
+                                  <% } else { %>
+                                    <option value="">Select book</option>
+                                  <% } %>
+                                <% books.forEach((book,index) => { %>
+                                  <option value="<%= book.title %>"><%= book.title %></option>
+                                <% }); %> 
+                              </select>
+                          </div>
+                        <% } %>
+                          <div class="button">
+                              <button type="submit" id="book_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin-top: 20px;">Search</button>
+                          </div>
+                      </div>
+                  </div>
+              </form>
+            </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="container-fluid" id="main">
+    <div class="top" id="content">
+        <div class="title">
+            <h5>Subscriptions</h5>
+            <p>See all the subscriptions here.</p>
+        </div>
+        <div class="button">
+          <button type="button" id="settings" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchSubscriptions" aria-expanded="false"><span class="iconify" data-icon="akar-icons:search"></span></button>
+        </div>
+    </div>
+    <br>
+    <div class="content_table">
+        <div class="search_bar">
+                <div class="row">
+                    <div class="col-lg-8 col-md-6 d-flex align-items-center">
+                      <div class="form-group search">
+                          <select class="form-control" style="height: 100%; border: 0;" id="page" onchange="changeUrl(this.value)" name="page" aria-label="Page">
+                            <% if(bookPage) { %> 
+                              <option value="program">Program</option>
+                              <option value="book" selected>Book</option>
+                            <% } else { %> 
+                              <option value="program" selected>Program</option>
+                              <option value="book">Book</option>
+                            <% } %> 
+                          </select>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 d-flex align-items-center justify-content-md-end justify-content-start">
+                      <button id="add" class="btn btn-primary" onclick="generatePDF()"><span class="iconify" data-icon="bx:category"></span>&nbsp;&nbsp;Generate Invoice</button>
+                      <% if(!searchPage) { %>
+                        <button class="btn btn-primary addButton" onclick="getUsers()"><span class="iconify" data-icon="carbon:add-alt"></span>&nbsp;&nbsp;Add Subscription</button>
+                      <% } else { %>
+                        <button class="btn btn-primary" onclick="location.href='/admin/subscriptions?page=1'">Reload</button>
+                      <% } %>
+                    </div>
+                </div>
+        </div>
+        <br>
+        <table id="printTable">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">USERNAME</th>
+                <th scope="col">PHONE NUMBER</th>
+                <% if(!bookPage) { %> 
+                  <th scope="col">PROGRAM</th>
+                  <th scope="col">TRAINER</th>
+                  <th scope="col">PRICE</th>
+                  <th scope="col">DAYS</th>
+                  <th scope="col">SESSIONS</th>
+                  <th scope="col">TIMINGS</th>
+                  <th scope="col">SESSIONS LEFT</th>
+                  <th scope="col">SESSION TYPE</th>
+                <% } else { %>
+                  <th scope="col">PRICE</th>
+                  <th scope="col">BOOK</th>
+                <% } %>  
+                <th scope="col">DATE PURCHASED</th>
+                <th scope="col" id="optionTag">OPTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if(data.length == 0) { %> 
+                <td>No Subscriptions present</td>
+            <% } else { %>
+                <% data.forEach((subscription,index) => { %> 
+                    <tr>
+                      <th scope="row"><%= (index+1+metadata.offset) %></th>
+                      <td><%= subscription.userName %></td>
+                      <td><%= subscription.phoneNumber %></td>
+                      <% if(!bookPage) { %> 
+                        <td><%= subscription.programName %></td>
+                        <td><%= subscription.trainerName %></td>
+                        <td><%= subscription.price %></td>
+                        <td><%= subscription.day_id %></td>
+                        <td><%= subscription.session_id %></td>
+                        <td><%= subscription.time_id %></td>
+                        <td><%= parseInt(subscription.session_id) - parseInt(subscription.session_count) %></td>
+                        <td><%= subscription.session_type %></td>
+                      <% } else { %>
+                        <td><%= subscription.price %></td>
+                        <td><%= subscription.title %></td>
+                      <% } %>  
+                      <td><%= subscription.date_purchased.toString().substring(0,15) %></td>
+                      <td>
+                        <div class="options">
+                            <% if(!bookPage) { %> 
+                              <a class="edit" onclick="editSubscription('<%= subscription.id %>','<%= subscription.session_count %>','<%= subscription.end_date %>','<%= subscription.pdf_path %>')"><span class="iconify" data-icon="akar-icons:edit"></span></a>
+                            <% } %>  
+                            <a class="delete" onclick="deleteSubscription('<%= subscription.id %>')"><span class="iconify" data-icon="ant-design:delete-outlined"></span></a>
+                        </div>
+                      </td>
+                    </tr>
+                <% }); %> 
+            <% } %> 
+            </tbody>
+          </table>
+          <% if(!searchPage && data.length != 0 && metadata.total_pages > 1) { %> 
+            <div class="pages">
+                <div class="total_pages">
+                    <div class="form-group">
+                        <input type="number" class="form-control" id="pageNumber" name="pageNumber" placeholder="Total pages = <%= metadata.total_pages %> ">
+                    </div>
+                      <% if(bookPage) { %>
+                        <button class="btn btn-primary" onclick="goToBookPage()">Go</button>
+                      <% } else { %> 
+                        <button class="btn btn-primary" onclick="goToPage()">Go</button>
+                      <% } %> 
+                </div>
+                <div class="inner_pages">
+                    <% if(metadata.page == 1) { %>
+                        <a id="prev" class="disabled">Prev</a>
+                    <% } else { %>
+                        <% if(bookPage) { %> 
+                          <a id="prev" onclick="location.href='/admin/subscriptions/book?page=<%= metadata.page - 1 %>'">Prev</a>
+                        <% } else { %> 
+                          <a id="prev" onclick="location.href='/admin/subscriptions?page=<%= metadata.page - 1 %>'">Prev</a>
+                        <% } %> 
+                    <% } %>
+                    <% if(metadata.total_pages >= 3) { %> 
+                        <% if(metadata.page == metadata.total_pages) { %> 
+                          <% if(bookPage) { %> 
+                            <a class="page" onclick="location.href='/admin/subscriptions/book?page=<%= metadata.page - 2 %>'"><%= metadata.page - 2 %></a>
+                            <a class="page" onclick="location.href='/admin/subscriptions/book?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/subscriptions/book?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                          <% } else { %> 
+                            <a class="page" onclick="location.href='/admin/subscriptions?page=<%= metadata.page - 2 %>'"><%= metadata.page - 2 %></a>
+                            <a class="page" onclick="location.href='/admin/subscriptions?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/subscriptions?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                          <% } %> 
+                        <% } else if(metadata.page == (metadata.total_pages - 1)) { %>
+                          <% if(bookPage) { %> 
+                            <a class="page" onclick="location.href='/admin/subscriptions/book?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/subscriptions/book?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/subscriptions/book?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                          <% } else { %> 
+                            <a class="page" onclick="location.href='/admin/subscriptions?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/subscriptions?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/subscriptions?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                          <% } %> 
+                        <% } else { %>
+                          <% if(bookPage) { %> 
+                            <a class="page selected_page" onclick="location.href='/admin/subscriptions/book?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/subscriptions/book?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                            <a class="page" onclick="location.href='/admin/subscriptions/book?page=<%= metadata.page + 2 %>'"><%= metadata.page + 2 %></a>
+                          <% } else { %> 
+                            <a class="page selected_page" onclick="location.href='/admin/subscriptions?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/subscriptions?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                            <a class="page" onclick="location.href='/admin/subscriptions?page=<%= metadata.page + 2 %>'"><%= metadata.page + 2 %></a>
+                          <% } %>
+                        <% } %>
+                    <% } else if(metadata.total_pages == 2) { %>
+                        <% if(metadata.page == metadata.total_pages) { %> 
+                          <% if(bookPage) { %> 
+                            <a class="page" onclick="location.href='/admin/subscriptions/book?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/subscriptions/book?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                          <% } else { %> 
+                            <a class="page" onclick="location.href='/admin/subscriptions?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/subscriptions?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                          <% } %>
+                        <% } else if(metadata.page == (metadata.total_pages - 1)) { %>
+                          <% if(bookPage) { %> 
+                            <a class="page selected_page" onclick="location.href='/admin/subscriptions/book?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/subscriptions/book?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                          <% } else { %> 
+                            <a class="page selected_page" onclick="location.href='/admin/subscriptions?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/subscriptions?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                          <% } %>
+                        <% } %>
+                    <% } else if(metadata.total_pages == 1) { %>
+                        <% if(bookPage) { %> 
+                          <a class="page selected_page" onclick="location.href='/admin/subscriptions/book?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                        <% } else { %> 
+                          <a class="page selected_page" onclick="location.href='/admin/subscriptions?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                        <% } %> 
+                    <% } %>
+                    <% if(metadata.page == metadata.total_pages) { %> 
+                        <a id="next" class="disabled">Next</a>
+                    <% } else { %>
+                        <% if(bookPage) { %> 
+                          <a id="next" onclick="location.href='/admin/subscriptions/book?page=<%= metadata.page + 1 %>'">Next</a>
+                        <% } else { %> 
+                          <a id="next" onclick="location.href='/admin/subscriptions?page=<%= metadata.page + 1 %>'">Next</a>
+                        <% } %> 
+                    <% } %>
+                </div>
+            </div>
+          <% } %> 
+    </div>
+</div>
+
+<!-- Common.js -->
+<script src="/javascripts/common.js"></script>
+<!---->
+
+<script>
+
+var dayTimeModal;
+
+$(function(){
+  // bootstraps modals
+    editModal = new bootstrap.Modal(document.getElementById('editSubscription'));
+    addModal = new bootstrap.Modal(document.getElementById('addSubscription'));
+});
+  
+  /* Functions */
+  //Delete  Pdf
+  function deleteCurrentPdf(path) {
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    if(confirm('Do you want to delete it?') == true){
+        console.log(path);
+        if(path != '/images/extra/nopreview.jpeg') {
+            $.ajax({
+                url : '/admin/common/deletePDF',
+                dataType: "json",
+                type: "POST",
+                data: {
+                    path:path
+                },
+                success: function(response){
+                    // alert('Removed Successfully');
+                    if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-success');
+                document.getElementById('alertMessage').innerHTML = 'Removed successfully';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+                    document.getElementById('pdf_'+path).remove();
+                },
+                error: function(err){
+                    console.log(err);
+                    // alert('Some error occured !!');
+                    if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-warning');
+                document.getElementById('alertMessage').innerHTML = 'Please fill all the values first.';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+                }
+            });
+        }
+    } 
+}
+
+  //Upload PDF
+  function uploadPDF(value) {
+    document.getElementById('load').style.visibility="visible";
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+      if(value != 'edit') {
+        var imageFiles = document.getElementById('subscription_pdf').files;
+        var form = new FormData();
+        for(var i=0;i<imageFiles.length;i++){
+            if(imageFiles[i] != undefined){
+                form.append(`pdf`, imageFiles[i]);
+            }
+        }
+        $.ajax({
+            url : "/admin/common/savePdf",
+            type: "POST",
+            cache: false,
+            contentType: false,
+            processData: false,
+            data : form,
+            success: function(response){
+                    console.log(response);
+                for(var i=0;i<response.files.length;i++) {
+                    var path = response.files[i].path.slice(6,response.files[i].path.length);
+                    $('#preview_pdf').append('<div class="col-12" id="pdf_'+ path +'"><a href="'+ path +'">'+ path +'</a> <a onclick="deleteCurrentPdf(\''+ path +'\')" style="color:red;margin-left:20px"><span class="iconify" data-icon="akar-icons:cross" style="color:red;width:30px;height:30px"></span></a><input type="hidden" class="pdf_path" name="pdf_path" id="pdf_path_'+ path +'" value="'+ path +'"></div>');
+                }
+                document.getElementById('subscription_pdf').value='';
+                document.getElementById('load').style.visibility="hidden";
+            },
+            error: function(err){
+                console.log(err.status);
+                if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-warning');
+                document.getElementById('alertMessage').innerHTML = 'Please fill all the values first.';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+            }
+        });
+      } else {
+        var imageFiles = document.getElementById('edit_subscription_pdf').files;
+        var form = new FormData();
+        var id = document.getElementsByClassName('edit_form')[0].getAttribute('id').split('_')[1];
+        for(var i=0;i<imageFiles.length;i++){
+            if(imageFiles[i] != undefined){
+                form.append(`pdf`, imageFiles[i]);
+            }
+        }
+        $.ajax({
+            url : `/admin/common/saveEditPdf/${id}/subscription-pdf`,
+            type: "POST",
+            cache: false,
+            contentType: false,
+            processData: false,
+            data : form,
+            success: function(response){
+                    console.log(response);
+                for(var i=0;i<response.files.length;i++) {
+                    var path = response.files[i].path.slice(6,response.files[i].path.length);
+                    $('#editpreview_pdf').append('<div class="col-12" id="pdf_'+ path +'"><a href="'+ path +'">'+ path +'</a> <a onclick="deleteCurrentPdf(\''+ path +'\')" style="color:red;margin-left:20px"><span class="iconify" data-icon="akar-icons:cross" style="color:red;width:30px;height:30px"></span></a></div>');
+                    document.getElementById('editpreview_pdf').setAttribute('data-pdfPath',path);
+                }
+                document.getElementById('edit_subscription_pdf').value='';
+                document.getElementById('load').style.visibility="hidden";
+            },
+            error: function(err){
+                console.log(err.status);
+                if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-warning');
+                document.getElementById('alertMessage').innerHTML = 'Please fill all the values first.';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+            }
+        });
+      }
+  }
+
+  function getUsers() {
+    var select = document.getElementById("users");
+    var length = select.options.length;
+    for (var i = length-1; i >= 0; i--) {
+        select.options[i] = null;
+    }   
+
+    var option = document.createElement("option");
+    option.text = "Select Users";
+    option.value= "";
+    select.add(option);
+
+    $.ajax({
+            url : `/admin/users/getUserData`,
+            dataType: "json",
+            type: "GET",
+            success: function(response){
+              console.log(response);
+                if(response.data.length != 0){
+                  for(var i=0;i<response.data.length;i++){
+                    var option = document.createElement("option");
+                            option.text = response.data[i].name + '-' + response.data[i].phoneNumber;
+                            option.value= response.data[i].id;
+                            select.add(option);
+                  }
+                } else {
+                    var option = document.createElement("option");
+                        option.text = "No Users present";
+                        option.value= "";
+                        select.add(option);
+                }
+                  // document.getElementById('tableLoader').style.display = 'none';
+                $('#users').selectize({
+                    sortField: 'text'
+                });
+
+                $('#trainer_program_id').selectize({
+                    sortField: 'text'
+                });
+
+                addModal.toggle();
+            },
+            error: function(err){
+                    console.log(err);
+                alert('Some error occured !!');
+            }
+        });
+  }
+
+  function generatePDF() {
+    // window.print();
+    var divToPrint=document.getElementById("printTable");
+  //  document.getElementById("optionTag").style.display = 'none !important';
+   newWin= window.open("");
+   newWin.document.write(divToPrint.outerHTML);
+   newWin.print();
+   newWin.close();
+  }
+
+  function changeUrl(value) {
+    if(value == 'program') {
+      location.href = `/admin/subscriptions?page=1`;
+    } else {
+      location.href = `/admin/subscriptions/book?page=1`;
+    }
+   }
+
+  //Go to page 
+  function goToPage() {
+      var page = document.getElementById('pageNumber').value;
+      var total_pages = '<%- metadata.total_pages %>';
+      if(page.length != 0) {
+          if(parseInt(page) > parseInt(total_pages)){
+              alert('Please enter a page number less than total pages');
+          } else if(parseInt(page) == 0) {
+              alert('Please enter a page number greater than 0');
+          } else {
+              location.href=`/admin/subscriptions?page=${page}`;
+          }
+      } else {
+          alert('Please enter a page number first');
+      }
+  }
+
+  //Go to book page 
+  function goToBookPage() {
+      var page = document.getElementById('pageNumber').value;
+      var total_pages = '<%- metadata.total_pages %>';
+      if(page.length != 0) {
+          if(parseInt(page) > parseInt(total_pages)){
+              alert('Please enter a page number less than total pages');
+          } else if(parseInt(page) == 0) {
+              alert('Please enter a page number greater than 0');
+          } else {
+              location.href=`/admin/subscriptions/book?page=${page}`;
+          }
+      } else {
+          alert('Please enter a page number first');
+      }
+  }
+
+//To ISO String
+function toIsoString(date) {
+    var tzo = -date.getTimezoneOffset(),
+        dif = tzo >= 0 ? '+' : '-',
+        pad = function(num) {
+            return (num < 10 ? '0' : '') + num;
+        };
+  
+    return date.getFullYear() +
+        '-' + pad(date.getMonth() + 1) +
+        '-' + pad(date.getDate()) +
+        'T' + pad(date.getHours()) +
+        ':' + pad(date.getMinutes()) +
+        ':' + pad(date.getSeconds()) +
+        dif + pad(Math.floor(Math.abs(tzo) / 60)) +
+        ':' + pad(Math.abs(tzo) % 60);
+  }
+
+  //Edit Subscription
+  function editSubscription(id,session_count,end_date,pdf) {
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    var date = new Date(end_date);
+      document.getElementById('editsessions').value = session_count;
+      document.getElementById('editend_date').value = toIsoString(date).split('T')[0];
+      document.getElementById('editpreview_pdf').innerHTML = "";
+      var path = pdf;
+      if(pdf.length !=0){
+        $('#editpreview_pdf').append('<div class="col-12" id="pdf_'+ path +'"><a href="'+ path +'">'+ path +'</a> <a onclick="deleteCurrentPdf(\''+ path +'\')" style="color:red;margin-left:20px"><span class="iconify" data-icon="akar-icons:cross" style="color:red;width:30px;height:30px"></span></a></div>');
+        document.getElementById('editpreview_pdf').setAttribute('data-pdfPath',path);
+      }
+      document.getElementsByClassName('edit_form')[0].setAttribute('id',`form_${id}`);
+      editModal.toggle();
+  }
+
+  //Delete Subscription
+  function deleteSubscription(id) {
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    if(confirm('Do you want to delete it?') == true){
+      $.ajax({
+            url : '/admin/subscriptions/deleteSubscription',
+            dataType: "json",
+            type: "POST",
+            data: {
+                id:id
+            },
+            success: function(response){
+              if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-success');
+                document.getElementById('alertMessage').innerHTML = 'Subscription deleted successfully';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                  $("#success-alert").slideUp(500);
+                });
+              }
+              setTimeout(() => {
+                location.reload();
+              },1000);
+            },
+            error: function(err){
+                    console.log(err);
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+      });
+    } 
+  }
+
+  var bookPage = '<%- bookPage %>';
+
+  //Add subscription
+  function addSubscription(event) {
+    event.preventDefault();
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    var item_id = bookPage == 'false' ? document.getElementById('trainer_program_id').value.split('_')[1] : document.getElementById('item_id').value;
+    var item_category = bookPage == 'false' ? 'program' : 'book';
+    var trainer_program_id = bookPage == 'false' ? document.getElementById('trainer_program_id').value.split('_')[0] : '';
+    var end_date = document.getElementById('end_date').value;
+    var user_id = document.getElementById('users').value;
+    // console.log(typeof bookPage);
+    $.ajax({
+                url : bookPage == 'false' ? '/admin/subscriptions/addSubscription' : '/admin/subscriptions/addBookSubscription',
+                dataType: "json",
+                type: "POST",
+                data: {
+                  item_id:item_id,
+                  item_category:item_category,
+                  trainer_program_id:trainer_program_id,
+                  end_date:end_date,
+                  user_id:user_id
+                },
+                success: function(response){
+                    if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-success');
+                        document.getElementById('alertMessage').innerHTML = 'Subscription added successfully';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+                    setTimeout(() => {
+                        location.reload();
+                    },1000);
+                },
+                error: function(err){
+                    console.log(err);
+                    if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+                }
+            });
+    // console.log(data);
+  }
+
+  //Save Subscription
+  function saveSubscription(event) {
+    event.preventDefault();
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    var end_date = document.getElementById('editend_date').value;
+    var sessions = document.getElementById('editsessions').value;
+    var pdf_path = document.getElementById('editpreview_pdf').getAttribute('data-pdfPath');
+    var id = document.getElementsByClassName('edit_form')[0].getAttribute('id').split('_')[1];
+    $.ajax({
+                url : '/admin/subscriptions/saveSubscription',
+                dataType: "json",
+                type: "POST",
+                data: {
+                  session_count:sessions,
+                  end_date:end_date,
+                  id:id,
+                  pdf_path:pdf_path,
+                },
+                success: function(response){
+                    if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-success');
+                        document.getElementById('alertMessage').innerHTML = 'Subscription edited successfully';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+                    setTimeout(() => {
+                        location.reload();
+                    },1000);
+                },
+                error: function(err){
+                    console.log(err);
+                    if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+                }
+            });
+    // console.log(data);
+  }
+
+</script>
+
+<%- include('../../components/footer/footer.ejs') %> 

@@ -42,6 +42,16 @@ html ,body {
     color: var(--rich-black);
 }
 
+body::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+}
+
+body::-webkit-scrollbar-thumb {
+    width: 0 !important;
+    height: 0 !important;
+}
+
 .row {
     width: 100% !important;
     margin: 0 !important;
@@ -70,6 +80,7 @@ a {
 
 *:focus {
     outline: 0 none !important;
+    border: 2px solid var(--highlight) !important;
 }
 
 textarea:hover, 
@@ -89,4 +100,12 @@ select:focus,
     outline:0px !important;
     -webkit-appearance:none;
     box-shadow: none !important;
+}
+
+input::placeholder {
+    font-size: 12px;
+}
+
+textarea::placeholder {
+    font-size: 12px;
 }

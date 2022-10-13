@@ -1,0 +1,130 @@
+<%- include('../components/header/website_header.ejs',{cssFile : 'index',page:page}) %> 
+
+<div id="load"></div>
+
+<div class="main-container">
+    <div class="container-fluid hero-section">
+        <div class="container d-flex align-items-end">
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-flex align-items-center justify-content-center justify-content-md-start">
+                    <div class="heading text-center text-lg-start text-md-start">
+                        <h4>Contact Us</h4>
+                        <h2>If you need help with anything<br>Please feel free to get in touch!</h2>
+                        <a href="#" style="color: var(--rich-black) !important;border: 0 !important;">
+                            <span class="iconify" data-icon="akar-icons:location"></span>&nbsp;&nbsp;
+                            <div>
+                                <span>Address</span><br>
+                                <span>Sector 12 Kharghar, Navi Mumbai,<br>Maharashtra, India - 410210</span>
+                            </div>
+                        ​</a>
+                        <a href="mailto:contact@healfit.in" style="color: var(--rich-black) !important;border: 0 !important;">
+                            <span class="iconify" data-icon="fluent:mail-16-regular"></span>&nbsp;&nbsp;
+                            <div>
+                                <span>Send us an email</span><br>
+                                <span>contact@healfit.in</span>
+                            </div>
+                        </a>
+                        <a href="https://wa.me/+918009555144" target="_blank" style="color: var(--rich-black) !important;border: 0 !important;">
+                            <span class="iconify" data-icon="bxl:whatsapp"></span>&nbsp;&nbsp;
+                            <div>
+                                <span>Whatsapp us on</span><br>
+                                <span>+91-8009555144</span>
+                            </div>
+                        ​</a>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-flex align-items-center">
+                    <div class="contact_form w-100">
+                        <form onsubmit="sendEmail(event)" method='GET' encType='text/plain' name='EmailFrom'>
+                            <div class="form-group">
+                                <label for="name" style="margin: 0px 0px 10px 0px;">Name <span style="color: var(--warning);">*</span></label>
+                                <input type="text" id="name" name="name" class="form-control" placeholder="Enter your name here.." required>
+                              </div>
+                              <div class="form-group">
+                                <label for="sentemail">Email</label>
+                                <input type="email" id="sentemail" name="sentemail" class="form-control" placeholder="Enter your email here.." required>
+                              </div>
+                              <div class="form-group">
+                                <label for="phone">Phone number</label>
+                                <div class="input-group search" style="height: 50px !important;">
+                                    <a style="background-color: var(--background);">+91</a>
+                                    <input type="text" id="phone" name="phone" class="form-control" placeholder="Enter 10 digit phone number here.." maxlength="10" minlength="10" style="border: 0;height: 100%;margin: 0;outline: 0 !important;" required>
+                                </div>
+                              </div>
+                                <div class="form-group">
+                                    <label for="message">Message <span style="color: var(--warning);">*</span></label>
+                                    <textarea class="form-control" style="height: unset;" id="body" name="body" rows="4" placeholder="Enter message here.." required></textarea>
+                                </div>
+                              <div class="button">
+                                  <button type="submit" id="book_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin-top: 30px;">Send Message</button>
+                              </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <%- include('footer.ejs',{showContactExpert: true}) %> 
+</div>
+
+  <script>
+    var isDevelopment = '<%- isDevelopment %>' == 'true' ? true : false;
+    function sendEmail(event) {
+        event.preventDefault();
+        document.getElementById('load').style.visibility="visible";
+        var name = document.getElementById('name').value;
+        var email = document.getElementById('sentemail').value;
+        var phone = document.getElementById('phone').value;
+        var body = document.getElementById('body').value;
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('currentUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        $.ajax({
+            url:`/api/sendMail`,
+            dataType: "json",
+            type:"POST",
+            headers: {
+                'token':token ? token : 'testing',
+                'platform': 'WEB'
+            },
+            data: {
+                name:name,
+                email:email,
+                phone:phone,
+                message:body
+            },
+            success: function(info){
+                document.getElementById('load').style.visibility="hidden";
+                alert('Sent successfully');
+                location.reload();
+            },
+            error: function(err){
+                console.log(err.status);
+                alert('Some Error occurred!');
+                // location.reload();
+            }
+        });
+        // window.open(`mailto:contact@healfit.in?name=${name}&email=${email}&subject=Contact%20form%20response&body=Phone%20number%20:%20${phone + '%0Amessage:%20' + body}`,'_blank');
+    }
+  </script>
+
+<%- include('../components/footer/website_footer.ejs') %>

@@ -1,10 +1,85 @@
-<%- include('../../components/header/header.ejs',{cssFile : 'adminPages'}) %> 
+<%- include('../../components/header/header.ejs',{cssFile : 'adminPages',page:'Dashboard'}) %> 
 
 <div id="load"></div>
 
-<div>
-    <%= data.name %> 
-    <%= data.phoneNumber %> 
+<div class="container-fluid" id="main">
+    <button class="btn btn-primary" onclick="history.back()">Go back</button>
+    <br>
+    <div class="profile_data" id="content">
+        <div class="row">
+            <div class="col-lg-2 col-md-12 col-sm-12 col-12 d-flex align-items-center justify-content-center">
+                <div class="text-center">
+                    <div class="profile-image" style="width: 100px;height: 100px;">
+                        <img src="<%= data.profile_image %>" alt="" style="width: 100px;height: 100px;">
+                    </div>
+                    <% if(data.status == 'ACTIVE') { %> 
+                        <a class="success">ACTIVE</a>
+                    <% } else if(data.status == 'BLOCKED') { %> 
+                        <a class="blocked">BLOCKED</a>
+                    <% } else { %>
+                        <a class="warning">DELETED</a>
+                    <% } %> 
+                </div>
+            </div>
+            <div class="col-lg-10 col-md-12 col-sm-12 col-12 d-flex align-items-center justify-content-center justify-content-lg-start">
+                <div class="row">
+                    <div class="col-lg-4 col-md-12 col-12">
+                        <p class="text-lg-start text-center">Name:</p>
+                        <h5 class="text-lg-start text-center"><%= data.name %></h5>
+                    </div>
+                    <div class="col-lg-4 col-md-12 col-12">
+                        <p class="text-lg-start text-center">Phone Number:</p>
+                        <h5 class="text-lg-start text-center"><a href="tel:<%= data.phoneNumber %>"><%= data.phoneNumber %></a></h5>
+                    </div>
+                    <div class="col-lg-4 col-md-12 col-12">
+                        <p class="text-lg-start text-center">Email:</p>
+                        <h5 class="text-lg-start text-center"><%= data.email %></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="data_row">
+        <div class="row">
+            <div class="col-lg-2 col-md-2 col-sm-4 col-6 d-flex align-items-center justify-content-center">
+                <div class="profile_data" style="margin: 10px 10px;">
+                    <p class="text-center">Gender:</p>
+                    <h5 class="text-center"><%= data.gender %></h5>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-4 col-6 d-flex align-items-center justify-content-center">
+                <div class="profile_data" style="margin: 10px 10px;">
+                    <p class="text-center">Age:</p>
+                    <h5 class="text-center"><%= data.age %></h5>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-4 col-6 d-flex align-items-center justify-content-center">
+                <div class="profile_data" style="margin: 10px 10px;">
+                    <p class="text-center">Weight:</p>
+                    <h5 class="text-center"><%= data.weight %> kg</h5>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-4 col-6 d-flex align-items-center justify-content-center">
+                <div class="profile_data" style="margin: 10px 10px;">
+                    <p class="text-center">Target:</p>
+                    <h5 class="text-center"><%= data.target_weight %> kg</h5>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-4 col-6 d-flex align-items-center justify-content-center">
+                <div class="profile_data" style="margin: 10px 10px;">
+                    <p class="text-center">Height:</p>
+                    <h5 class="text-center"><%= data.height %> f'i</h5>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-4 col-6 d-flex align-items-center justify-content-center">
+                <div class="profile_data" style="margin: 10px 10px;">
+                    <p class="text-center">Device:</p>
+                    <h5 class="text-center"><%= data.device %></h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 </div>
 
 <%- include('../../components/footer/footer.ejs') %> 

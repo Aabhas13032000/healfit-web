@@ -1,0 +1,138 @@
+<%- include('../components/header/website_header.ejs',{cssFile : 'index',page:page}) %> 
+
+<div id="load"></div>
+
+<div class="main-container eachExpert">
+    <br><br><br><br>
+    <div class="container" style="padding: 0;">
+        <div class="row">
+            <div class="col-lg-4 col-md-6 col-sm-12 col-12">
+                <div class="profileImage">
+                    <div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner" id="profile-slider">
+                        </div>
+                      </div>
+                </div>
+            </div>
+            <div class="col-lg-8 col-md-6 col-sm-12 col-12" id="info">
+                <div class="name" id="name">
+
+                </div>
+                <h4>Vision</h4>
+                <div class="vision" id="vision">
+
+                </div>
+                <h4>About</h4>
+                <div class="about" id="about">
+
+                </div>
+                <h4>Qualification</h4>
+                <div class="qualification" id="qualification">
+
+                </div>
+                <h4>Expertise</h4>
+                <div class="expertise" id="expertise">
+
+                </div>
+            </div>
+            <div class="col-12" id="trainerPrograms">
+                <br>
+                <div class="heading" id="heading">
+                    <h5>Programs</h5>
+                </div>
+                <br>
+                <div class="row experts" id="morePrograms">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <%- include('footer.ejs',{showContactExpert: true}) %>
+</div>
+
+<script>
+    var isDevelopment = '<%- isDevelopment %>' == 'true' ? true : false;
+    
+    function getEachExpert() {
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('currentUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        document.getElementById('load').style.visibility="visible";
+        document.getElementById('about').innerHTML = '';
+        document.getElementById('vision').innerHTML = '';
+        document.getElementById('qualification').innerHTML = '';
+        document.getElementById('expertise').innerHTML = '';
+        document.getElementById('profile-slider').innerHTML = '';
+        document.getElementById('name').innerHTML = '';
+        var id = '<%- id %>';
+        $.ajax({
+            url : `/api/experts/getEachTrainers?id=${id}`,
+            dataType: "json",
+            type: "GET",
+            headers: {
+                'token':token ? token : 'testing',
+                'Content-Type':'application/json',
+                'platform': 'WEB'
+            },
+            success: function(response){
+              if(isDevelopment) {
+                    console.log(response);
+                }
+              if(response.data.length != 0){
+                document.getElementById('name').innerHTML = '<h2>'+ response.data[0].name +'</h2>';
+                document.getElementById('about').innerHTML = response.data[0].about;
+                document.getElementById('vision').innerHTML = response.data[0].vision;
+                document.getElementById('qualification').innerHTML = response.data[0].qualification;
+                document.getElementById('expertise').innerHTML = response.data[0].expertise;
+                if(response.images.length !=0) {
+                    for(var i=0;i<response.images.length;i++){
+                        if(i == 0) {
+                            $('#profile-slider').append('<div class="carousel-item active"><img src="'+ response.images[i].path +'" class="d-block w-100" alt=""></div>');
+                        } else {
+                            $('#profile-slider').append('<div class="carousel-item"><img src="'+ response.images[i].path +'" class="d-block w-100" alt=""></div>');
+                        }
+                    }
+                }
+                if(response.programs.length !=0) {
+                    for(var i=0;i<response.programs.length;i++){
+                        $('#morePrograms').append('<div class="col-lg-3 col-md-4 col-sm-6 col-12"><div class="box3" style="margin: 0;" onclick="window.location.href=\'/each-program/'+ response.programs[i].id +'\'"><div class="image"><img src="'+ response.programs[i].cover_photo +'" alt=""></div><div class="inside_container"><div class="text"><h5>'+ response.programs[i].title +'</h5><p>Starting from Rs '+ response.programs[i].price +'</p></div><div class="arrow-right icon2"><a><span class="iconify" data-icon="eva:arrow-ios-forward-fill"></span></a></div></div></div></div>');
+                    }
+                } else {
+                    document.getElementById('trainerPrograms').style.display = 'none';
+                }
+              }
+              document.getElementById('load').style.visibility="hidden";
+            },
+            error: function(err){
+                if(isDevelopment) {
+                    console.log(err);
+                }
+                alert('Some error occured !!');
+            }
+        });
+    }
+    setTimeout(() => {
+        getEachExpert();
+    },500);
+</script>
+
+<%- include('../components/footer/website_footer.ejs') %>

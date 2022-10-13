@@ -2,6 +2,7 @@
 //Onclick moving box
 document.querySelectorAll('.list').forEach(item => {
     item.addEventListener('click', event => {
+        event.preventDefault();
         var inside_selected_list = document.getElementsByClassName('selected')[0];
         var profile_selected = document.getElementsByClassName('selected_profile')[0];
         if(inside_selected_list) {

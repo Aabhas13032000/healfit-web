@@ -1,65 +1,224 @@
-<%- include('../../components/header/header.ejs',{cssFile : 'adminPages'}) %> 
+<%- include('../../components/header/header.ejs',{cssFile : 'adminPages',page:'Dashboard'}) %> 
 
 <div id="load"></div>
 
-<div class="modal fade" id="addBook" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="alert alert-dismissible fade show" role="alert" id="success-alert">
+  <p id="alertMessage" style="margin: 0;">Edited successfully</p>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div class="modal fade" id="addProgram" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
       <div class="modal-content">
           <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Add Course</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Add Program</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              <form onsubmit="addCourse(event)" id="form" method="post" enctype="multipart/form-data" autocomplete="off">
+              <form onsubmit="addProgram(event)" id="form" method="post" enctype="multipart/form-data" autocomplete="off">
                   <div class="row">
                       <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                           <div class="form-group">
-                              <input type="text" id="title" name="title" class="form-control" placeholder="Enter Course Name"  style="margin-bottom: 10px;" required>
+                            <label for="title">Title</label>
+                              <input type="text" id="title" name="title" class="form-control" placeholder="Enter program title.." style="margin: 10px 0px;" required>
                           </div>
                           <div class="form-group">
-                              <select class="form-control" id="category" style="margin-bottom: 10px;" name="category" aria-label="Images Categories" required>
-                                <option value="">Select course category</option>
-                                <option value="online">Online</option>
-                                <option value="offline">Offline</option>
-                                <option value="free">Free</option>
-                                <option value="live">Live</option>
-                                <option value="Budget Friendly">Budget Friendly</option>
+                            <label for="short_desc">Short Description (for notifications)</label>
+                              <input type="text" id="short_desc" name="short_desc" class="form-control" placeholder="Enter short description.." style="margin: 10px 0px;" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="description" style="margin: 10px 0px;">Description</label>
+                              <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter description here.." style="margin: 10px 0px;border-radius: 10px;" required></textarea>
+                          </div>
+                          <div class="form-group">
+                            <label for="category" style="margin-top: 10px;">Category</label>
+                              <select class="form-control" id="category" style="margin: 10px 0px;height: 100px;" name="category" aria-label="Images Categories" multiple required>
+                                <% categories.forEach((category,index) => { %>
+                                  <option value="<%= category.name %>"><%= category.name %></option>
+                                <% }); %> 
                               </select>
                           </div>
                           <div class="form-group">
-                              <input type="url" id="promo_video" name="promo_video" class="form-control" placeholder="Enter Promo Video URL" style="margin-bottom: 10px;">
+                            <label for="tag" style="margin-top: 10px;">Tag</label>
+                              <select class="form-control" id="tag" style="margin: 10px 0px;" name="tag" aria-label="Tags" required>
+                                <option value="">Select tag</option>
+                                <option value="1">LIVE NOW</option>
+                                <option value="2">COMING SOON</option>
+                              </select>
                           </div>
                           <div class="form-group">
-                              <input type="number" id="price" name="price" class="form-control" placeholder="Enter Course Price" style="margin-bottom: 10px;" required>
+                            <label for="promo_video">Promo video URL</label>
+                              <input type="url" id="promo_video" name="promo_video" class="form-control" placeholder="Enter Promo Video URL" style="margin: 10px 0px;">
                           </div>
                           <div class="form-group">
-                              <input type="number" id="discount_price" name="discount_price" class="form-control" placeholder="Enter Discount Price" style="margin-bottom: 10px;" required>
-                          </div>
-                          <div class="form-group">
-                              <input type="number" id="days" name="days" class="form-control" placeholder="Enter Subscription Days" style="margin-bottom: 10px;" required>
-                          </div>
-                          <div class="form-group">
-                              
-                          </div>
-                          <div class="form-group">
-                              <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter description here.." style="margin-bottom: 10px;border-radius: 10px;" required></textarea>
-                          </div>
-                          <div class="form-group">
-                              <label for="">PDF</label>
-                              <input class="form-control" onchange="uploadPDF('add')" style="margin-bottom: 10px;height: unset;border-radius: 8px;" type="file" id="pdf" name="pdf" multiple accept="application/pdf">
-                          </div>
-                          <div id="preview_pdf">
-                              
-                          </div>
-                          <div class="form-group">
-                              <label for="">Images</label>
-                              <input class="form-control" onchange="uploadImages('add')" style="margin-bottom: 10px;height: unset;border-radius: 8px;" type="file" multiple id="course_images" name="images" accept="image/*">
+                              <label for="program_images">Images</label>
+                              <input class="form-control" onchange="uploadImages('add')" style="margin: 10px 0px;height: unset;border-radius: 8px;" type="file" multiple id="program_images" name="images" accept="image/*">
                           </div>
                           <div id="preview" class="row preview_images">
                               
                           </div>
                           <div class="button">
-                              <button type="submit" id="book_verify" class="btn btn-primary" style="width: 100%;margin-top: 20px;" >Create</button>
+                              <button type="submit" id="book_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin-top: 20px;">Create</button>
+                          </div>
+                      </div>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="programTrainers" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title" id="programTrainerModalLabel">Name Program Trainers</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div>
+              <form onsubmit="addProgramTrainers(event)" data-programTrainer="add" data-programTrainerId="0" class="program_trainer_form" id="program_trainer_form_" method="post" autocomplete="off">
+                  <div class="row">
+                      <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="padding: 0px 5px !important;">
+                        <div class="form-group">
+                          <label for="trainer_id">Trainers</label>
+                            <select class="form-control" id="trainer_id" style="margin: 10px 0px;" name="trainer_id" aria-label="Days" required>
+                              <option value="">Select trainer</option>
+                              <% trainers.forEach((trainer,index) => { %>
+                                <option value="<%= trainer.id %>"><%= trainer.name %></option>
+                              <% }); %> 
+                            </select>
+                        </div>
+                          <div class="form-group">
+                            <label for="day_id" style="margin-top: 10px;">Days</label>
+                              <select class="form-control" id="day_id" style="margin: 10px 0px;" name="day_id" aria-label="Days" required>
+                                <option value="">Select day</option>
+                                <% days.forEach((day,index) => { %>
+                                  <option value="<%= day.value %>"><%= day.value %></option>
+                                <% }); %> 
+                              </select>
+                          </div>
+                          <div class="form-group">
+                            <label for="session_id" style="margin-top: 10px;">Sessions</label>
+                              <select class="form-control" id="session_id" style="margin: 10px 0px;" name="session_id" aria-label="Days" required>
+                                <option value="">Select session</option>
+                                <% sessions.forEach((session,index) => { %>
+                                  <option value="<%= session.days %>"><%= session.days %></option>
+                                <% }); %> 
+                              </select>
+                          </div>
+                      </div>
+                      <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="padding: 0px 5px !important;">
+                          <div class="form-group">
+                            <label for="session_type">Session Type</label>
+                              <select class="form-control" id="session_type" style="margin: 10px 0px;" name="session_type" aria-label="Tags" required>
+                                <option value="">Select session type</option>
+                                <option value="1">SINGLE</option>
+                                <option value="2">PACKAGE</option>
+                              </select>
+                          </div>
+                          <div class="form-group">
+                            <label for="time_id" style="margin-top: 10px;">Time</label>
+                              <select class="form-control" id="time_id" style="margin: 10px 0px;" name="time_id" aria-label="Days" required>
+                                <option value="">Select time</option>
+                                <% timings.forEach((time,index) => { %>
+                                  <option value="<%= time.value %>"><%= time.value %></option>
+                                <% }); %> 
+                              </select>
+                          </div>
+                          <div class="form-group">
+                            <label for="price" style="margin-top: 10px;">Price</label>
+                              <input type="number" id="price" name="price" class="form-control" placeholder="Enter Price" min="0" style="margin: 10px 0px;" required>
+                          </div>
+                      </div>
+                      <div class="col-lg-12 col-md-12 col-sm-12 col-12" style="padding: 0px 5px !important;">
+                        <div class="form-group">
+                          <label for="meeting_url">Meeting URL</label>
+                            <input type="url" id="meeting_url" name="meeting_url" class="form-control" placeholder="Enter Meeting URL" style="margin: 10px 0px;">
+                        </div>
+                          <div class="button">
+                              <button type="submit" id="trainer_program_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin-top: 20px;">Create</button>
+                          </div>
+                      </div>
+                  </div>
+              </form>
+            </div>
+              <div class="content" style="margin-top: 10px;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">TRAINER NAME</th>
+                      <th scope="col">SESSION TYPE</th>
+                      <th scope="col">SESSIONS</th>
+                      <th scope="col">DAYS</th>
+                      <th scope="col">TIMINGS</th>
+                      <th scope="col">PRICE</th>
+                      <th scope="col">MEETING URL</th>
+                      <th scope="col">OPTION</th>
+                    </tr>
+                  </thead>
+                  <tbody id="data_trainer_programs">
+                  </tbody>
+                </table>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="editProgram" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Edit Program</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <form onsubmit="saveProgram(event)" class="edit_form" id="form_" method="post" enctype="multipart/form-data" autocomplete="off">
+                  <div class="row">
+                      <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                          <div class="form-group">
+                            <label for="edittitle">Title</label>
+                              <input type="text" id="edittitle" name="edittitle" class="form-control" placeholder="Enter program title.." style="margin: 10px 0px;" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="editshort_desc">Short Description (for notifications)</label>
+                              <input type="text" id="editshort_desc" name="editshort_desc" class="form-control" placeholder="Enter short description.." style="margin: 10px 0px;" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="editdescription" style="margin: 10px 0px;">Description</label>
+                              <textarea class="form-control" id="editdescription" name="editdescription" rows="3" placeholder="Enter description here.." style="margin: 10px 0px;border-radius: 10px;" required></textarea>
+                          </div>
+                          <div class="form-group">
+                            <label for="editcategory" style="margin-top: 10px;">Category</label>
+                              <select class="form-control" id="editcategory" style="margin: 10px 0px;height: 100px;" name="editcategory" aria-label="Images Categories" multiple required>
+                                <% categories.forEach((category,index) => { %>
+                                  <option value="<%= category.name %>"><%= category.name %></option>
+                                <% }); %> 
+                              </select>
+                          </div>
+                          <div class="form-group">
+                            <label for="edittag" style="margin-top: 10px;">Tag</label>
+                              <select class="form-control" id="edittag" style="margin: 10px 0px;" name="edittag" aria-label="Tags" required>
+                                <option value="" id="edittag_option">Select tag</option>
+                                <option value="1">LIVE NOW</option>
+                                <option value="2">COMING SOON</option>
+                              </select>
+                          </div>
+                          <div class="form-group">
+                            <label for="editpromo_video">Promo video URL</label>
+                              <input type="url" id="editpromo_video" name="editpromo_video" class="form-control" placeholder="Enter Promo Video URL" style="margin: 10px 0px;">
+                          </div>
+                          <div class="form-group">
+                              <label for="edit_program_images">Images</label>
+                              <input class="form-control" onchange="uploadImages('edit')" style="margin: 10px 0px;height: unset;border-radius: 8px;" type="file" multiple id="edit_program_images" name="images" accept="image/*">
+                          </div>
+                          <div id="editpreview" class="row preview_images">
+                              
+                          </div>
+                          <div class="button">
+                              <button type="submit" id="book_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin-top: 20px;">Save</button>
                           </div>
                       </div>
                   </div>
@@ -83,19 +242,178 @@
                 <a class="tab" data-tab="sessions" onclick="openDayTimeModal('sessions',true)">Sessions</a>
                 <a class="tab" data-tab="timings" onclick="openDayTimeModal('timings',true)">Timings</a>
               </div>
+              <p style="color: var(--warning);margin: 20px auto;text-align: center;">* Please enter values carefully, as they are non-editable *</p>
+              <div class="form">
+                <form onsubmit="addDTS(event,'days')" id="days" method="post" enctype="multipart/form-data" autocomplete="off">
+                  <div class="row">
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-6">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="Monday" id="monday">
+                        <label class="form-check-label" for="monday">
+                          Monday
+                        </label>
+                      </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-6">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="Tuesday" id="tuesday">
+                        <label class="form-check-label" for="tuesday">
+                          Tuesday
+                        </label>
+                      </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-6">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="Wednesday" id="wednesday">
+                        <label class="form-check-label" for="wednesday">
+                          Wednesday
+                        </label>
+                      </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-6">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="Thursday" id="thursday">
+                        <label class="form-check-label" for="thursday">
+                          Thursday
+                        </label>
+                      </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-6">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="Friday" id="friday">
+                        <label class="form-check-label" for="friday">
+                          Friday
+                        </label>
+                      </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-6">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="Saturday" id="saturday">
+                        <label class="form-check-label" for="saturday">
+                          Saturday
+                        </label>
+                      </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-6">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="Sunday" id="sunday">
+                        <label class="form-check-label" for="sunday">
+                          Sunday
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="button">
+                    <button type="submit" id="book_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin: 20px 0px;" >Add</button>
+                  </div>
+                </form>
+                <form onsubmit="addDTS(event,'sessions')" id="sessions" method="post" enctype="multipart/form-data" autocomplete="off">
+                  <div class="row">
+                    <div class="col-12">
+                      <div class="form-group">
+                        <input type="number" class="form-control" id="sessionNumber" name="sessionNumber" placeholder="Enter value here..">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="button">
+                    <button type="submit" id="book_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin: 20px 0px;" >Add</button>
+                  </div>
+                </form>
+                <form onsubmit="addDTS(event,'timings')" id="timings" method="post" enctype="multipart/form-data" autocomplete="off">
+                  <div class="row">
+                    <div class="col-6" style="padding-right: 5px;">
+                      <div class="form-group">
+                        <input type="time" class="form-control" id="from" name="from" placeholder="Enter value here..">
+                      </div>
+                    </div>
+                    <div class="col-6" style="padding-left: 5px;">
+                      <div class="form-group">
+                        <input type="time" class="form-control" id="to" name="to" placeholder="Enter value here..">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="button">
+                    <button type="submit" id="book_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin: 20px 0px;" >Add</button>
+                  </div>
+                </form>
+              </div>
               <div class="content">
                 <table>
                   <thead>
                     <tr>
                       <th scope="col">#</th>
                       <th scope="col">VALUE</th>
-                      <th scope="col">OPTION</th>
+                      <!-- <th scope="col">OPTION</th> -->
                     </tr>
                   </thead>
                   <tbody id="data">
                   </tbody>
                 </table>
               </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="allcategories" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Categories</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p style="color: var(--warning);margin: 0px auto;text-align: center;">* Please enter values carefully, as they are non-editable *</p>
+            <br>
+              <form onsubmit="addCategory(event)" method="post">
+                  <div class="form-group">
+                      <input type="text" id="program_category" name="program_category" class="form-control" placeholder="Enter Category Name" onkeyup="checkProgramCategory(this.value)"  style="margin-bottom: 10px;" required>
+                      <div id="productCategoryValidationServernameFeedback" style="margin: 10px 0px;" class="invalid-feedback">
+                        Category name already exists.
+                      </div>
+                      <div class="button">
+                          <button type="submit" id="program_category_verify" class="btn btn-primary d-flex justify-content-center align-items-center" style="width: 100%;margin-top: 20px;" >Create</button>
+                      </div>
+                  </div>
+              </form>
+              <br>
+              <table>
+                  <thead>
+                      <th>#</th>
+                      <th>CATEGORY</th>
+                  </thead>
+                  <tbody id="category_data">
+                    <% if(categories.length == 0) { %> 
+                      <td>No categories present</td>
+                  <% } else { %>
+                      <% categories.forEach((category,index) => { %> 
+                          <tr>
+                            <th scope="row"><%= (index+1) %></th>
+                            <td><%= category.name %></td>
+                          </tr>
+                      <% }); %> 
+                  <% } %> 
+                  </tbody>
+                </table>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="selectCoverPhoto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Select Cover Photo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="row preview_allImages" id="allImages">
+
+              </div>
+            <div class="button">
+              <button onclick="saveSelectedImage()" type="submit" id="program_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin-top: 20px;">Save</button>
+            </div>
           </div>
       </div>
   </div>
@@ -108,6 +426,7 @@
             <p>See all the programs here.</p>
         </div>
         <div class="button">
+          <% if(!searchPage) { %>
             <div class="btn-group dropstart">
               <button type="button" id="settings" class="btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false"><span class="iconify" data-icon="eva:menu-2-fill"></span></button>
               <ul class="dropdown-menu">
@@ -116,6 +435,7 @@
                 <li onclick="openDayTimeModal('timings',false)"><a class="dropdown-item" href="#">Timings</a></li>
               </ul>
             </div>
+          <% } %>
         </div>
     </div>
     <br>
@@ -123,16 +443,29 @@
         <div class="search_bar">
                 <div class="row">
                     <div class="col-lg-8 col-md-6 d-flex align-items-center">
-                      <form action="/admin/searchProgrm" method="POST">
+                      <form action="/admin/programs/searchProgrm" method="get" class="search-form">
                         <div class="form-group input-group search">
                             <a><span class="iconify" data-icon="akar-icons:search"></span></a>
-                            <input type="text" class="form-control" id="searchText" name="searchText" placeholder="Search by title...">
+                            <input type="text" class="form-control" id="searchText" name="searchText" placeholder="Search by title..." value="<%= searchValue %>">
                         </div>
+                        <div class="form-group statusType">
+                          <select class="form-control type" id="category" name="category" aria-label="Images Categories" value="<%= statusValue %>">
+                            <option value="" <%- statusValue == '' ? 'selected' : '' %>>All categories</option>
+                            <% categories.forEach((category,index) => { %>
+                              <option value="<%= category.name %>" <%- statusValue == category.name ? 'selected' : '' %>><%= category.name %></option>
+                            <% }); %> 
+                          </select>
+                      </div>
+                        <input type="submit" hidden />
                       </form>
                     </div>
                     <div class="col-lg-4 col-md-6 d-flex align-items-center justify-content-md-end justify-content-start">
-                      <button id="add" class="btn btn-primary"><span class="iconify" data-icon="bx:category"></span>&nbsp;&nbsp;Categories</button>
-                      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBook"><span class="iconify" data-icon="carbon:add-alt"></span>&nbsp;&nbsp;Add program</button>
+                      <% if(!searchPage) { %> 
+                        <button id="add" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#allcategories"><span class="iconify" data-icon="bx:category"></span>&nbsp;&nbsp;Categories</button>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProgram"><span class="iconify" data-icon="carbon:add-alt"></span>&nbsp;&nbsp;Add program</button>
+                      <% } else { %>
+                        <button class="btn btn-primary" onclick="location.href='/admin/programs?page=1'">Reload</button>
+                      <% } %>
                     </div>
                 </div>
         </div>
@@ -143,49 +476,131 @@
                 <th scope="col">#</th>
                 <th scope="col">PROGRAM</th>
                 <th scope="col">CATEGORY</th>
-                <th scope="col">TRAINERS</th>
                 <th scope="col">LIKES</th>
                 <th scope="col">IMPORTANT</th>
-                <th scope="col">VIEW</th>
+                <th scope="col">INCLUDE ADDRESS</th>
                 <th scope="col">OPTION</th>
+                <th scope="col">TRAINERS</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-                <td>Thornton</td>
-              </tr>
-              <tr>
-                <th scope="row">2</th>
-                <td>Jacob</td>
-                <td>Thornton</td>
-                <td>@fat</td>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-                <td>Thornton</td>
-              </tr>
-              <tr>
-                <th scope="row">3</th>
-                <td>Jacob</td>
-                <td>Thornton</td>
-                <td>@twitter</td>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-                <td>Thornton</td>
-              </tr>
+              <% if(data.length == 0) { %> 
+                <td>No programs present</td>
+            <% } else { %>
+                <% data.forEach((program,index) => { %> 
+                    <tr>
+                      <th scope="row"><%= (index+1+metadata.offset) %></th>
+                      <td>
+                        <div class="profile_table_data">
+                          <div class="profile_image">
+                              <img src="<%= program.cover_photo %>" alt="">
+                               <div class="edit-icon" onclick="selectCoverPhoto('<%= program.id %>','<%= program.cover_photo %>')">
+                                  <a><span class="iconify" data-icon="clarity:edit-line"></span></a>
+                               </div>
+                          </div>
+                          <p style="margin: 0px 5px 0px 10px;"><%= program.title %></p>
+                        </div>
+                      </td>
+                      <td><%= program.category %></td>
+                      <td><%= program.views %></td>
+                      <td>
+                        <div class="form-check form-switch d-flex justify-content-center">
+                          <% if(program.imp == 1){ %> 
+                              <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleBlocked('<%= program.id %>','/admin/programs/markedProgramImportant')" checked>
+                          <% } else { %>
+                              <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleBlocked('<%= program.id %>','/admin/programs/markedProgramImportant')">
+                          <% } %>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="form-check form-switch d-flex justify-content-center">
+                          <% if(program.include_address == 1){ %> 
+                              <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleBlocked('<%= program.id %>','/admin/programs/includeAddress')" checked>
+                          <% } else { %>
+                              <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleBlocked('<%= program.id %>','/admin/programs/includeAddress')">
+                          <% } %>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="options">
+                            <a class="edit" onclick="editProgram('<%= program.id %>','<%= program.title %>','<%= program.short_desc %>','<%= program.category %>','<%= program.tag %>','<%= program.promo_video %>')"><span class="iconify" data-icon="akar-icons:edit"></span></a>
+                            <a class="delete" onclick="deleteProgram('<%= program.id %>')"><span class="iconify" data-icon="ant-design:delete-outlined"></span></a>
+                            <a class="delete" onclick="sendNotification('<%= program.title %>','<%= program.id %>','program','<%= program.short_desc %>','<%= program.cover_photo %>','/each-program/<%= program.id %>?item_id=<%= program.id %>','<%= program.share_url %>')"><span class="iconify" data-icon="bi:send"></span></a>
+                            <input type="hidden" name="" id="ckeditordescriptionvalue<%= program.id %>" value="<%= program.description %>">
+                        </div>
+                      </td>
+                      <td>
+                        <a class="btn btn-primary open" onclick="programTrainers('<%= program.id %>','<%= program.title %>')">OPEN</a>
+                      </td>
+                    </tr>
+                <% }); %> 
+            <% } %> 
             </tbody>
           </table>
+          <% if(!searchPage && data.length != 0 && metadata.total_pages > 1) { %> 
+            <div class="pages">
+                <div class="total_pages">
+                    <div class="form-group">
+                        <input type="number" class="form-control" id="pageNumber" name="pageNumber" placeholder="Total pages = <%= metadata.total_pages %> ">
+                    </div>
+                    <button class="btn btn-primary" onclick="goToPage()">Go</button>
+                </div>
+                <div class="inner_pages">
+                    <% if(metadata.page == 1) { %>
+                        <a id="prev" class="disabled">Prev</a>
+                    <% } else { %>
+                        <a id="prev" onclick="location.href='/admin/programs?page=<%= metadata.page - 1 %>'">Prev</a>
+                    <% } %>
+                    <% if(metadata.total_pages >= 3) { %> 
+                        <% if(metadata.page == metadata.total_pages) { %> 
+                            <a class="page" onclick="location.href='/admin/programs?page=<%= metadata.page - 2 %>'"><%= metadata.page - 2 %></a>
+                            <a class="page" onclick="location.href='/admin/programs?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/programs?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                        <% } else if(metadata.page == (metadata.total_pages - 1)) { %>
+                            <a class="page" onclick="location.href='/admin/programs?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/programs?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/programs?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                        <% } else { %>
+                            <a class="page selected_page" onclick="location.href='/admin/programs?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/programs?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                            <a class="page" onclick="location.href='/admin/programs?page=<%= metadata.page + 2 %>'"><%= metadata.page + 2 %></a>
+                        <% } %>
+                    <% } else if(metadata.total_pages == 2) { %>
+                        <% if(metadata.page == metadata.total_pages) { %> 
+                            <a class="page" onclick="location.href='/admin/programs?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/programs?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                        <% } else if(metadata.page == (metadata.total_pages - 1)) { %>
+                            <a class="page selected_page" onclick="location.href='/admin/programs?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/programs?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                        <% } %>
+                    <% } else if(metadata.total_pages == 1) { %>
+                        <a class="page selected_page" onclick="location.href='/admin/programs?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                    <% } %>
+                    <% if(metadata.page == metadata.total_pages) { %> 
+                        <a id="next" class="disabled">Next</a>
+                    <% } else { %>
+                        <a id="next" onclick="location.href='/admin/programs?page=<%= metadata.page + 1 %>'">Next</a>
+                    <% } %>
+                </div>
+            </div>
+          <% } %> 
     </div>
 </div>
 
+<!-- Notification Modal -->
+<div class="modal fade" id="sendingNotification" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h3>Sending Notification Please Wait!!</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Common.js -->
+<script src="/javascripts/common.js"></script>
+<!---->
 
 <script>
 
@@ -194,21 +609,203 @@ var dayTimeModal;
 $(function(){
   // bootstraps modals
   dayTimeModal = new bootstrap.Modal(document.getElementById('dts'));
+  editModal = new bootstrap.Modal(document.getElementById('editProgram'));
+  selectCoverPhotoModal = new bootstrap.Modal(document.getElementById('selectCoverPhoto'));
+  programTrainersModal = new bootstrap.Modal(document.getElementById('programTrainers'));
+    if($('textarea#description').length){
+        //ckeditor defination
+        CKEDITOR.replace('description',{
+            filebrowserUploadUrl: '/admin/common/upload',
+            filebrowserUploadMethod: 'form',
+        });
+    }
+    if($('textarea#editdescription').length){
+        //ckeditor defination
+        CKEDITOR.replace('editdescription',{
+            filebrowserUploadUrl: '/admin/common/upload',
+            filebrowserUploadMethod: 'form'
+        });
+    }
 });
 
-  //ckeditor defination
-  CKEDITOR.replace('description',{
-    filebrowserUploadUrl: '/admin/upload',
-    filebrowserUploadMethod: 'form'
-  });
-  
   /* Functions */
-  
-  //add course
-  function addCourse(event) {
+
+  function programTrainers(id,title) {
+    // programTrainersModal.toggle();
+    document.getElementsByClassName('program_trainer_form')[0].setAttribute('id',`program_trainer_form_${id}`);
+    document.getElementById('programTrainerModalLabel').innerHTML = `${title} program sessions and trainers`;
+    getDTS('trainer_programs',false)
+  }
+
+  //Upload image
+function uploadImages(value) {
+    document.getElementById('load').style.visibility="visible";
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+      if(value != 'edit'){
+        var imageFiles = document.getElementById('program_images').files;
+        var form = new FormData();
+        for(var i=0;i<imageFiles.length;i++){
+            if(imageFiles[i] != undefined){
+                form.append(`book_images`, imageFiles[i]);
+            }
+        }
+
+        $.ajax({
+            url : "/admin/common/saveBookImages",
+            type: "POST",
+            cache: false,
+            contentType: false,
+            processData: false,
+            data : form,
+            success: function(response){
+                // console.log(response.files);
+                for(var i=0;i<response.files.length;i++) {
+                    var path = response.files[i].slice(6,response.files[i].length);
+                    $('#preview').append('<div class="col-lg-4 col-md-4 col-sm-6 col-6" id="gallery_image_'+ path +'"><div class="card" id="append_image_'+ path +'"><a class="delete_gallery_image" onclick="deleteCurrentGalleryImage(\''+ ( "gallery_image_"+ path )  +'\',\'gallery_image_path_'+ path +'\')"><span class="iconify" data-icon="akar-icons:cross"></span></a><img src="'+ path +'" id="preview_galler_image_'+ path +'" alt=""><input type="hidden" class="gallery_image_path" name="gallery_image_path" id="gallery_image_path_'+ path +'" value="'+ path +'"></div></div>');
+                }
+                document.getElementById('program_images').value='';
+                document.getElementById('load').style.visibility="hidden";
+            },
+            error: function(err){
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+        });
+      } else {
+        var imageFiles = document.getElementById('edit_program_images').files;
+        var id = document.getElementsByClassName('edit_form')[0].getAttribute('id').split('_')[1];
+        //   console.log(imageFiles);
+        var form = new FormData();
+        for(var i=0;i<imageFiles.length;i++){
+            if(imageFiles[i] != undefined){
+                form.append(`book_images`, imageFiles[i]);
+            }
+        }
+
+        $.ajax({
+            url : `/admin/common/saveEditImages/${id}/program`,
+            type: "POST",
+            cache: false,
+            contentType: false,
+            processData: false,
+            data : form,
+            success: function(response){
+                // console.log(response.files);
+                for(var i=0;i<response.files.length;i++) {
+                  var path = response.files[i].slice(6,response.files[i].length);
+                  $('#editpreview').append('<div class="col-lg-4 col-md-4 col-sm-6 col-6" id="edit_gallery_image_'+ path +'"><div class="card" id="append_image_'+ path +'"><a class="delete_gallery_image" onclick="deleteEditCurrentGalleryImage(\''+ ( "edit_gallery_image_"+ path )  +'\',\''+ path +'\')"><span class="iconify" data-icon="akar-icons:cross"></span></a><img src="'+ path +'" id="preview_galler_image_'+ path +'" alt=""></div><input type="hidden" class="edit_gallery_image_path" name="gallery_image_path" id="gallery_image_path_'+ path +'" value="'+ path +'"></div>');
+                }
+                document.getElementById('edit_program_images').value='';
+                document.getElementById('load').style.visibility="hidden";
+            },
+            error: function(err){
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+        });
+      }
+  }
+
+  //Check category name
+  function checkProgramCategory(name) {
+    if(document.getElementById('program_category').classList.contains('is-invalid')) {
+        document.getElementById('program_category').classList.remove('is-invalid')
+    }
+    if(document.getElementById('program_category').classList.contains('is-valid')) {
+        document.getElementById('program_category').classList.remove('is-valid')
+    }
+    if(name.length != 0){
+        $.ajax({
+            url : `/admin/programs/checkProgramCategory/${name}`,
+            dataType: "json",
+            type: "GET",
+            success: function(response){
+                if(response.data.length == 0){
+                    document.getElementById('program_category_verify').removeAttribute('disabled');
+                    document.getElementById('program_category').classList.add('is-valid');
+                } else {
+                    document.getElementById('program_category_verify').setAttribute('disabled','disabled');
+                    document.getElementById('program_category').classList.add('is-invalid');
+                }
+                console.log(response);
+            },
+            error: function(err){
+                    console.log(err);
+          if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-danger');
+                document.getElementById('alertMessage').innerHTML = 'Some error occurred';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+            }
+        });
+    } else {
+        document.getElementById('program_category_verify').removeAttribute('disabled');
+        if(document.getElementById('program_category').classList.contains('is-invalid')) {
+            document.getElementById('program_category').classList.remove('is-invalid')
+        }
+        if(document.getElementById('program_category').classList.contains('is-valid')) {
+            document.getElementById('program_category').classList.remove('is-valid')
+        }
+    }
+}
+
+  //Add category
+  function addCategory(event) {
     event.preventDefault();
-    var data = CKEDITOR.instances['description'].getData();
-    console.log(data);
+
+    var category_name = document.getElementById('program_category').value;
+    $.ajax({
+        url : `/admin/programs/addCategories`,
+        dataType: "json",
+        type: "POST",
+        data: {
+          value:category_name,
+        },
+        success: function(response){
+          if(document.getElementById('success-alert')) {
+                  document.getElementById('success-alert').classList.add('alert-success');
+                  document.getElementById('alertMessage').innerHTML = 'Category added successfully';
+                  $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                      $("#success-alert").slideUp(500);
+                  });
+              }
+              setTimeout(() => {
+                  location.reload();
+              },1000);
+        },
+        error: function(err){
+                    console.log(err);
+          if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-danger');
+                document.getElementById('alertMessage').innerHTML = 'Some error occurred';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+        }
+    });
   }
 
   function openDayTimeModal(value,callfunction) {
@@ -221,13 +818,778 @@ $(function(){
         item.classList.add('selected');
       }
     });
-    if(!callfunction) {
-      dayTimeModal.toggle();
+
+    getDTS(value,callfunction);
+  }
+
+  //Add day time sessions
+  function addDTS(event,value) {
+    event.preventDefault();
+    var finalString = '';
+    var url = '';
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    if(value == 'days'){
+      var counter = 0;
+      var daysArray = [
+        {
+          day: document.getElementById('monday').value,
+          checked: document.getElementById('monday').checked,
+        },
+        {
+          day: document.getElementById('tuesday').value,
+          checked: document.getElementById('tuesday').checked,
+        },
+        {
+          day: document.getElementById('wednesday').value,
+          checked: document.getElementById('wednesday').checked,
+        },
+        {
+          day: document.getElementById('thursday').value,
+          checked: document.getElementById('thursday').checked,
+        },
+        {
+          day: document.getElementById('friday').value,
+          checked: document.getElementById('friday').checked,
+        },
+        {
+          day: document.getElementById('saturday').value,
+          checked: document.getElementById('saturday').checked,
+        },
+        {
+          day: document.getElementById('sunday').value,
+          checked: document.getElementById('sunday').checked,
+        },
+      ];
+      daysArray.forEach((obj) => {
+        if(obj.checked) {
+          finalString = finalString + '-' + obj.day;
+          counter++;
+        }
+      });
+      if(counter >= 6){
+        finalString = `All ${counter} days`;
+      } else {
+        finalString = finalString.slice(1,finalString.length);
+      }
+      url = `/admin/programs/addDays`;
+    } else if(value == 'sessions') {
+      finalString = document.getElementById('sessionNumber').value;
+      url = `/admin/programs/addSessions`;
+    } else if(value == 'timings') {
+      var from = document.getElementById('from').value;
+      var to = document.getElementById('to').value;
+      if(from.length != 0 && to.length !=0) {
+        finalString = from + '-' + to;
+      }
+      url = `/admin/programs/addTimings`;
+    }
+    if(finalString.length != 0){
+        $.ajax({
+          url : url,
+          dataType: "json",
+          type: "POST",
+          data:{
+              value : finalString,
+          },
+          success: function(response){
+            if(document.getElementById('success-alert')) {
+                  document.getElementById('success-alert').classList.add('alert-success');
+                  document.getElementById('alertMessage').innerHTML = 'Value added successfully';
+                  $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                      $("#success-alert").slideUp(500);
+                  });
+              }
+              setTimeout(() => {
+                  location.reload();
+              },1000);
+          },
+          error: function(err){
+                    console.log(err);
+          if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-danger');
+                document.getElementById('alertMessage').innerHTML = 'Some error occurred';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+          }
+        });
+      } else {
+        if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-warning');
+                document.getElementById('alertMessage').innerHTML = 'Please fill the value first.';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+      }
+  }
+
+  //Go to page 
+  function goToPage() {
+      var page = document.getElementById('pageNumber').value;
+      var total_pages = '<%- metadata.total_pages %>';
+      if(page.length != 0) {
+          if(parseInt(page) > parseInt(total_pages)){
+              alert('Please enter a page number less than total pages');
+          } else if(parseInt(page) == 0) {
+              alert('Please enter a page number greater than 0');
+          } else {
+              location.href=`/admin/programs?page=${page}`;
+          }
+      } else {
+          alert('Please enter a page number first');
+      }
+  }
+
+  //Delete program
+  function deleteProgram(id) {
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    if(confirm('Do you want to delete it?') == true){
+      $.ajax({
+            url : '/admin/programs/deleteProgram',
+            dataType: "json",
+            type: "POST",
+            data: {
+                id:id
+            },
+            success: function(response){
+              if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-success');
+                document.getElementById('alertMessage').innerHTML = 'Program deleted successfully';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                  $("#success-alert").slideUp(500);
+                });
+              }
+              setTimeout(() => {
+                location.reload();
+              },1000);
+            },
+            error: function(err){
+                    console.log(err);
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+      });
+    } 
+  }
+
+  //Delete program
+  function deleteProgramTrainer(id) {
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    if(confirm('Do you want to delete it?') == true){
+      $.ajax({
+            url : '/admin/programs/deleteProgramTrainer',
+            dataType: "json",
+            type: "POST",
+            data: {
+                id:id
+            },
+            success: function(response){
+              if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-success');
+                document.getElementById('alertMessage').innerHTML = 'Program Trainer Session deleted successfully';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                  $("#success-alert").slideUp(500);
+                });
+              }
+              setTimeout(() => {
+                location.reload();
+              },1000);
+            },
+            error: function(err){
+                    console.log(err);
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+      });
+    } 
+  }
+
+  //Edit Program
+  function editProgram(id,title,short_desc,category,tag,promo_video) {
+    document.getElementById('editpreview').innerHTML = '';
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    getImages(id,'edit');
+    // document.getElementById('editcategory_option').innerHTML = category;
+    var selected_array = category.split(',');
+    for(var option of document.getElementById('editcategory').options){
+      option.selected = '';
+      if(selected_array.includes(option.value)){
+        option.selected = 'selected';
+      }
+    }
+    // document.getElementById('editcategory_option').setAttribute('value',category);
+    document.getElementById('edittag_option').innerHTML = tag;
+    document.getElementById('edittag_option').setAttribute('value',tag);
+    document.getElementById('edittitle').value = title;
+    document.getElementById('editshort_desc').value = short_desc;
+    document.getElementById('editpromo_video').value = promo_video;
+    CKEDITOR.instances['editdescription'].setData(document.getElementById('ckeditordescriptionvalue' + id).value);
+    document.getElementsByClassName('edit_form')[0].setAttribute('id',`form_${id}`);
+    editModal.toggle();
+  }
+
+  function saveSelectedImage() {
+    var path = document.getElementsByClassName('is-selected')[0].getAttribute('data-path');
+    var id = document.getElementsByClassName('is-selected')[0].getAttribute('data-programid');
+    // console.log(path);
+    // console.log(id);
+    if(confirm('Do you want to edit it?') == true){
+      $.ajax({
+            url : '/admin/programs/saveProgramCoverImage',
+            dataType: "json",
+            type: "POST",
+            data: {
+                id:id,
+                path:path
+            },
+            success: function(response){
+              if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-success');
+                document.getElementById('alertMessage').innerHTML = 'Cover photo updated successfully';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                  $("#success-alert").slideUp(500);
+                });
+              }
+              setTimeout(() => {
+                location.reload();
+              },1000);
+            },
+            error: function(err){
+                    console.log(err);
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+      });
+    } 
+  }
+
+  //move select image box
+  function changeSelectedImage(i) {
+    var item = document.getElementsByClassName('selected_save_profile')[i];
+    var inside_selected_list = document.getElementsByClassName('is-selected')[0];
+    if(inside_selected_list) {
+      inside_selected_list.classList.remove('is-selected');
+      inside_selected_list.classList.add('is-not-selected');
+    }
+    if(item.classList.contains('is-not-selected')){
+      item.classList.remove('is-not-selected');
+    }
+    item.classList.add('is-selected');
+  }
+
+  //Select profile image
+  function selectCoverPhoto(id ,profile_image) {
+    selectCoverPhotoModal.toggle();
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    document.getElementById('allImages').innerHTML = "";
+    $.ajax({
+            url : `/admin/getImages?item_id=${id}&item_category=program`,
+            dataType: "json",
+            type: "GET",
+            success: function(response){
+              console.log(response);
+                for(var i=0;i<response.data.length;i++) {
+                        var path = response.data[i].path;
+                        $('#allImages').append('<div class="select" onclick="changeSelectedImage(\''+ i +'\')" id="edit_gallery_image_'+ path +'"><div class="card" id="append_image_'+ path +'" ><img src="'+ path +'" id="preview_galler_image_'+ path +'" alt=""></div><div class="selected_save_profile '+ (path == profile_image ? 'is-selected' : 'is-not-selected' ) +'" data-path="'+ path +'" data-programid="'+ id +'"><a><span class="iconify" data-icon="teenyicons:tick-circle-solid"></span></a></div></div>');
+                    }
+            },
+            error: function(err){
+                    console.log(err);
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+        });
+  }
+
+  //Get images
+  function getImages(id,value) {
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    $.ajax({
+            url : `/admin/getImages?item_id=${id}&item_category=program`,
+            dataType: "json",
+            type: "GET",
+            success: function(response){
+                console.log(response);
+                if(value == 'edit') {
+                    for(var i=0;i<response.data.length;i++) {
+                        var path = response.data[i].path;
+                        $('#editpreview').append('<div class="col-lg-4 col-md-4 col-sm-6 col-6" id="edit_gallery_image_'+ path +'"><div class="card" id="append_image_'+ path +'"><a class="delete_gallery_image" onclick="deleteEditCurrentGalleryImage(\''+ ( "edit_gallery_image_"+ path )  +'\',\''+ path +'\')"><span class="iconify" data-icon="akar-icons:cross"></span></a><img src="'+ path +'" id="preview_galler_image_'+ path +'" alt=""></div><input type="hidden" class="edit_gallery_image_path" name="gallery_image_path" id="gallery_image_path_'+ path +'" value="'+ path +'"></div>');
+                    }
+                } 
+            },
+            error: function(err){
+                    console.log(err);
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+        });
+  }
+
+  //Get day time sessions
+  function getDTS(value,callfunction) {
+    document.getElementById('data').innerHTML = '';
+    document.getElementById('data_trainer_programs').innerHTML = '';
+    document.getElementById('days').style.display = 'none';
+    document.getElementById('sessions').style.display = 'none';
+    document.getElementById('timings').style.display = 'none';
+    if(value == 'days'){
+      $.ajax({
+        url : `/admin/programs/getDays`,
+        dataType: "json",
+        type: "GET",
+        success: function(response){
+          console.log(response);
+          for(var i=0;i<response.data.length;i++){
+              $('#data').append('<tr><td>'+ (i+1) +'</td><td>'+ response.data[i].value +'</td></tr>');
+            }
+          if(!callfunction) {
+            dayTimeModal.toggle();
+          }
+          document.getElementById('days').style.display = 'block';
+        },
+        error: function(err){
+          console.log(err);
+          if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-danger');
+                document.getElementById('alertMessage').innerHTML = 'Some error occurred';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+        }
+      });
+    } else if(value == 'timings'){
+      $.ajax({
+        url : `/admin/programs/getTimings`,
+        dataType: "json",
+        type: "GET",
+        success: function(response){
+          console.log(response);
+          for(var i=0;i<response.data.length;i++){
+              $('#data').append('<tr><td>'+ (i+1) +'</td><td>'+ response.data[i].value +'</td></tr>');
+            }
+          if(!callfunction) {
+            dayTimeModal.toggle();
+          }
+          document.getElementById('timings').style.display = 'block';
+        },
+        error: function(err){
+                    console.log(err);
+          if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-danger');
+                document.getElementById('alertMessage').innerHTML = 'Some error occurred';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+        }
+      });
+    } else if(value == 'sessions'){
+      $.ajax({
+        url : `/admin/programs/getSessions`,
+        dataType: "json",
+        type: "GET",
+        success: function(response){
+          console.log(response);
+          for(var i=0;i<response.data.length;i++){
+              // $('#data').append('<tr><td>'+ (i+1) +'</td><td>'+ response.data[i].days +'</td><td><div class="options"><a class="delete" onclick="deleteCourses()"><span class="iconify" data-icon="ant-design:delete-outlined"></span></a></div></td></tr>');
+              $('#data').append('<tr><td>'+ (i+1) +'</td><td>'+ response.data[i].days +'</td></tr>');
+            }
+          if(!callfunction) {
+            dayTimeModal.toggle();
+          }
+          document.getElementById('sessions').style.display = 'block';
+        },
+        error: function(err){
+                    console.log(err);
+          if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-danger');
+                document.getElementById('alertMessage').innerHTML = 'Some error occurred';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+        }
+      });
+    } else if(value == 'trainer_programs'){
+      var id = document.getElementsByClassName('program_trainer_form')[0].getAttribute('id').split('program_trainer_form_')[1];
+      $.ajax({
+        url : `/admin/programs/getProgramTrainers?program_id=${id}`,
+        dataType: "json",
+        type: "GET",
+        success: function(response){
+          console.log(response);
+          for(var i=0;i<response.data.length;i++){
+              $('#data_trainer_programs').append('<tr><td>'+ (i+1) +'</td><td>'+ response.data[i].trainerName +'</td><td>'+ response.data[i].session_type +'</td><td>'+ response.data[i].session_id +'</td><td>'+ response.data[i].day_id +'</td><td>'+ response.data[i].time_id +'</td><td>'+ response.data[i].price +'</td><td>'+ (response.data[i].meeting_url.length == 0 ? '' : '<a href="'+ response.data[i].meeting_url +'" target="_blank">URL</a>') +'</td><td><div class="options"><a class="delete" onclick="editProgramTrainers(\''+ response.data[i].id +'\',\''+ response.data[i].session_id +'\',\''+ response.data[i].session_type +'\',\''+ response.data[i].day_id +'\',\''+ response.data[i].time_id +'\',\''+ response.data[i].trainer_id +'\',\''+ response.data[i].price +'\',\''+ response.data[i].meeting_url +'\')"><span class="iconify" data-icon="akar-icons:edit"></span></a><a class="delete" onclick="deleteProgramTrainer(\''+ response.data[i].id +'\')"><span class="iconify" data-icon="ant-design:delete-outlined"></span></a></div></td></tr>');
+            }
+          if(!callfunction) {
+            programTrainersModal.toggle();
+          }
+          document.getElementById('sessions').style.display = 'block';
+        },
+        error: function(err){
+                    console.log(err);
+          if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-danger');
+                document.getElementById('alertMessage').innerHTML = 'Some error occurred';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+        }
+      });
     }
   }
 
-  function getDays() {
+  //Add program
+  function addProgram(event) {
+    event.preventDefault();
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    var description = CKEDITOR.instances['description'].getData();
+    var title = document.getElementById('title').value;
+    var short_desc = document.getElementById('short_desc').value;
+    // var category = document.getElementById('category').value;
+    var tag = document.getElementById('tag').value;
+    var promo_video = document.getElementById('promo_video').value;
+    var categories = [];
+    for(var option of document.getElementById('category').options){
+      if (option.selected) {
+        categories.push(option.value);    
+      }
+    }
+    if(description.length != 0) {
+        var gallery = document.getElementsByClassName("gallery_image_path");
+        var gallery_values = [];
+        if(gallery.length != 0) {
+            for(var i =0;i<gallery.length;i++) {
+                gallery_values.push(gallery[i].value);
+            }
+            $.ajax({
+                url : '/admin/programs/addProgram',
+                dataType: "json",
+                type: "POST",
+                data: {
+                    title:title,
+                    short_desc:short_desc,
+                    category:categories.toString(),
+                    description:description,
+                    gallery:gallery_values,
+                    tag:tag,
+                    promo_video:promo_video,
+                },
+                success: function(response){
+                    if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-success');
+                        document.getElementById('alertMessage').innerHTML = 'Program added successfully';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+                    setTimeout(() => {
+                        location.reload();
+                    },1000);
+                },
+                error: function(err){
+                    console.log(err);
+                    if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+                }
+            });
+      } else {
+        if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-warning');
+                  document.getElementById('alertMessage').innerHTML = 'Select an image first';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+      }
+    } else {
+        if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-warning');
+                document.getElementById('alertMessage').innerHTML = 'Please fill all the values first.';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+    }
+    // console.log(data);
+  }
 
+  function editProgramTrainers(id,session_id,session_type,day_id,time_id,trainer_id,price,meeting_url) {
+    document.getElementsByClassName('program_trainer_form')[0].setAttribute('data-programTrainer','edit');
+    document.getElementById('trainer_program_verify').innerHTML = 'Save';
+    document.getElementById('session_id').value = session_id;
+    document.getElementById('session_type').value = session_type == 'SINGLE' ? 1 : 2;
+    document.getElementById('day_id').value = day_id;
+    document.getElementById('time_id').value = time_id;
+    document.getElementById('trainer_id').value = trainer_id;
+    document.getElementById('price').value = price;
+    document.getElementById('meeting_url').value = meeting_url;
+    document.getElementsByClassName('program_trainer_form')[0].setAttribute('data-programTrainerId',id);
+  }
+ 
+  //Add program trainers
+  function addProgramTrainers(event) {
+    event.preventDefault();
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    var session_id = document.getElementById('session_id').value;
+    var session_type = document.getElementById('session_type').value;
+    var day_id = document.getElementById('day_id').value;
+    var time_id = document.getElementById('time_id').value;
+    var trainer_id = document.getElementById('trainer_id').value;
+    var price = document.getElementById('price').value;
+    var meeting_url = document.getElementById('meeting_url').value;
+    var program_id = document.getElementsByClassName('program_trainer_form')[0].getAttribute('id').split('program_trainer_form_')[1];
+    var formValue = document.getElementsByClassName('program_trainer_form')[0].getAttribute('data-programTrainer');
+    var formId = formValue == 'add' ? '0' : document.getElementsByClassName('program_trainer_form')[0].getAttribute('data-programTrainerId');
+    $.ajax({
+                url : formValue == 'add' ? '/admin/programs/addProgramTrainer' : '/admin/programs/saveTrainerProgram',
+                dataType: "json",
+                type: "POST",
+                data: {
+                  session_id:session_id,
+                  session_type:session_type,
+                  day_id:day_id,
+                  time_id:time_id,
+                  price:price,
+                  trainer_id:trainer_id,
+                  program_id:program_id,
+                  meeting_url:meeting_url,
+                  id:formId
+                },
+                success: function(response){
+                    if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-success');
+                        if(formValue == 'add'){
+                          document.getElementById('alertMessage').innerHTML = 'Program trainer session added successfully';
+                        } else {
+                          document.getElementById('alertMessage').innerHTML = 'Program trainer session edited successfully';
+                        }
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+                    setTimeout(() => {
+                        location.reload();
+                    },1000);
+                },
+                error: function(err){
+                    console.log(err);
+                    if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+                }
+            });
+    // console.log(data);
+  }
+
+  //Save Program
+  function saveProgram(event) {
+    event.preventDefault();
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    var description = CKEDITOR.instances['editdescription'].getData();
+    var title = document.getElementById('edittitle').value;
+    var short_desc = document.getElementById('editshort_desc').value;
+    // var category = document.getElementById('editcategory').value;
+    var tag = document.getElementById('edittag').value;
+    var promo_video = document.getElementById('editpromo_video').value;
+    var id = document.getElementsByClassName('edit_form')[0].getAttribute('id').split('_')[1];
+    var categories = [];
+    for(var option of document.getElementById('editcategory').options){
+      if (option.selected) {
+        categories.push(option.value);    
+      }
+    }
+    if(description.length != 0) {
+        var gallery = document.getElementsByClassName("edit_gallery_image_path");
+        var gallery_values = [];
+        if(gallery.length != 0) {
+            for(var i =0;i<gallery.length;i++) {
+                gallery_values.push(gallery[i].value);
+            }
+            $.ajax({
+                url : '/admin/programs/saveProgram',
+                dataType: "json",
+                type: "POST",
+                data: {
+                    title:title,
+                    short_desc:short_desc,
+                    category:categories.toString(),
+                    description:description,
+                    gallery:gallery_values,
+                    tag:tag,
+                    promo_video:promo_video,
+                    id:id,
+                },
+                success: function(response){
+                    if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-success');
+                        document.getElementById('alertMessage').innerHTML = 'Program edited successfully';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+                    setTimeout(() => {
+                        location.reload();
+                    },1000);
+                },
+                error: function(err){
+                    console.log(err);
+                    if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+                }
+            });
+      } else {
+        if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-warning');
+                document.getElementById('alertMessage').innerHTML = 'Select an image first';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+      }
+    } else {
+        if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-warning');
+                document.getElementById('alertMessage').innerHTML = 'Please fill all the values first.';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+    }
+    // console.log(data);
   }
 
 </script>

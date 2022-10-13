@@ -1,4 +1,4 @@
-<%- include('../../components/header/header.ejs',{cssFile : 'adminPages'}) %> 
+<%- include('../../components/header/header.ejs',{cssFile : 'adminPages',page:'Dashboard'}) %> 
 
 <div id="load"></div>
 
@@ -17,7 +17,7 @@
                 <div class="col-lg-10 col-md-9 col-sm-12 col-12 d-flex align-items-center justify-content-center justify-content-md-start">
                     <div>
                         <h4 class="text-center text-md-start"><%= data.name %></h4>
-                        <p class="text-center text-md-start">Update your photo and personal details</p>
+                        <p class="text-center text-md-start">Update your personal details</p>
                     </div>
                 </div>
             </div>
@@ -97,9 +97,15 @@
                     </div>
                     <br>
                     <div class="row">
-                        <div class="col-lg-3">
+                        <div class="col-lg-3" style="padding: 0px 10px !important;">
                             <div class="button">
-                                <button type="submit" id="book_verify" class="btn btn-primary" style="width: 100%;margin-top: 20px;">Save</button>
+                                <button type="submit" id="book_verify" class="btn btn-primary d-flex align-items-center justify-content-center" style="width: 100%;margin-top: 20px;text-align: center;">Save</button>
+                            </div>
+                        </div>
+                        <div class="col-lg-3" style="padding: 0px 10px !important;">
+                            <div class="button">
+                                <button type="button" onclick="sendNotification('App Update 2.2.0','0','appupdate','ckeditordescriptionvalue0','/images/local/logo.png','/','appUpdateUrl')" class="btn btn-primary d-flex align-items-center justify-content-center" style="width: 100%;margin-top: 20px;text-align: center;">Send update notification</button>
+                                <input type="hidden" name="" id="ckeditordescriptionvalue0" value="Please update the app its mandatory">
                             </div>
                         </div>
                     </div>
@@ -109,6 +115,21 @@
         </div>
     </div>
 </div>
+
+<!-- Notification Modal -->
+<div class="modal fade" id="sendingNotification" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h3>Sending Notification Please Wait!!</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Common.js -->
+<script src="/javascripts/common.js"></script>
+<!---->
 
 <script>
     if(document.getElementById('success-alert')) {

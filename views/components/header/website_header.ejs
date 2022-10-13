@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no,maximum-scale=1.0, minimum-scale=1">
+    <meta property="og:title" content="Healfit"/>
+    <meta property="og:url" content="https://healfit.in/"/>
+    <meta property="og:image" content="https://healfit.in/images/local/logo.png">
+
+    <% if(page) { %> 
+        <title><%= page %> - Healfit</title>
+    <% } else { %> 
+        <title>Dashboard - Healfit</title>
+    <% } %> 
+    <!-- <link rel="icon" href="/images/logo/Mono.png" type="image/icon type"> -->
+
+    <!--  Razorpay  -->
+    <!-- <link rel="stylesheet" href="https://unpkg.com/bulma@0.9.0/css/bulma.min.css" /> -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <!---->
+    
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css"/>
+
+    <!-- Bootstrap -->
+    <link href="/bootstrap/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Jquery -->
+    <script src="/jquery/jquery.js"></script>
+
+    <!-- Date Picker -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+
+    <!-- Ckeditor Cdn -->
+    <!-- <script src="https://cdn.ckeditor.com/4.15.1/standard/ckeditor.js"></script> -->
+    <script src="https://cdn.ckeditor.com/4.19.0/standard/ckeditor.js"></script>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/stylesheets/common.css">
+    <link rel="stylesheet" href="/stylesheets/<%= cssFile %>.css">
+    <script>
+        document.onreadystatechange = function () {
+            var state = document.readyState
+            if (state == 'complete') {
+                setTimeout(function(){
+                    if(document.getElementById('load')) {
+                        document.getElementById('load').style.visibility="hidden";
+                    }
+                },500);
+            }
+        }
+    </script>
+</head>
+<body>
+
+<div class="blurbackground" onclick="toggleSideBar()"></div>
+
+<div class="navbar">
+    <div class="container">
+        <div class="logo">
+            <a class="logo-item" href="/" style="border: 0 !important;">
+                <img src="/images/local/logo.png">
+                <span id="logoName">HealFit</span>
+            </a>
+        </div>
+        <div class="menu">
+            <ul>
+                <li onclick="window.location.href = '/'">Home</li>
+                <li onclick="window.location.href = '/programs'">Programs</li>
+                <li onclick="window.location.href = '/experts'">Experts</li>
+                <li onclick="window.location.href = '/blogs'">Blogs</li>
+                <li onclick="window.location.href = '/about'">About us</li>
+                <li onclick="window.location.href = '/contact'">Contact us</li>
+            </ul>
+        </div>
+        <div class="button" id="login_button_topbar">
+            <a href="#login" data-bs-toggle="modal" data-bs-target="#login">Login</a>
+        </div>
+        <div id="profile" style="overflow: unset !important">
+            <!-- <a id="notification">
+                <span class="iconify" data-icon="akar-icons:bell"></span>
+                <span class="dot"></span>
+            </a> -->
+            <a id="cart" onclick="window.location.href='/cart'">
+                <span class="iconify" data-icon="akar-icons:cart"></span>
+                <span class="dot"></span>
+            </a>
+            <div class="btn-group dropstart">
+                <a data-bs-toggle="dropdown">
+                    <img src="" id="loggedInProfileImage">
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#userProfile">Edit Profile</a></li>
+                    <li><a class="dropdown-item" href="/myPrograms">My programs</a></li>
+                    <li><a class="dropdown-item" href="/purchasedBooks">Purchased Books</a></li>
+                    <li><a class="dropdown-item" onclick="logout()" style="color: var(--warning);">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="navbar_toggle_button" onclick="toggleSideBar()">
+    <a><span class="iconify" data-icon="gala:menu-left"></span></a>
+</div>
+
+<div class="sidebar">
+    <ul>
+        <li onclick="window.location.href = '/'">
+            <a><span>Home</span><span class="iconify" data-icon="charm:arrow-right"></span></a>
+        </li>
+        <li onclick="window.location.href = '/programs'">
+            <a><span>Programs</span><span class="iconify" data-icon="charm:arrow-right"></span></a>
+        </li>
+        <li onclick="window.location.href = '/experts'">
+            <a><span>Experts</span><span class="iconify" data-icon="charm:arrow-right"></span></a>
+        </li>
+        <li onclick="window.location.href = '/blogs'">
+            <a><span>Blogs</span><span class="iconify" data-icon="charm:arrow-right"></span></a>
+        </li>
+        <li onclick="window.location.href = '/about'">
+            <a><span>About us</span><span class="iconify" data-icon="charm:arrow-right"></span></a>
+        </li>
+        <li onclick="window.location.href = '/contact'">
+            <a><span>Contact us</span><span class="iconify" data-icon="charm:arrow-right"></span></a>
+        </li>
+    </ul>
+    <div class="button">
+        <a href="#login" id="login_button" data-bs-toggle="modal" data-bs-target="#login">Login</a>
+    </div>
+</div>
+
+<div class="modal fade" id="playVideo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div id="close" data-bs-dismiss="modal">
+                    <a><span class="iconify" data-icon="eva:close-fill"></span></a>
+                </div>
+                <div class="video">
+                    <iframe width="100%" height="500px" style="border-radius: 10px;" src="https://www.youtube.com/embed/qqBG84Hrj5Y" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+<div class="modal fade" id="login" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div id="close" data-bs-dismiss="modal">
+                    <a><span class="iconify" data-icon="eva:close-fill"></span></a>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-12 order-1 order-md-0 d-none d-md-flex">
+                        <div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                              <div class="carousel-item active">
+                                <img src="https://cdn.mos.cms.futurecdn.net/KLZwUWe4JwyyXY7pV7CpaU.jpg" class="d-block w-100" alt="">
+                              </div>
+                              <div class="carousel-item">
+                                <img src="https://resize.indiatvnews.com/en/resize/newbucket/1200_-/2022/02/fitness-tips-1645774618.jpg" class="d-block w-100" alt="">
+                              </div>
+                              <div class="carousel-item">
+                                <img src="https://static.wixstatic.com/media/6a670ac1508f442cac494d76770e1ded.jpg/v1/fill/w_640,h_452,al_t,q_80,usm_0.66_1.00_0.01,enc_auto/6a670ac1508f442cac494d76770e1ded.jpg" class="d-block w-100" alt="">
+                              </div>
+                            </div>
+                          </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-12 order-0 order-md-1">
+                        <div class="login_form">
+                            <div id="phone_number_input">
+                                <p>OTP Verification</p>
+                                <div class="form-group">
+                                    <label for="phoneNumber" style="margin:0px 0px 10px 0px;">Phone number</label>
+                                    <div class="input-group search" style="height: 50px !important;">
+                                        <a style="background-color: var(--card-bg);">+91</a>
+                                        <input type="text" id="phoneNumber" name="phoneNumber" class="form-control" placeholder="Enter 10 digit phone number here.." maxlength="10" minlength="10" style="border: 0;height: 100%;margin: 0;outline: 0 !important;">
+                                    </div>
+                                </div>
+                                <div class="button" style="margin:30px 0px 10px 0px;">
+                                    <button id="sign-in-button" class="btn btn-primary" style="border: 0;width: 100%;">
+                                        Get OTP
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="otp_verification" style="display: none;">
+                                <p>OTP Verification</p>
+                                <div class="form-group">
+                                    <label for="phoneNumber" style="margin:0px 0px 10px 0px;">OTP</label>
+                                    <input type="text" class="form-control" id="code" placeholder="Enter OTP" maxlength="6" minlength="6" required/>
+                                </div>
+                                <div class="button" style="margin:30px 0px 10px 0px;">
+                                    <button id="confirm-code" style="border: 0;width: 100%;" class="btn btn-primary">
+                                        Verify
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="user_values" style="display: none;" data-userId="0">
+                                <p>Get Started</p>
+                                <form onsubmit="saveData(event)" id="form" method="post" enctype="multipart/form-data" autocomplete="off">
+                                    <div class="profileImage">
+                                        <input type="file" id="profileImageInput" style="display: none;" onchange="uploadImages()" accept="image/*">
+                                        <img src="/images/local/addImage.png" onclick="selectImage()" id="profileImageData" alt="">
+                                        <div id="delete-icon" onclick="removeImage()">
+                                            <a><span class="iconify" data-icon="ant-design:delete-outlined"></span></a>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="fullname" style="margin:10px 0px 10px 0px;">Full name</label>
+                                        <input type="text" class="form-control" name="fullname" id="fullname" placeholder="Enter your full name" required/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="email" style="margin:10px 0px 10px 0px;">Email (optional)</label>
+                                        <input type="email" class="form-control" name="email" id="email" placeholder="Enter your email"/>
+                                    </div>
+                                    <label for="gender" style="margin:10px 0px 10px 0px;">Select your gender</label>
+                                    <div class="gender-cards">
+                                        <div class="gcards" data-gvalue="2">
+                                            <div>
+                                                <img src="/images/local/female.png" alt="">
+                                                <p>Woman</p>
+                                            </div>
+                                        </div>
+                                        <div class="gcards" style="margin: 0px 5px;" data-gvalue="1">
+                                            <div>
+                                                <img src="/images/local/male.png" alt="">
+                                                <p>Man</p>
+                                            </div>
+                                        </div>
+                                        <div class="gcards" data-gvalue="3">
+                                            <div>
+                                                <img src="/images/local/trans.png" alt="">
+                                                <p>Others</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="age" style="margin:10px 0px 10px 0px;">Age</label>
+                                        <input type="number" step="1"  class="form-control" name="age" id="age" placeholder="Enter your age" min="0" max="100" required/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="height" style="margin:10px 0px 10px 0px;">Height</label>
+                                        <div class="row" style="height: unset;">
+                                            <div class="col-6" style="height: unset;padding: 0px 5px 0px 0px !important;">
+                                                <input type="number" class="form-control" name="ft" id="ft" placeholder="Enter your height (in feet)" min="0" max="100" required/>
+                                            </div>
+                                            <div class="col-6" style="height: unset;padding: 0px 0px 0px 5px !important;">
+                                                <input type="number" class="form-control" name="in" id="in" placeholder="Enter your height (in inch)" min="0" max="100" required/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="weight" style="margin:10px 0px 10px 0px;">Weight</label>
+                                        <input type="number" step=0.01 class="form-control" name="weight" id="weight" placeholder="Enter your weight" required/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="target_weight" style="margin:10px 0px 10px 0px;">Target weight (optional)</label>
+                                        <input type="number" step=0.01 class="form-control" name="target_weight" id="target_weight" placeholder="Enter your target weight"/>
+                                    </div>
+                                    <div class="button" style="margin:30px 0px 10px 0px;">
+                                        <button type="submit" style="border: 0;width: 100%;display: flex;align-items: center;justify-content: center;" class="btn btn-primary">
+                                            Submit
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="recaptcha-container" style="display: none"></div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+<div class="modal fade" id="userProfile" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div id="close" data-bs-dismiss="modal">
+                    <a><span class="iconify" data-icon="eva:close-fill"></span></a>
+                </div>
+                <div class="login_form">
+                    <div id="user_values" data-userId="0">
+                        <p>User Profile</p>
+                        <form onsubmit="saveData1(event)" id="form" method="post" enctype="multipart/form-data" autocomplete="off">
+                            <div class="profileImage">
+                                <input type="file" id="profileImageInput1" style="display: none;" onchange="uploadImages1()" accept="image/*">
+                                <img src="/images/local/addImage.png" onclick="selectImage1()" id="profileImageData1" alt="">
+                                <div id="delete-icon1" onclick="removeImage1()">
+                                    <a><span class="iconify" data-icon="ant-design:delete-outlined"></span></a>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="fullname1" style="margin:10px 0px 10px 0px;">Full name</label>
+                                <input type="text" class="form-control" name="fullname1" id="fullname1" placeholder="Enter your full name" required/>
+                            </div>
+                            <div class="form-group">
+                                <label for="email1" style="margin:10px 0px 10px 0px;">Email (optional)</label>
+                                <input type="email" class="form-control" name="email1" id="email1" placeholder="Enter your email"/>
+                            </div>
+                            <label for="gender" style="margin:10px 0px 10px 0px;">Select your gender</label>
+                            <div class="gender-cards">
+                                <div class="gcards gcards1" data-gvalue="2">
+                                    <div>
+                                        <img src="/images/local/female.png" alt="">
+                                        <p>Woman</p>
+                                    </div>
+                                </div>
+                                <div class="gcards gcards1" style="margin: 0px 5px;" data-gvalue="1">
+                                    <div>
+                                        <img src="/images/local/male.png" alt="">
+                                        <p>Man</p>
+                                    </div>
+                                </div>
+                                <div class="gcards gcards1" data-gvalue="3">
+                                    <div>
+                                        <img src="/images/local/trans.png" alt="">
+                                        <p>Others</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="age1" style="margin:10px 0px 10px 0px;">Age</label>
+                                <input type="number" step="1"  class="form-control" name="age1" id="age1" placeholder="Enter your age" min="0" max="100" required/>
+                            </div>
+                            <div class="form-group">
+                                <label for="height" style="margin:10px 0px 10px 0px;">Height</label>
+                                <div class="row" style="height: unset;">
+                                    <div class="col-6" style="height: unset;padding: 0px 5px 0px 0px !important;">
+                                        <input type="number" class="form-control" name="ft1" id="ft1" placeholder="Enter your height (in feet)" min="0" max="100" required/>
+                                    </div>
+                                    <div class="col-6" style="height: unset;padding: 0px 0px 0px 5px !important;">
+                                        <input type="number" class="form-control" name="in1" id="in1" placeholder="Enter your height (in inch)" min="0" max="100" required/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="weight" style="margin:10px 0px 10px 0px;">Weight</label>
+                                <input type="number" step=0.01 class="form-control" name="weight1" id="weight1" placeholder="Enter your weight" required/>
+                            </div>
+                            <div class="form-group">
+                                <label for="target_weight" style="margin:10px 0px 10px 0px;">Target weight (optional)</label>
+                                <input type="number" step=0.01 class="form-control" name="target_weight1" id="target_weight1" placeholder="Enter your target weight"/>
+                            </div>
+                            <div class="button" style="margin:30px 0px 10px 0px;">
+                                <button type="submit" style="border: 0;width: 100%;display: flex;align-items: center;justify-content: center" class="btn btn-primary">
+                                    Submit
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+

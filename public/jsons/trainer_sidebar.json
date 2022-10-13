@@ -1,0 +1,14 @@
+[
+    {
+        "name": "Programs",
+        "path": "/admin/trainers/programs?page=1",
+        "icon": "bi:p-circle",
+        "sub-options":[]
+    },
+    {
+        "name": "Subscriptions",
+        "path": "/admin/trainers/subscriptions?page=1",
+        "icon": "codicon:list-ordered",
+        "sub-options":[]
+    }
+]

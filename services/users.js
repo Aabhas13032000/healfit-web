@@ -24,9 +24,25 @@ module.exports = {
                     req.totalUsers = totalUsers.length > 0 ? totalUsers[0].total : 0;
                     req.searchPage = false;
                     req.searchValue = '';
+                    req.statusValue = '';
                 }
                 next();
             });
+        });
+    },
+    getUserData: (req,res,next) => {
+        var query = "SELECT * FROM `users` WHERE `phoneNumber` <> '+910000000000' ORDER BY `id` DESC";
+        pool.query(query,function(err,results){
+            if(err) {
+                console.log(err);
+                res.json({
+                    message:'error'
+                });
+            } else {
+                res.json({
+                    data:results
+                });
+            }
         });
     },
     getEachUser: (req,res,next) => {
@@ -46,13 +62,13 @@ module.exports = {
         });
     },
     markeduserblocked : (req,res,next) => {
-        const query  = "SELECT * FROM `users` WHERE `id` = '"+ req.body.id +"' AND `status` = 1";
+        const query  = "SELECT * FROM `users` WHERE `id` = '"+ req.body.id +"' AND (`status` = 1 OR `status` = 2)";
         pool.query(query,function(err,results,fields){
             if(err) {
                 callback(err);
             } else {
-                if(results[0].blocked == 0){
-                    var query2  = "UPDATE `users` SET `status` = 2  WHERE `id` = '"+ req.body.id +"'";
+                if(results[0].status == 'BLOCKED'){
+                    var query2  = "UPDATE `users` SET `status` = 1  WHERE `id` = '"+ req.body.id +"'";
                 } else {
                     var query2  = "UPDATE `users` SET `status` = 2  WHERE `id` = '"+ req.body.id +"'";
                 }
@@ -68,7 +84,11 @@ module.exports = {
     },
     getSearchUser : (req,res,next) => {
         var queryData = req.query;
-        const query = "SELECT * FROM `users` WHERE `phoneNumber` LIKE '%"+ queryData.phone_number +"%'";
+        if(queryData.statusCategory.length != 0){
+            var query = "SELECT * FROM `users` WHERE (`phoneNumber` LIKE '%"+ queryData.phone_number +"%' OR `name` LIKE '%"+ queryData.phone_number +"%') AND `status` = "+ queryData.statusCategory +" AND `phoneNumber` <> '+910000000000' ORDER BY `id` DESC";
+        } else {
+            var query = "SELECT * FROM `users` WHERE (`phoneNumber` LIKE '%"+ queryData.phone_number +"%' OR `name` LIKE '%"+ queryData.phone_number +"%') AND `phoneNumber` <> '+910000000000' ORDER BY `id` DESC";
+        }
         pool.query(query,function(err,results,fields){
             if(err) {
                 req.error = 'Database error';
@@ -79,6 +99,7 @@ module.exports = {
                 req.page = 0;
                 req.searchPage = true;
                 req.searchValue = queryData.phone_number;
+                req.statusValue = queryData.statusCategory;
             }
             next();
         });
