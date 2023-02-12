@@ -48,16 +48,20 @@ module.exports = {
     getEachUser: (req,res,next) => {
         var queryData = req.query;
         var query = "SELECT * FROM `users` WHERE `id` = '"+ queryData.user_id +"'";
+        var user_devices = "SELECT * , COUNT(*) AS total_devices FROM `user_devices` WHERE `user_id` = '"+ queryData.user_id +"' AND `logged_in` = 1 GROUP BY `device`";
         var subscriptions = "SELECT * FROM `subscription` WHERE `user_id` = '"+ queryData.user_id +"'";
         pool.query(query,function(err,results){
-            pool.query(subscriptions,function(err,subscriptions){
-                if(err) {
-                    req.error = 'Database error';
-                } else {
-                    req.data = results[0];
-                    req.subscriptions = subscriptions;
-                }
-                next();
+            pool.query(user_devices,function(err,user_devices){
+                pool.query(subscriptions,function(err,subscriptions){
+                    if(err) {
+                        req.error = 'Database error';
+                    } else {
+                        req.data = results[0];
+                        req.subscriptions = subscriptions;
+                        req.user_devices = user_devices;
+                    }
+                    next();
+                });
             });
         });
     },

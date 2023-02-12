@@ -632,7 +632,6 @@ function saveData(event) {
     var age = document.getElementById('age').value;
     var weight = document.getElementById('weight').value;
     var target_weight = document.getElementById('target_weight').value;
-    var userId = document.getElementById('user_values').getAttribute('data-userId');
     var height = `${document.getElementById('ft').value}.${document.getElementById('in').value}`;
     if(gender.length != 0) {
         var selectedImage = document.getElementById('profileImageData').getAttribute('src');
@@ -665,7 +664,7 @@ function saveData(event) {
                     target_weight: target_weight.length != 0 ? target_weight : 0,
                     profile_image: selectedImage,
                     height: height,
-                    user_id: decodeURIComponent(document.cookie).split(';')[1].split('user_id=')[1],
+                    user_id: user_id,
                 },
                 success: function(response){
                     setTimeout(() => {
@@ -753,7 +752,7 @@ function saveData1(event) {
                     target_weight: target_weight.length != 0 ? target_weight : 0,
                     profile_image: selectedImage,
                     height: height,
-                    user_id: decodeURIComponent(document.cookie).split(';')[1].split('user_id=')[1],
+                    user_id: user_id,
                 },
                 success: function(response){
                     setTimeout(() => {
@@ -773,6 +772,86 @@ function saveData1(event) {
         alert('Select a gender');
     }
 }
+
+//save data
+function saveDataApperal(event) {
+    event.preventDefault();
+    var array = document.cookie.split(';');
+    var counter = 0;
+    var index = 0;
+    var userIndex = 0;
+    for(var i=0;i<array.length;i++) {
+        if(array[i].includes('currentUserToken=')){
+            counter++;
+            index = i;
+        }
+        if(array[i].includes('user_id=')){
+            counter++;
+            userIndex = i;
+        }
+    }
+    if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+        var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+        var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+    } else {
+        var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+        var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+    }
+    var name = document.getElementById('fullname1').value;
+    var email = document.getElementById('email1').value;
+    if(document.getElementsByClassName('selected-gcard')[0]) {
+        var gender = document.getElementsByClassName('selected-gcard')[0].getAttribute('data-gvalue');
+    } else {
+        var gender = '';
+    }
+    if(gender.length != 0) {
+        var selectedImage = document.getElementById('profileImageData1').getAttribute('src');
+        // if(selectedImage != '/images/local/addImage.png') {
+            if(selectedImage == '/images/local/addImage.png') {
+                if(gender == '1'){
+                    selectImage = '/images/local/male.png';
+                } else if(gender == '2'){
+                    selectImage = '/images/local/female.png';
+                } else if(gender == '3'){
+                    selectImage = '/images/local/others.png';
+                } else {
+                    selectImage = '/images/local/male.png';
+                }
+            }
+            $.ajax({
+                url : `${baseUrl}api/updateApperalData`,
+                dataType: "json",
+                type: "POST",
+                headers: {
+                    'token':token ? token : 'testing',
+                    'platform': 'WEB'
+                },
+                data: {
+                    name: name,
+                    email: email,
+                    gender: gender,
+                    profile_image: selectedImage,
+                    user_id: user_id,
+                },
+                success: function(response){
+                    setTimeout(() => {
+                        location.reload();
+                    },1000);
+                },
+                error: function(err){
+                    if(isDevelopment) {
+                    console.log(err);
+                }
+                }
+            });
+    //   } else {
+    //     alert('Select a profile image');
+    //   }
+    } else {
+        alert('Select a gender');
+    }
+}
+
 
   //Upload image
   function uploadImages() {
@@ -839,3 +918,218 @@ function saveData1(event) {
             }
         });
   }
+
+
+//alert(document.cookie);
+
+  //genrate random token
+  function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * 
+        charactersLength));
+    }
+    return result;
+}
+
+
+function setHomeCookie(cname,cvalue,exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    setHomeInitialData(cvalue);
+  }
+  
+  function getHomeCookie(cname) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
+  
+  async function checkHomeCookie() {
+    let user = getHomeCookie("currentUserToken");
+    // alert(user);
+    if (user != "") {
+        setHomeInitialData(user);
+    } else {
+        var token = await makeid(14);
+        setHomeCookie("currentUserToken", token, 365);
+    }
+  }
+
+
+  function setHomeInitialData(token) {
+    loginModal = new bootstrap.Modal(document.getElementById('login'));
+    state = history.state || {};
+    reloadCount = state.reloadCount || 0;
+    if (performance.navigation.type === 1) { // Reload
+        state.reloadCount = ++reloadCount;
+        history.replaceState(state, null, document.URL);
+    } else if (reloadCount) {
+        delete state.reloadCount;
+        reloadCount = 0;
+        history.replaceState(state, null, document.URL);
+    }
+    $.ajax({
+        url : `/api/createUser/`,
+        dataType: "json",
+        type: "GET",
+        headers: {
+            'token':token ? token : 'testing',
+            'Content-Type':'application/json',
+            'platform': 'WEB'
+        },
+        success: function(response){
+          if(isDevelopment) {
+                console.log(response);
+            }
+        //   console.log(window.location.pathname);
+            document.cookie = `user_id=${response.user[0].id}`;
+          if(response.user.length != 0){
+            user = response.user[0];
+            if(response.user[0].logged_in == 1){
+                if(response.user[0].status != 'BLOCKED'){
+                    document.getElementById('phone_number_input').style.display="none";
+                    document.getElementById('otp_verification').style.display="none";
+                    document.getElementById('user_values').style.display="block";
+                    document.getElementById('login_button_topbar').style.display="none";
+                    document.getElementById('login_button').style.display="none";
+                    document.getElementById('profile').style.display="flex";
+                    if(response.user[0].profile_image != null && response.user[0].profile_image.length != 0){
+                        document.getElementById('loggedInProfileImage').setAttribute('src',response.user[0].profile_image);
+                    } else {
+                        document.getElementById('loggedInProfileImage').setAttribute('src','/images/local/addImage.png');
+                    }
+                    document.getElementById('fullname1').value = response.user[0].name;
+                    document.getElementById('email1').value = response.user[0].email;
+                    if(response.user[0].gender.length != 0) {
+                        var gender = response.user[0].gender == 'MALE' ? '1' : response.user[0].gender == 'FEMALE' ? '2' : '3';
+                        var inside_selected_list = document.getElementsByClassName('selected-gcard')[0];
+                        if(inside_selected_list) {
+                            inside_selected_list.classList.remove('selected-gcard');
+                        }
+                        document.querySelectorAll('.gcards1').forEach(item => {
+                            if(item.getAttribute('data-gvalue') == gender) {
+                                item.classList.add('selected-gcard');
+                            }
+                        });
+                    }
+                    //Onclick select gender
+                    document.querySelectorAll('.gcards1').forEach(item => {
+                        item.addEventListener('click', event => {
+                            event.preventDefault();
+                            var inside_selected_list = document.getElementsByClassName('selected-gcard')[0];
+                            if(inside_selected_list) {
+                                inside_selected_list.classList.remove('selected-gcard');
+                            }
+                            item.classList.add('selected-gcard');
+                        });
+                    });
+
+                    document.getElementById('age1').value = response.user[0].age != '0' ? response.user[0].age : '';
+                    document.getElementById('weight1').value = response.user[0].weight != '0' ? response.user[0].weight :'';
+                    document.getElementById('target_weight1').value = response.user[0].target_weight != '0' ? response.user[0].target_weight : '';
+                    document.getElementById('ft1').value = response.user[0].height.toString().split('.')[0] != '0' ? response.user[0].height.toString().split('.')[0] : '';
+                    document.getElementById('in1').value = response.user[0].height.toString().split('.')[1] != '0' ? response.user[0].height.toString().split('.')[1] : '';
+                    if(response.user[0].profile_image != null && response.user[0].profile_image.length != 0){
+                        document.getElementById('profileImageData1').setAttribute('src',response.user[0].profile_image);
+                    } else {
+                        document.getElementById('profileImageData1').setAttribute('src','/images/local/addImage.png');
+                    }
+                    document.getElementById('delete-icon1').style.display = 'flex';
+                    if(document.getElementById('beforeLoginHeroSection')) {
+                        var heightInCm = parseFloat(response.user[0].height) * 30.48;
+                        var weight = parseFloat(response.user[0].weight);
+                        var age = parseInt(response.user[0].age);
+                        var s = response.user[0].gender == 'MALE' ? 5 : response.user[0].gender == 'FEMALE' ? -161 : 5;
+                        var calories= ((10.0 * weight) + (6.25 * heightInCm) - (5.0 * age) + s);
+                        document.getElementById('calorieCounterValue').setAttribute('data-calorieBurned', Math.ceil(calories));
+                        document.getElementById('beforeLoginHeroSection').style.display = 'none';
+                        document.getElementById('afterLoginHeroSection').style.display = 'flex';
+                    }
+                    document.getElementById('load').style.visibility="hidden";
+                } else {
+                    document.getElementById('load').style.visibility="hidden";
+                    alert('You are blocked by admin , so you can\'t login with this number!!');
+                }
+            } else {
+                // if(response.user[0].phoneNumber == '+910000000000'){
+                //     document.getElementById('load').style.visibility="hidden";
+                //     if(window.location.pathname == '/' && reloadCount <= 1){
+                //         setTimeout(() => {
+                //             loginModal.toggle();
+                //         },1000);
+                //     }
+                // } else {
+                // }
+
+                    if(response.user[0].is_otp_verified == 1){
+                        document.getElementById('load').style.visibility="hidden";
+                        document.getElementById('phone_number_input').style.display="none";
+                        document.getElementById('otp_verification').style.display="none";
+                        document.getElementById('user_values').style.display="block";
+                        if(response.user[0].name == null || response.user[0].age == 0){
+                                document.getElementById('fullname').value = response.user[0].name;
+                                document.getElementById('email').value = response.user[0].email;
+                                if(response.user[0].gender.length != 0) {
+                                    var gender = response.user[0].gender == 'MALE' ? '1' : response.user[0].gender == 'FEMALE' ? '2' : '3';
+                                    var inside_selected_list = document.getElementsByClassName('selected-gcard')[0];
+                                    if(inside_selected_list) {
+                                        inside_selected_list.classList.remove('selected-gcard');
+                                    }
+                                    document.querySelectorAll('.gcards').forEach(item => {
+                                        if(item.getAttribute('data-gvalue') == gender) {
+                                            item.classList.add('selected-gcard');
+                                        }
+                                    });
+                                }
+                                document.getElementById('age').value = response.user[0].age != '0' ? response.user[0].age : '';
+                                document.getElementById('weight').value = response.user[0].weight != '0' ? response.user[0].weight :'';
+                                document.getElementById('target_weight').value = response.user[0].target_weight != '0' ? response.user[0].target_weight : '';
+                                document.getElementById('ft').value = response.user[0].height.toString().split('.')[0] != '0' ? response.user[0].height.toString().split('.')[0] : '';
+                                document.getElementById('in').value = response.user[0].height.toString().split('.')[1] != '0' ? response.user[0].height.toString().split('.')[1] : '';
+                                if(response.user[0].profile_image != null && response.user[0].profile_image.length != 0){
+                                    document.getElementById('profileImageData').setAttribute('src',response.user[0].profile_image);
+                                } else {
+                                    document.getElementById('profileImageData').setAttribute('src','/images/local/addImage.png');
+                                }
+                            //Open name age modal 
+                            if(window.location.pathname == '/' && reloadCount <= 1 && window.location.href.indexOf('?') == -1){
+                                setTimeout(() => {
+                                    loginModal.toggle();
+                                },1000);
+                            }
+                        }
+                    } else {
+                        document.getElementById('load').style.visibility="hidden";
+                        if(window.location.pathname == '/' && reloadCount <= 1 && window.location.href.indexOf('?') == -1){
+                            setTimeout(() => {
+                                loginModal.toggle();
+                            },1000);
+                        }
+                    }
+            }
+          }
+            document.getElementById('load').style.visibility="hidden";
+        },
+        error: function(err){
+            if(isDevelopment) {
+                console.log(err);
+            }
+            alert('Some error occured !!');
+        }
+    });
+}

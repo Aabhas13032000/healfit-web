@@ -3,13 +3,17 @@ const router = express.Router();
 
 //Constants
 const constants = require('../../controllers/constants');
+//Middlewares
+const curectMiddlewares = require('../../services/apparels/main');
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', curectMiddlewares.getClothCategory ,function(req, res, next) {
   res.render('main/main',{
     page: 'Home',
     firebaseKey: constants.firebaseWebApiKey,
     isDevelopment: constants.isDevelopment,
+    categories_array:[],
+    product_categories: req.productCategories,
   });
   // res.render('main/maintinance');
 });

@@ -7,9 +7,16 @@ module.exports = {
             console.log(value);
         }
     },
-    razorpay_key_id: 'rzp_test_q3saAGtqUJ4pbi',
-    razorpay_key_secret: 'K10ENcDxn6C8XX5DBYZY1szo',
-    devLogoImageUrl: 'http://172.20.10.3:3000/images/local/logo.png',
+    razorpay_key_id: 'rzp_test_lM2PMkHKN6PfDv',
+    razorpay_key_secret: 'URfeTcD4GruYs47kOTAfSNcL',
+    razorpay_prduct_key_id: 'rzp_test_lM2PMkHKN6PfDv',
+    razorpay_product_key_secret: 'URfeTcD4GruYs47kOTAfSNcL',
+    devLogoImageUrl: 'http://healfit.in/images/local/logo.png',
     prodLogoImageUrl: 'https://healfit.in/images/local/logo.png',
-    firebaseWebApiKey: 'BDi-nWqIeoaCHo_N8NTsvsD6XfV9mePAe9GDuvqJkq48J6pqnSrRhMHzMSPP55xUrZM3bFiypqIs0vjlmMaEevo'
+    devProductLogoImageUrl: 'https://healfit.in/images/local/curectLogo.png',
+    prodProductLogoImageUrl: 'https://healfit.in/images/local/curectLogo.png',
+    firebaseWebApiKey: 'BDi-nWqIeoaCHo_N8NTsvsD6XfV9mePAe9GDuvqJkq48J6pqnSrRhMHzMSPP55xUrZM3bFiypqIs0vjlmMaEevo',
+    prodBaseUrl:'https://healfit.in/',
+    devBaseUrl:'http://localhost:3000/',
+    curectUrl:'curect.healfit.in'
 }

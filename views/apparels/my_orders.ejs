@@ -1,0 +1,149 @@
+<%- include('../components/header/apperals_header.ejs',{cssFile : 'index',page:page,isDevelopment: isDevelopment,mainUrl:mainUrl,product_categories:product_categories}) %> 
+
+<div id="load"></div>
+
+<div class="whatsapp_icon" onclick="window.open(`https:\/\/wa.me\/+919321596934`,'_blank')">
+    <a><span class="iconify" data-icon="ic:baseline-whatsapp"></span><span class="text">Contact us</span></a>
+</div>
+
+<div class="main-container">
+    <br><br><br><br>
+    <div class="container">
+        <div class="row d-flex align-items-center">
+            <div class="col-lg-9 col-md-8 col-sm-4 col-12" style="padding: 0px 0px 0px 10px !important;">
+                <div class="heading">
+                    <h5>My Orders</h5>
+                    <p>See all your orders here.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-8 col-12" style="padding: 0px 10px 0px 10px !important;">
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="container" id="moreOrders">
+        <div class="row experts" id="experts">
+            
+        </div>
+    </div>
+    <br>
+    <div class="load_more" id="load_more">
+        <div class="button">
+            <button class="btn btn-primary d-flex justify-content-center" onclick="getMoreOrders()">Load more</button>
+        </div>
+    </div>
+    <br><br>
+    <%- include('footer.ejs',{showContactExpert: true}) %>
+</div>
+
+<script>
+    var offset = 0;
+    var message = '<%- message %>';
+    var baseUrl = '<%- baseUrl %>';
+    var mainUrl = '<%- mainUrl %>';
+    var isDevelopment = '<%- isDevelopment %>' == 'true' ? true : false;
+
+    function getMoreOrders() {
+        offset = offset + 20;
+        getOrders(offset);
+    }
+
+    //Cancel Order
+    function cancelOrder(id,itemId,details,quantity) {
+        if(confirm('Are you sure, you want to cancel the order?') == true){
+            $.ajax({
+                url : `${baseUrl}api/products/changeOrderStatus?status=CANCELLED&details=${details}&quantity=${quantity}&item_id=${itemId}`,
+                dataType: "json",
+                type: "POST",
+                data:{
+                    id:id
+                },
+                success: function(response){
+                    location.reload();
+                },
+                error: function(err){
+                    console.log(err);
+                    location.reload();
+                    // alert('Some error occured !!');
+                }
+            });   
+        }
+    }
+
+    function getOrders(offset) {
+        if(message == 'payment_failed') {
+            alert('Some error occurred, Please contact us for any query');
+            window.location.href = '/myOrders';
+        } else if(message == 'payment_successfull') {
+            alert('Order placed successfull , See all your orders here');
+            window.location.href = '/myOrders';
+        } 
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('apperalUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('apperalUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        document.getElementById('load').style.visibility="visible";
+        document.getElementById('experts').innerHTML = '';
+        $.ajax({
+            url : `${baseUrl}api/products/getUserProductOrders?user_id=${user_id}&offset=${offset}`,
+            dataType: "json",
+            type: "GET",
+            headers: {
+                'token':token ? token : 'testing',
+                'Content-Type':'application/json',
+                'platform': 'WEB'
+            },
+            success: function(response){
+              if(isDevelopment) {
+                    console.log(response);
+                }
+                if(response.data.length != 0) {
+                    for(var i=0;i<response.data.length;i++){
+                        var url = `/each-product/${response.data[i].item_id}`;
+                        var color = response.data[i].status == "REJECTED" || response.data[i].status == "CANCELLED" ? 'var(--warning)' : response.data[i].status == "DELIVERED" ? 'var(--congrats)' : 'var(--highlight)';
+                        var bgcolor = response.data[i].status == "REJECTED" || response.data[i].status == "CANCELLED" ? 'var(--light-red)' : response.data[i].status == "DELIVERED" ? 'var(--light-green)' : 'var(--light-yellow)';
+                        var date = new Date(response.data[i].date_purchased);
+                        $('#experts').append(`<div class="col-lg-4 col-md-6 col-sm-12 col-12" style="padding:0 10px !important"><div class="cart-item product-cart-item card"><div class="top"><div class="image" onclick="window.location.href=\'${url}\'"><img src="${response.data[i].cover_photo}" alt=""></div><div class="name"><h4 onclick="window.location.href=\'${url}\'">${response.data[i].productName}</h4><p>Size: ${response.data[i].details}</p><br><p>Date: ${date.toDateString()}</p><br></div></div><hr><div class="bottom-total"><p>User Details : ${response.data[i].full_name}, ${response.data[i].phoneNumber}</p></div><div class="bottom-total"><p>Address : ${response.data[i].address}</p></div><div class="bottom-total"><p>Quantity : ${response.data[i].quantity}</p></div><div class="bottom-total"><p>Price : Rs ${response.data[i].paid_price}</p></div><div class="bottom-total"><p>Paymnet method : ${response.data[i].payment_method == 'online' ? 'Online' : 'Pay On Delivery'}</p></div><div class="bottom-total status" style=""><p style="background-color: ${bgcolor};color: ${color} !important;border: 1px solid ${color};">${response.data[i].status}</p>${response.data[i].status == "REJECTED" || response.data[i].status == "CANCELLED" || response.data[i].status == "DISPATCHED" || response.data[i].status == "ON THE WAY" || response.data[i].status == "DELIVERED" ? '' : `<div class="button" style="margin:10px 0px 0px 0px;display:flex;justify-content:flex-end;width:100%"><button style="border: 0;width: unset;display: flex;align-items: center;justify-content: center;padding:8px 15px !important" class="btn btn-primary" onclick="cancelOrder('${response.data[i].id}','${response.data[i].item_id}','${response.data[i].details}','${response.data[i].quantity}')">Cancel Order</button></div>`}</div></div></div>`);
+                      }
+                } else {
+                    if(offset == 0){
+                        $('#experts').append('<div class="col-12 text-center"><h6>No Orders present</h6></div>');
+                    }
+                }
+                if(response.totalOrders <= 20) {
+                    document.getElementById('load_more').style.display = 'none';
+                } else if(document.getElementsByClassName('expert-cards').length == response.totalOrders) {
+                    document.getElementById('load_more').style.display = 'none';
+                }
+                document.getElementById('load').style.visibility="hidden";
+            },
+            error: function(err){
+                if(isDevelopment) {
+                    console.log(err);
+                }
+                alert('Some error occured !!');
+            }
+        });
+    }
+    setTimeout(() => {
+        getOrders(offset);
+    },500);
+</script>
+<%- include('../components/footer/apperals_footer.ejs') %>

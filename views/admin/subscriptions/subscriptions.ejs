@@ -7,6 +7,100 @@
   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 
+<div class="modal fade" id="generateInvoice" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+      <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Generate Invoice</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" style="padding: 0;">
+            <div id="invoicePDF" style="padding:10px">
+              <table style="border-collapse: collapse;width:575px;table-layout:unset !important" border="0">
+                <tr style="width:100%">
+                  <td style="width:50%;">
+                    <a style="border: 0 !important;">
+                      <img src="/images/local/logo.png" style="width:50px">
+                      <span id="logoName" style="font-size: 20px;">HealFit</span>
+                    </a>
+                    <br>
+                    <br>
+                    <h6><b>HealFit Health and Wellness Pvt Ltd</b></h6>
+                    <h6><b>GSTIN - 09AAGCH3598B1ZG</b></h6>
+                    <h6><b>CIN - U85100UP2022PTC166110</b></h6>
+                  </td>
+                  <td style="text-align: right;vertical-align: bottom;width:50%;">
+                    <p style="margin: 0px;font-size:16px;">1237, , SIPRI BAZAR, Jhansi,<br>Jhansi, Uttar Pradesh, India - 284003</p>
+                    <p style="margin: 5px 0px 0px 0px;font-size:16px;">contact@curect.healfit.in</p>
+                    <p style="margin: 5px 0px 0px 0px;font-size:16px;">+91 9321596934</p>
+                  </td>
+                </tr>
+              </table>
+              <table style="border-collapse: collapse;width:575px;table-layout:unset !important" border="0">
+                <tr style="width:100%;border-top: 1px solid black !important">
+                  <td style="width: 50%;">
+                    <h5><b>Bill to:</b></h5>
+                    <h5 id="clientName" style="color:rgba(0,0,0,0.6)"></h5>
+                    <h5 id="clientMobileNumber" style="color:rgba(0,0,0,0.6)"></h5>
+                    <h5 id="clientAddress" style="color:rgba(0,0,0,0.6)"></h5>
+                    <h5><b>Invoice:</b> <span id="invoiceNumber" style="color:rgba(0,0,0,0.6)"></span></h5>
+                  </td>
+                  <td style="text-align: right;width: 50%;vertical-align:top;">
+                    <p id="purchaseDate" style="margin: 0px;font-size:17px;"></p>
+                  </td>
+                </tr>
+              </table>
+              <br><br>
+              <table style="border-collapse: collapse;width:575px;table-layout:unset !important" border="0">
+                <thead style="width:100%">
+                  <th style="border-top: 1px solid black !important;border-bottom: 0px !important;font-size:16px;"><b>ITEM</b></th>
+                  <th style="border-top: 1px solid black !important;border-bottom: 0px !important;font-size:16px;"><b>QUANTITY</b></th>
+                  <th style="border-top: 1px solid black !important;border-bottom: 0px !important;font-size:16px;"><b>UNIT PRICE</b></th>
+                  <th style="border-top: 1px solid black !important;border-bottom: 0px !important;font-size:16px;"><b>TOTAL</b></th>
+                </thead>
+                <tbody style="width:100%">
+                  <tr style="border-top: 1px solid black !important;border-bottom: 1px solid black !important;">
+                    <td>
+                      <h6 id="invoiceItem"></h6>
+                    </td>
+                    <td>
+                      <p id="invoiceQuantity" style="font-size:16px;"></p>
+                    </td>
+                    <td>
+                      <p id="invoiceUnitPrice" style="font-size:16px;"></p>
+                    </td>
+                    <td>
+                      <p id="invoiceTotalPrice" style="font-size:16px;"></p>
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 0px !important;">
+                    <td style="border-top: 0px !important;"></td>
+                    <td style="border-top: 0px !important;"></td>
+                    <td style="border-top: 0px !important;border-bottom: 1px solid black !important;">
+                      <h6>SUB TOTAL</h6>
+                    </td>
+                    <td style="border-top: 0px !important;border-bottom: 1px solid black !important;">
+                      <p id="invoiceSubTotalPrice" style="font-size:16px;"></p>
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 0px !important;">
+                    <td style="border-top: 0px !important;"></td>
+                    <td style="border-top: 0px !important;"></td>
+                    <td>
+                      <h6>TOTAL</h6>
+                    </td>
+                    <td>
+                      <p id="invoiceFinalTotalPrice" style="font-size:16px;"></p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+      </div>
+  </div>
+</div>
+
 <div class="modal fade" id="addSubscription" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content">
@@ -265,7 +359,7 @@
                       </div>
                     </div>
                     <div class="col-lg-4 col-md-6 d-flex align-items-center justify-content-md-end justify-content-start">
-                      <button id="add" class="btn btn-primary" onclick="generatePDF()"><span class="iconify" data-icon="bx:category"></span>&nbsp;&nbsp;Generate Invoice</button>
+                      <!-- <button id="add" class="btn btn-primary" onclick="generatePDF()"><span class="iconify" data-icon="bx:category"></span>&nbsp;&nbsp;Generate Invoice</button> -->
                       <% if(!searchPage) { %>
                         <button class="btn btn-primary addButton" onclick="getUsers()"><span class="iconify" data-icon="carbon:add-alt"></span>&nbsp;&nbsp;Add Subscription</button>
                       <% } else { %>
@@ -327,6 +421,7 @@
                               <a class="edit" onclick="editSubscription('<%= subscription.id %>','<%= subscription.session_count %>','<%= subscription.end_date %>','<%= subscription.pdf_path %>')"><span class="iconify" data-icon="akar-icons:edit"></span></a>
                             <% } %>  
                             <a class="delete" onclick="deleteSubscription('<%= subscription.id %>')"><span class="iconify" data-icon="ant-design:delete-outlined"></span></a>
+                            <a class="edit" onclick="genreateInvoice('<%= subscription.id %>','<%= subscription.userName %>','<%= subscription.phoneNumber %>','','<%= subscription.programName %>','',1,'<%= subscription.price %>','<%= subscription.date_purchased.toString().substring(0,15) %>')"><span class="iconify" data-icon="mingcute:file-download-line"></span></a>
                         </div>
                       </td>
                     </tr>
@@ -432,6 +527,10 @@
 <script src="/javascripts/common.js"></script>
 <!---->
 
+<!-- JS PDF -->
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.js"></script>
+
 <script>
 
 var dayTimeModal;
@@ -440,9 +539,37 @@ $(function(){
   // bootstraps modals
     editModal = new bootstrap.Modal(document.getElementById('editSubscription'));
     addModal = new bootstrap.Modal(document.getElementById('addSubscription'));
+    generateInvoiceModal = new bootstrap.Modal(document.getElementById('generateInvoice'));
 });
   
   /* Functions */
+
+  async function genreateInvoice(id,userName,phoneNumber,address,productName,color,quantity,paid_price,date_purchased) {
+    document.getElementById('clientName').innerHTML = userName;
+    document.getElementById('clientMobileNumber').innerHTML = phoneNumber;
+    document.getElementById('clientAddress').innerHTML = address;
+    document.getElementById('purchaseDate').innerHTML = date_purchased;
+    document.getElementById('invoiceNumber').innerHTML = `#${id}`;
+    document.getElementById('invoiceItem').innerHTML = `${productName}`;
+    document.getElementById('invoiceQuantity').innerHTML = quantity;
+    document.getElementById('invoiceUnitPrice').innerHTML = `Rs ${paid_price}`;
+    document.getElementById('invoiceTotalPrice').innerHTML = `Rs ${paid_price}`;
+    document.getElementById('invoiceSubTotalPrice').innerHTML = `Rs ${paid_price}`;
+    document.getElementById('invoiceFinalTotalPrice').innerHTML = `Rs ${paid_price}`;
+    document.getElementById('')
+    generateInvoiceModal.toggle();
+    document.getElementById('load').style.visibility="visible";
+    const { jsPDF } = window.jspdf;
+    var pdf = new jsPDF('p', 'pt','a4',true);
+		await pdf.html(document.getElementById('invoicePDF'), {
+			callback: function (pdf) {
+        pdf.save(`Invoice_${productName}_${date_purchased}.pdf`);
+        document.getElementById('load').style.visibility="hidden";
+        generateInvoiceModal.toggle();
+			},
+		});
+  }
+
   //Delete  Pdf
   function deleteCurrentPdf(path) {
     if(document.getElementById('success-alert')) {

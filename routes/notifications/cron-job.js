@@ -1,7 +1,7 @@
 var cron = require('node-cron');
 
 //weeks
-var weeks = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+var weeks = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
 //Firebase Admin
 var admin = require("firebase-admin");
@@ -101,10 +101,10 @@ cron.schedule('45 05 * * *', () => {
   console.log('Notification for session at 06:00 a.m');
   var date = new Date();
   var day = date.getDay();
-  if(day == 7){
-    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '06:00-07:00' AND (tp.`day_id` = 'All 7 days' OR tp.`day_id` LIKE '%"+ weeks[day - 1] +"%')";
+  if(day == 0){
+    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '06:00-07:00' AND (tp.`day_id` = 'All 7 days' OR tp.`day_id` LIKE '%"+ weeks[day] +"%')";
   } else {
-    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '06:00-07:00' AND (tp.`day_id` = 'All 6 days' OR tp.`day_id` LIKE '%"+ weeks[day - 1] +"%')";
+    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '06:00-07:00' AND (tp.`day_id` = 'All 6 days' OR tp.`day_id` LIKE '%"+ weeks[day] +"%')";
   }
   pool.query(sql,function(err,data){
       sendNotification(data,'Session','Your session is starting in 15 mins','myPrograms').then((result) => {
@@ -119,10 +119,10 @@ cron.schedule('45 06 * * *', () => {
   console.log('Notification for session at 07:00 a.m');
   var date = new Date();
   var day = date.getDay();
-  if(day == 7){
-    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '07:00-08:00' AND (tp.`day_id` = 'All 7 days' OR tp.`day_id` LIKE '%"+ weeks[day - 1] +"%')";
+  if(day == 0){
+    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '07:00-08:00' AND (tp.`day_id` = 'All 7 days' OR tp.`day_id` LIKE '%"+ weeks[day] +"%')";
   } else {
-    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '07:00-08:00' AND (tp.`day_id` = 'All 6 days' OR tp.`day_id` LIKE '%"+ weeks[day - 1] +"%')";
+    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '07:00-08:00' AND (tp.`day_id` = 'All 6 days' OR tp.`day_id` LIKE '%"+ weeks[day] +"%')";
   }
   pool.query(sql,function(err,data){
       sendNotification(data,'Session','Your session is starting in 15 mins','myPrograms').then((result) => {
@@ -137,10 +137,10 @@ cron.schedule('45 07 * * *', () => {
   console.log('Notification for session at 08:00 a.m');
   var date = new Date();
   var day = date.getDay();
-  if(day == 7){
-    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '08:00-09:00' AND (tp.`day_id` = 'All 7 days' OR tp.`day_id` LIKE '%"+ weeks[day - 1] +"%')";
+  if(day == 0){
+    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '08:00-09:00' AND (tp.`day_id` = 'All 7 days' OR tp.`day_id` LIKE '%"+ weeks[day] +"%')";
   } else {
-    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '08:00-09:00' AND (tp.`day_id` = 'All 6 days' OR tp.`day_id` LIKE '%"+ weeks[day - 1] +"%')";
+    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '08:00-09:00' AND (tp.`day_id` = 'All 6 days' OR tp.`day_id` LIKE '%"+ weeks[day] +"%')";
   }
   pool.query(sql,function(err,data){
       sendNotification(data,'Session','Your session is starting in 15 mins','myPrograms').then((result) => {
@@ -155,10 +155,10 @@ cron.schedule('45 08 * * *', () => {
   console.log('Notification for session at 09:00 a.m');
   var date = new Date();
   var day = date.getDay();
-  if(day == 7){
-    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '09:00-10:00' AND (tp.`day_id` = 'All 7 days' OR tp.`day_id` LIKE '%"+ weeks[day - 1] +"%')";
+  if(day == 0){
+    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '09:00-10:00' AND (tp.`day_id` = 'All 7 days' OR tp.`day_id` LIKE '%"+ weeks[day] +"%')";
   } else {
-    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '09:00-10:00' AND (tp.`day_id` = 'All 6 days' OR tp.`day_id` LIKE '%"+ weeks[day - 1] +"%')";
+    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '09:00-10:00' AND (tp.`day_id` = 'All 6 days' OR tp.`day_id` LIKE '%"+ weeks[day] +"%')";
   }
   pool.query(sql,function(err,data){
       sendNotification(data,'Session','Your session is starting in 15 mins','myPrograms').then((result) => {
@@ -221,10 +221,10 @@ cron.schedule('45 08 * * *', () => {
 cron.schedule('45 14 * * *', () => {
   console.log('Notification for session at 15:00 a.m');
   var date = new Date();
-  if(day == 7){
-    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '15:00-16:00' AND (tp.`day_id` = 'All 7 days' OR tp.`day_id` LIKE '%"+ weeks[day - 1] +"%')";
+  if(day == 0){
+    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '15:00-16:00' AND (tp.`day_id` = 'All 7 days' OR tp.`day_id` LIKE '%"+ weeks[day] +"%')";
   } else {
-    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '15:00-16:00' AND (tp.`day_id` = 'All 6 days' OR tp.`day_id` LIKE '%"+ weeks[day - 1] +"%')";
+    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '15:00-16:00' AND (tp.`day_id` = 'All 6 days' OR tp.`day_id` LIKE '%"+ weeks[day] +"%')";
   }
   pool.query(sql,function(err,data){
       sendNotification(data,'Session','Your session is starting in 15 mins','myPrograms').then((result) => {
@@ -239,10 +239,10 @@ cron.schedule('45 15 * * *', () => {
   console.log('Notification for session at 16:00 a.m');
   var date = new Date();
   var day = date.getDay();
-  if(day == 7){
-    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '16:00-17:00' AND (tp.`day_id` = 'All 7 days' OR tp.`day_id` LIKE '%"+ weeks[day - 1] +"%')";
+  if(day == 0){
+    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '16:00-17:00' AND (tp.`day_id` = 'All 7 days' OR tp.`day_id` LIKE '%"+ weeks[day] +"%')";
   } else {
-    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '16:00-17:00' AND (tp.`day_id` = 'All 6 days' OR tp.`day_id` LIKE '%"+ weeks[day - 1] +"%')";
+    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '16:00-17:00' AND (tp.`day_id` = 'All 6 days' OR tp.`day_id` LIKE '%"+ weeks[day] +"%')";
   }
   pool.query(sql,function(err,data){
       sendNotification(data,'Session','Your session is starting in 15 mins','myPrograms').then((result) => {
@@ -257,10 +257,10 @@ cron.schedule('45 16 * * *', () => {
   console.log('Notification for session at 17:00 a.m');
   var date = new Date();
   var day = date.getDay();
-  if(day == 7){
-    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '17:00-18:00' AND (tp.`day_id` = 'All 7 days' OR tp.`day_id` LIKE '%"+ weeks[day - 1] +"%')";
+  if(day == 0){
+    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '17:00-18:00' AND (tp.`day_id` = 'All 7 days' OR tp.`day_id` LIKE '%"+ weeks[day] +"%')";
   } else {
-    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '17:00-18:00' AND (tp.`day_id` = 'All 6 days' OR tp.`day_id` LIKE '%"+ weeks[day - 1] +"%')";
+    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '17:00-18:00' AND (tp.`day_id` = 'All 6 days' OR tp.`day_id` LIKE '%"+ weeks[day] +"%')";
   }
   pool.query(sql,function(err,data){
       sendNotification(data,'Session','Your session is starting in 15 mins','myPrograms').then((result) => {
@@ -304,12 +304,14 @@ cron.schedule('45 17 * * *', () => {
   console.log('Notification for session at 18:00 a.m');
   var date = new Date();
   var day = date.getDay();
-  if(day == 7){
-    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '18:00-19:00' AND (tp.`day_id` = 'All 7 days' OR tp.`day_id` LIKE '%"+ weeks[day - 1] +"%')";
+  if(day == 0){
+    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '18:00-19:00' AND (tp.`day_id` = 'All 7 days' OR tp.`day_id` LIKE '%"+ weeks[day] +"%')";
   } else {
-    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '18:00-19:00' AND (tp.`day_id` = 'All 6 days' OR tp.`day_id` LIKE '%"+ weeks[day - 1] +"%')";
+    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '18:00-19:00' AND (tp.`day_id` = 'All 6 days' OR tp.`day_id` LIKE '%"+ weeks[day] +"%')";
   }
+  // console.log(sql);
   pool.query(sql,function(err,data){
+      console.log(data.length);
       sendNotification(data,'Session','Your session is starting in 15 mins','myPrograms').then((result) => {
         console.log('success' + result);
       }).catch((err) => {
@@ -322,10 +324,10 @@ cron.schedule('45 18 * * *', () => {
   console.log('Notification for session at 19:00 a.m');
   var date = new Date();
   var day = date.getDay();
-  if(day == 7){
-    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '19:00-20:00' AND (tp.`day_id` = 'All 7 days' OR tp.`day_id` LIKE '%"+ weeks[day - 1] +"%')";
+  if(day == 0){
+    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '19:00-20:00' AND (tp.`day_id` = 'All 7 days' OR tp.`day_id` LIKE '%"+ weeks[day] +"%')";
   } else {
-    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '19:00-20:00' AND (tp.`day_id` = 'All 6 days' OR tp.`day_id` LIKE '%"+ weeks[day - 1] +"%')";
+    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '19:00-20:00' AND (tp.`day_id` = 'All 6 days' OR tp.`day_id` LIKE '%"+ weeks[day] +"%')";
   }
   pool.query(sql,function(err,data){
       sendNotification(data,'Session','Your session is starting in 15 mins','myPrograms').then((result) => {
@@ -339,10 +341,10 @@ cron.schedule('45 18 * * *', () => {
 cron.schedule('45 19 * * *', () => {
   console.log('Notification for session at 20:00 a.m');
   var day = date.getDay();
-  if(day == 7){
-    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '20:00-21:00' AND (tp.`day_id` = 'All 7 days' OR tp.`day_id` LIKE '%"+ weeks[day - 1] +"%')";
+  if(day == 0){
+    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '20:00-21:00' AND (tp.`day_id` = 'All 7 days' OR tp.`day_id` LIKE '%"+ weeks[day] +"%')";
   } else {
-    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '20:00-21:00' AND (tp.`day_id` = 'All 6 days' OR tp.`day_id` LIKE '%"+ weeks[day - 1] +"%')";
+    var sql = "SELECT ud.`device_id`,ud.`user_id` FROM `subscription` s INNER JOIN `trainer_programs` tp ON tp.id = s.trainer_program_id INNER JOIN `user_devices` ud ON ud.`user_id` = s.`user_id` WHERE s.`status` = 1 AND tp.`time_id` = '20:00-21:00' AND (tp.`day_id` = 'All 6 days' OR tp.`day_id` LIKE '%"+ weeks[day] +"%')";
   }
   pool.query(sql,function(err,data){
       sendNotification(data,'Session','Your session is starting in 15 mins','myPrograms').then((result) => {
@@ -377,7 +379,7 @@ cron.schedule('45 19 * * *', () => {
 //   });
 // });
 
-cron.schedule('00 23 * * *', () => {
+cron.schedule('00 22 * * *', () => {
   console.log('Notification for no entries for calorie at 11:00 p.m.');
   var date = new Date();
   var sql = "SELECT ud.`device_id`, ud.`user_id` FROM `user_devices` ud WHERE ud.logged_in = 1 AND (SELECT COUNT(*) FROM `user_calories` uc WHERE uc.`user_id` = ud.`user_id` AND uc.created_at LIKE '%"+ date.toISOString().split('T')[0] +"%') = 0";
@@ -398,7 +400,7 @@ cron.schedule('00 23 * * *', () => {
   });
 });
 
-cron.schedule('15 23 * * *', () => {
+cron.schedule('15 22 * * *', () => {
   console.log('Notification for no entries for workout at 11:15 p.m');
   var date = new Date();
   var sql = "SELECT ud.`device_id`, ud.`user_id` FROM `user_devices` ud WHERE ud.logged_in = 1 AND (SELECT COUNT(*) FROM `user_exercise` uc WHERE uc.`user_id` = ud.`user_id` AND uc.created_at LIKE '%"+ date.toISOString().split('T')[0] +"%') = 0";

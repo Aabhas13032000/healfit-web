@@ -1,3 +1,242 @@
-<h1>
-apparels
-</h1>
+<%- include('../components/header/apperals_header.ejs',{cssFile : 'index',page:page,isDevelopment: isDevelopment,mainUrl:mainUrl,product_categories:product_categories}) %> 
+
+<div id="load"></div>
+
+<div class="main-container">
+    <br><br><br><br>
+    <div class="container-fluid product_slider">
+        <div class="product_slider_card">
+            <div class="image">
+                <img src="" alt="">
+            </div>
+            <div class="white_box">
+
+            </div>
+            <div class="content">
+
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row d-flex align-items-center">
+            <div class="col-lg-9 col-md-8 col-sm-4 col-12" style="padding: 0px 0px 0px 10px !important;">
+                <div class="heading">
+                    <% if(gender.length != 0) { %> 
+                        <% if(gender == 'MALE'){ %>
+                            <h5>Men</h5>
+                        <% } else if(gender == 'WOMEN'){ %>  
+                            <h5>Women</h5>
+                        <% } else if(gender == 'UNISEX'){ %>
+                            <h5>Unisex</h5>
+                        <% } %> 
+                    <% } else { %>
+                        <h5>Products</h5>
+                    <% } %>  
+                    <p>See all the products here.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-8 col-12" style="padding: 0px 10px 0px 10px !important;">
+                <div>
+                    <form onsubmit="getSearchedProducts(event)" method="get" class="search-form">
+                        <div class="form-group input-group search">
+                            <a><span class="iconify" data-icon="akar-icons:search"></span></a>
+                            <input type="text" class="form-control" id="searchText" name="searchedTitle" placeholder="Search by name...">
+                        </div>
+                        <input type="submit" hidden />
+                    </form>
+                </div>
+            </div>
+            <div class="col-12" style="padding: 10px 10px 0px 10px !important;">
+                <div class="product_category_tabs">
+                    <% for(var i=0;i<categories_array.length;i++){ %> 
+                        <% if(i == 0) {%> 
+                            <a class="product_category_tab selected"><%= categories_array[i].cloth_category %></a>
+                        <% } else { %> 
+                            <a class="product_category_tab"><%= categories_array[i].cloth_category %></a>
+                        <% } %>
+                    <% } %> 
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="morePrograms">
+        <div class="row experts" id="experts">
+            
+        </div>
+    </div>
+    <br>
+    <div class="load_more" id="load_more">
+        <div class="button">
+            <button class="btn btn-primary d-flex justify-content-center" onclick="getMoreProducts()">Load more</button>
+        </div>
+    </div>
+    <br>
+    <%- include('footer.ejs',{isDevelopment: isDevelopment,mainUrl:mainUrl}) %> 
+</div>
+
+
+<script>
+
+    //Onclick moving box
+    document.querySelectorAll('.product_category_tab').forEach(item => {
+        item.addEventListener('click', event => {
+            event.preventDefault();
+            var inside_selected_list = document.getElementsByClassName('selected')[0];
+            if(inside_selected_list) {
+                inside_selected_list.classList.remove('selected');
+            }
+            item.classList.add('selected');
+            offset = 0;
+            getInitialData(0);
+        });
+    });
+
+    var isDevelopment = '<%- isDevelopment %>' == 'true' ? true : false;
+    var baseUrl = '<%- baseUrl %>';
+    var mainUrl = '<%- mainUrl %>';
+    var gender = '<%- gender %>';
+    var offset = 0;
+
+    function getMoreProducts() {
+        offset = offset + 20;
+        getInitialData(offset);
+    }
+
+
+    function getSearchedProducts(event) {
+        var selectedTab = document.getElementsByClassName('selected')[0].innerHTML;
+        event.preventDefault();
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('apperalUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('apperalUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        document.getElementById('load').style.visibility="visible";
+        var value = document.getElementById('searchText').value;
+        if(value.length != 0){
+        document.getElementById('experts').innerHTML = '';
+            $.ajax({
+                url : `${baseUrl}api/products/getSearchProductsByGender?gender=${gender.length != 0 ? gender : 'All'}&name=${value}` + (selectedTab == 'ALL' ? '' : `&category=${selectedTab}`),
+                dataType: "json",
+                type: "GET",
+                headers: {
+                    'token':token ? token : 'testing',
+                    'Content-Type':'application/json',
+                    'platform': 'WEB'
+                },
+                success: function(response){
+                    if(isDevelopment) {
+                        console.log(response);
+                    }
+                    if(response.products.length != 0) {
+                        for(var i=0;i<response.products.length;i++){
+                            var discount = response.products[i].discount_price == 0 ? 0 : Math.round((parseInt(response.products[i].price) - parseInt(response.products[i].discount_price))/parseInt(response.products[i].price) * 100);
+                            var url = `/each-product/${response.products[i].id}`;
+                            $('#experts').append('<div class="col-lg-3 col-md-4 col-sm-6 col-12"><div class="box4" style="margin: 0;" onclick="window.location.href=\''+ url +'\'"><div class="image"><img src="'+ response.products[i].cover_photo +'" alt=""></div><div class="inside_container"><div class="text"><h5>'+ response.products[i].name +'</h5><h5 class="price-info"><span class="disount_price" style="color:'+ (response.products[i].discount_price == 0 ? 'var(--congrats);font-family:Gilroy-Medium' : 'var(--rich-black)' ) +'">'+ (response.products[i].discount_price == 0 ? 'Free' : 'Rs.' + response.products[i].discount_price ) +'</span>'+ (discount == 0 ? '' : '&nbsp;&nbsp;<span class="price">Rs.'+ response.products[i].price +'</span>&nbsp;&nbsp;<span class="discount-per">'+ discount +'% Off</span>') +'</h5></div></div>'+ (response.products[i].stock == 0 ? '<div class="outOfStock"><p>Out of stock</p></div>' : ' ') +'</div></div>');
+                        }
+                    } else {
+                        document.getElementById('experts').innerHTML = '<div class="col-12 text-center" style="margin-top:30px;"><h6>No Products present</h6></div>';
+                    }
+                    document.getElementById('load_more').style.display = 'none';
+                    document.getElementById('load').style.visibility="hidden";
+                },
+                error: function(err){
+                    if(isDevelopment) {
+                    console.log(err);
+                }
+                    alert('Some error occured !!');
+                }
+            });
+        } else {
+            getInitialData(0);
+        }
+    }
+
+    function getInitialData(offset) {
+        var selectedTab = document.getElementsByClassName('selected')[0].innerHTML;
+        var today = new Date();
+        var array = document.cookie.split(';');
+            var counter = 0;
+            var index = 0;
+            var userIndex = 0;
+            for(var i=0;i<array.length;i++) {
+                if(array[i].includes('apperalUserToken=')){
+                    counter++;
+                    index = i;
+                }
+                if(array[i].includes('user_id=')){
+                    counter++;
+                    userIndex = i;
+                }
+            }
+            if(decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1]) {
+                var token = decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1];
+                var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+            } else {
+                var token = document.cookie.split(';')[index].split('apperalUserToken=')[1];
+                var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+            }
+            document.getElementById('load').style.visibility="visible";
+            if(offset == 0) {
+                document.getElementById('experts').innerHTML = '';
+            }
+            $.ajax({
+                url : `${baseUrl}api/products/getProductsByGender?gender=${gender.length != 0 ? gender : 'All'}&offset=${offset}` + (selectedTab == 'ALL' ? '' : `&category=${selectedTab}`),
+                dataType: "json",
+                type: "GET",
+                headers: {
+                    'token':token ? token : 'testing',
+                    'Content-Type':'application/json',
+                    'platform': 'WEB'
+                },
+                success: function(response){
+                    if(isDevelopment) {
+                        console.log(response);
+                    }
+                    if(response.products.length != 0) {
+                        for(var i=0;i<response.products.length;i++){
+                            var discount = response.products[i].discount_price == 0 ? 0 : Math.round((parseInt(response.products[i].price) - parseInt(response.products[i].discount_price))/parseInt(response.products[i].price) * 100);
+                            var url = `/each-product/${response.products[i].id}`;
+                            $('#experts').append('<div class="col-lg-3 col-md-4 col-sm-6 col-12"><div class="box4" style="margin: 0;" onclick="window.location.href=\''+ url +'\'"><div class="image"><img src="'+ response.products[i].cover_photo +'" alt=""></div><div class="inside_container"><div class="text"><h5>'+ response.products[i].name +'</h5><h5 class="price-info"><span class="disount_price" style="color:'+ (response.products[i].discount_price == 0 ? 'var(--congrats);font-family:Gilroy-Medium' : 'var(--rich-black)' ) +'">'+ (response.products[i].discount_price == 0 ? 'Free' : 'Rs.' + response.products[i].discount_price ) +'</span>'+ (discount == 0 ? '' : '&nbsp;&nbsp;<span class="price">Rs.'+ response.products[i].price +'</span>&nbsp;&nbsp;<span class="discount-per">'+ discount +'% Off</span>') +'</h5></div></div>'+ (response.products[i].stock == 0 ? '<div class="outOfStock"><p>Out of stock</p></div>' : ' ') +'</div></div>');
+                        }
+                    }
+                    if(response.totalProducts == 0){
+                        $('#experts').append('<div class="col-12 text-center" style="margin-top:30px;"><h6>No Products present</h6></div>');
+                    }
+                        if(response.totalProducts <= 20) {
+                            document.getElementById('load_more').style.display = 'none';
+                        } else if(document.getElementsByClassName('box3').length == response.totalProducts) {
+                            document.getElementById('load_more').style.display = 'none';
+                        }
+                    document.getElementById('load').style.visibility="hidden";
+                },
+                error: function(err){
+                    if(isDevelopment) {
+                    console.log(err);
+                }
+                    alert('Some error occured !!');
+                }
+            });
+    }
+    setTimeout(() => {
+        getInitialData(offset);
+    },500);
+</script>
+
+<%- include('../components/footer/apperals_footer.ejs') %>

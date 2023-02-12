@@ -1,0 +1,404 @@
+<%- include('../components/header/apperals_header.ejs',{cssFile : 'index',page:page,isDevelopment: isDevelopment,mainUrl:mainUrl,product_categories:product_categories}) %> 
+
+<div id="load"></div>
+
+<div id="productGallery">
+    <div class="blurBg" onclick="openGallery(0)"></div>
+    <div class="productImages">
+        <div id="carouselExampleControls" class="carousel slide" data-bs-interval="false">
+            <div class="carousel-inner" id="profile-slider-2">
+            </div>
+            <button class="carousel-control-prev leftButtonOne" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                <a><span class="iconify" data-icon="eva:arrow-ios-back-fill"></span></a>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next rightButtonOne" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                <a><span class="iconify" data-icon="eva:arrow-ios-forward-fill"></span></a>
+              <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="sizeChart" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Size chart</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="padding: 0;">
+                <img src="" id="sizeChartImg" alt="" width="100%">
+                <p id="sizeChartMessage"></p>
+            </div>
+        </div>
+    </div>
+  </div>
+
+<div class="main-container eachExpert">
+    <br><br><br>
+    <div class="container" style="padding: 0;">
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                <div id="mobile-profile-slider">
+                    <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner" id="mobile_product_sliders_value">
+                        </div>
+                        <button class="carousel-control-prev icon4" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                            <a><span class="iconify" data-icon="eva:arrow-ios-back-fill"></span></a>
+                        </button>
+                        <button class="carousel-control-next icon3" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                            <a><span class="iconify" data-icon="eva:arrow-ios-forward-fill"></span></a>
+                        </button>
+                      </div>
+                </div>
+                <div class="row image_selectors" id="profile-slider">
+                    <!-- <div class="arrow-left icon" id="left" onclick="leftButtonClicked('slider','box',event)">
+                        <a><span class="iconify" data-icon="eva:arrow-ios-back-fill"></span></a>
+                    </div>
+                    <div class="arrow-right icon" id="right" onclick="rightButtonClicked('slider','box',event)">
+                        <a><span class="iconify" data-icon="eva:arrow-ios-forward-fill"></span></a>
+                    </div>
+                    <div class="images">
+                        <div class="image-card selected">
+                            <img src="https://cdn-images.cure.fit/www-curefit-com/image/upload/fl_progressive,f_auto,q_auto:eco,w_500,ar_3:4,c_fill/dpr_2/cultgear-content/k1TBuGPMCa2NkTDKEiqVbmCW" alt="">
+                        </div>
+                        <div class="image-card">
+                            <img src="https://cdn-images.cure.fit/www-curefit-com/image/upload/fl_progressive,f_auto,q_auto:eco,w_500,ar_3:4,c_fill/dpr_2/cultgear-content/cYgqxMmmZcMMUi6cGsj7JtLF" alt="">
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-12" id="product-info">
+                <div class="name">
+                    <h3 id="productName"></h3>
+                </div>
+                <b><h5 id="out-of-stock">Out of stock</h5></b>
+                <div class="product-price">
+                    <h2 id="product-discount-price"></h2>
+                    <h2 id="product-actual-price"></h2>
+                    <a id="product-discount"></a>
+                </div>
+                <br>
+                <h5 id="more_colors_heading" class="product-headings">More Colors</h5>
+                <div class="more_colors d-flex justify-content-start" id="more_colors">
+                </div>
+                <br>
+                <div class="accordion-item" style="background-color: transparent !important;box-shadow: unset !important; border: 0px">
+                    <h2 class="accordion-header" style="background-color: transparent !important;" id="headingOne">
+                      <button class="accordion-button" style="background-color: transparent !important;box-shadow: unset !important;padding: 0; border-bottom: unset !important" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        <h5>Description</h5>
+                      </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                      <div class="accordion-body">
+                        <div class="description" id="product-desc">
+                        </div>
+                      </div>
+                    </div>
+                </div>
+                <div class="d-flex align-item-center justify-content-between" style="margin-top: 20px;">
+                    <h5 class="product-headings">Choose Size</h5>
+                    <a href="#sizeChart" data-bs-toggle="modal"  style="color: var(--sub-text);font-family:Hellix-Medium;border:0 !important">Size Chart</a>
+                </div>
+                <div class="sizes d-flex justify-content-center justify-content-md-start">
+                    <a class="size-tab">XS</a>
+                    <a class="size-tab">S</a>   
+                    <a class="size-tab">M</a>   
+                    <a class="size-tab">L</a>   
+                    <a class="size-tab">XL</a>   
+                    <a class="size-tab">XXL</a>   
+                </div>
+                <b><p id="left-stock" style="color: var(--warning);margin-bottom:0px;margin-top:10px"></p></b>
+                <div class="button d-flex">
+                    <button type="button" onclick="checkout('<%- id %>')" id="purchase_now_button" class="btn btn-primary d-flex justify-content-center" style="margin-top: 20px;flex: 1;margin-right: 5px;">Purchase now</button>
+                    <button type="button" onclick="addToCart('<%- id %>')" id="add_to_cart_button" class="btn btn-primary d-flex justify-content-center" style="margin-top: 20px;flex: 1;margin-left: 5px;background-color: transparent !important;color: var(--highlight);">Add to Cart</button>
+                </div>
+            </div>
+            <div class="col-12" id="trainerPrograms" style="margin-top: 30px;">
+                <div class="heading" id="heading">
+                    <h5>Related products</h5>
+                </div>
+                <div class="row experts" id="morePrograms" style="margin-top: 10px !important">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <%- include('footer.ejs',{isDevelopment: isDevelopment,mainUrl:mainUrl}) %> 
+</div>
+
+<script>
+    var isDevelopment = '<%- isDevelopment %>' == 'true' ? true : false;
+    var mainUrl = '<%- mainUrl %>';
+    var baseUrl = '<%- baseUrl %>';
+
+    //open Gallery
+    function openGallery(id){
+        var displayGallery = document.getElementById('productGallery').style.display;
+        if(displayGallery == 'none' || displayGallery.length == 0) {
+            document.getElementById('productGallery').style.display = 'block';
+            var array = document.querySelectorAll('.clothSliders2');
+            array.forEach((item) => {
+                if( !item.classList.contains('active') && item.getAttribute('data-activeId') == id) {
+                    item.classList.add('active');
+                } else if( item.classList.contains('active') && item.getAttribute('data-activeId') == id) {
+                } else {
+                    if(item.classList.contains('active')) {
+                        item.classList.remove('active');
+                    }
+                }
+            })
+        } else if(displayGallery == 'block') {
+            document.getElementById('productGallery').style.display = 'none';
+        }
+    }
+
+    //Onclick moving box
+    document.querySelectorAll('.size-tab').forEach(item => {
+        item.addEventListener('click', event => {
+            event.preventDefault();
+            document.getElementById('left-stock').innerHTML = '';
+            var inside_selected_list = document.getElementsByClassName('selected-size')[0];
+            if(inside_selected_list) {
+                inside_selected_list.classList.remove('selected-size');
+            }
+            var quantity = item.getAttribute('data-quantity');
+            if(parseInt(quantity) <= 2) {
+                document.getElementById('left-stock').innerHTML = `Only ${quantity} left in stock`;
+            }
+            if(item.classList.contains('active-size')){
+                item.classList.add('selected-size');
+            }
+        });
+    });
+
+    //Checkout
+    function checkout(id) {
+        var element = document.getElementById('login_button_topbar');
+        var element2 = document.getElementById('login_button');
+        if(element.style.display == "block" || element2.style.display =="block" || element.style.display == "" || element2.style.display =="") {
+            alert('Please login first');
+        } else {
+            var selectedSize = document.getElementsByClassName('selected-size')[0];
+            if(selectedSize) {
+                window.location.href = `/checkout?product_id=` + id + `&size=` + selectedSize.innerHTML;
+            } else {
+                alert('Select a size first');
+            }
+        }
+    }
+
+    async function addToCart(id) {
+        var element = document.getElementById('login_button_topbar');
+        var element2 = document.getElementById('login_button');
+        if(element.style.display == "block" || element2.style.display =="block" || element.style.display == "" || element2.style.display =="") {
+            alert('Please login first');
+        } else {
+            var array = document.cookie.split(';');
+            var counter = 0;
+            var index = 0;
+            var userIndex = 0;
+            for(var i=0;i<array.length;i++) {
+                if(array[i].includes('apperalUserToken=')){
+                    counter++;
+                    index = i;
+                }
+                if(array[i].includes('user_id=')){
+                    counter++;
+                    userIndex = i;
+                }
+            }
+            if(decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1]) {
+                var token = decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1];
+                var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+            } else {
+                var token = document.cookie.split(';')[index].split('apperalUserToken=')[1];
+                var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+            }
+            var selectedSize = document.getElementsByClassName('selected-size')[0];
+            selected_size = selectedSize.innerHTML.includes('<span>') ? selectedSize.innerHTML.split('<span>')[0] : selectedSize.innerHTML ;
+            if(selectedSize) {
+                $.ajax({
+                    url : `${baseUrl}api/cart/addProductToCart`,
+                    dataType: "json",
+                    type: "POST",
+                    headers: {
+                        'token':token ? token : 'testing',
+                        'platform': 'WEB'
+                    },
+                    data:{
+                        item_category: 'product',
+                        item_id:id,
+                        user_id: user_id,
+                        description: selected_size
+                    },
+                    success: function(response){
+                        if(isDevelopment) {
+                            console.log(response);
+                        }
+                        if(response.message == 'success') {
+                            alert('Added to cart successfully');
+                            location.reload();
+                        } else {
+                            alert('Some error occured !!');
+                            location.reload();
+                        }
+                    },
+                    error: function(err){
+                        if(isDevelopment) {
+                            console.log(err);
+                        }
+                        alert('Some error occured !!');
+                    }
+                });
+            } else {
+                alert('Select a size first');
+            }
+        }
+    }
+    
+    function getEachExpert() {
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('apperalUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('apperalUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        document.getElementById('load').style.visibility="visible";
+        document.getElementById('profile-slider').innerHTML = '';
+        var id = '<%- id %>';
+        $.ajax({
+            url : `${baseUrl}api/products/getEachProduct?id=${id}`,
+            dataType: "json",
+            type: "GET",
+            headers: {
+                'token':token ? token : 'testing',
+                'Content-Type':'application/json',
+                'platform': 'WEB'
+            },
+            success: function(response){
+              if(isDevelopment) {
+                    console.log(response);
+                }
+              if(response.data.length != 0){
+                var dis = response.data[0].discount_price == 0 ? 0 : Math.round((parseInt(response.data[0].price) - parseInt(response.data[0].discount_price))/parseInt(response.data[0].price) * 100);
+                document.getElementById('productName').innerHTML = response.data[0].name;
+                document.getElementById('product-discount-price').innerHTML =  response.data[0].discount_price == 0 ? 'Free' :`Rs.${response.data[0].discount_price}`;
+                if(dis == 0) {
+                    document.getElementById('product-actual-price').style.display = 'none';
+                    document.getElementById('product-discount').style.display = 'none';
+                } else {
+                    document.getElementById('product-actual-price').innerHTML =  response.data[0].discount_price == 0 ? '' : dis == 0 ? '' : `Rs.${response.data[0].price}`;
+                    document.getElementById('product-discount').innerHTML = response.data[0].discount_price == 0 ? '' : dis == 0 ? '' : `${dis}%`;
+                }
+                document.getElementById('product-desc').innerHTML = response.data[0].description;
+
+                if(response.data[0].cloth_category == "RAGLAN CROP TOPS") {
+                    document.getElementById('sizeChartImg').setAttribute('src','/images/local/crop_top.jpg');
+                    document.getElementById('sizeChartMessage').style.margin = '0';
+                } else if(response.data[0].cloth_category == "REGULAR CREW NECK") {
+                    document.getElementById('sizeChartImg').setAttribute('src','/images/local/regular_fit.jpg');
+                    document.getElementById('sizeChartMessage').style.margin = '0';
+                } else if(response.data[0].cloth_category == "OVERSIZED CREW NECK") {
+                    document.getElementById('sizeChartImg').setAttribute('src','/images/local/oversize.jpg');
+                    document.getElementById('sizeChartMessage').style.margin = '0';
+                } else {
+                    document.getElementById('sizeChartMessage').innerHTML = 'No size chart present';
+                }
+
+                var activeSizes = response.data[0].sizes.split(',');
+                var sizes = document.getElementsByClassName('size-tab');
+                var finalSizes = Array.prototype.map.call(sizes, (e) => e.innerHTML);
+                var sizeCounter = 0;
+
+                for(var i=0;i<response.eachQuantity.length;i++) {
+                    if(finalSizes.includes(response.eachQuantity[i].size)) {
+                        var j = finalSizes.indexOf(response.eachQuantity[i].size);
+                        if(response.eachQuantity[i].quantity >= 1) {
+                            if(!sizes[j].classList.contains('active-size')) {
+                                sizes[j].classList.add('active-size');
+                            }
+                            sizes[j].setAttribute('data-quantity',response.eachQuantity[i].quantity);
+                            if(response.eachQuantity[i].quantity <= 2) {
+                                sizes[j].innerHTML = `${response.eachQuantity[i].size}<span>${response.eachQuantity[i].quantity} left</span>`
+                            }
+                        } else {
+                            sizes[j].innerHTML = `${response.eachQuantity[i].size}<span style="font-size:11px !important;padding:2px 2px;text-align:center">Sold out</span>`
+                            sizeCounter++;
+                        }
+                    }
+                }
+
+                if(sizeCounter == response.eachQuantity.length) {
+                    document.getElementById('out-of-stock').style.display = 'block';
+                    document.getElementById('purchase_now_button').setAttribute('disabled','disabled');
+                    document.getElementById('add_to_cart_button').setAttribute('disabled','disabled');
+                }
+
+                if(response.similiarColors.length > 0) {
+                    for(var i=0;i<response.similiarColors.length;i++){
+                        var url = `/each-product/${response.similiarColors[i].id}`;
+                        $('#more_colors').append('<a class="more_color_img" href="'+ url +'"><img src="'+ response.similiarColors[i].cover_photo +'" /></a>');
+                    }
+                } else {
+                    document.getElementById('more_colors_heading').style.display = 'none';
+                }
+
+                if(response.images.length !=0) {
+                    for(var i=0;i<response.images.length;i++){
+                        if(i == 0) {
+                            $('#mobile_product_sliders_value').append('<div class="carousel-item active clothSliders" data-activeId="'+ i +'" data-bs-interval="2000" onclick="openGallery(\''+ i +'\')"><img src="'+ response.images[i].path +'" class="d-block w-100" alt="..."></div>');
+                            $('#profile-slider-2').append('<div class="carousel-item active clothSliders2" data-activeId="'+ i +'" data-bs-interval="2000"><img src="'+ response.images[i].path +'" class="d-block w-100" alt="..."></div>');
+                            $('#profile-slider').append('<div class="col-lg-12 col-md-12 col-sm-12 col-12" data-activeId="'+ i +'" onclick="openGallery(\''+ i +'\')"><img src="'+ response.images[i].path +'" class="d-block" alt=""></div>');
+                        } else {
+                            $('#mobile_product_sliders_value').append('<div class="carousel-item clothSliders" data-activeId="'+ i +'" data-bs-interval="2000" onclick="openGallery(\''+ i +'\')"><img src="'+ response.images[i].path +'" class="d-block w-100" alt="..."></div>');
+                            $('#profile-slider-2').append('<div class="carousel-item clothSliders2" data-activeId="'+ i +'" data-bs-interval="2000"><img src="'+ response.images[i].path +'" class="d-block w-100" alt="..."></div>');
+                            $('#profile-slider').append('<div class="col-lg-6 col-md-6 col-sm-6 col-6" data-activeId="'+ i +'" onclick="openGallery(\''+ i +'\')"><img src="'+ response.images[i].path +'" class="d-block" alt=""></div>');
+                        }
+                    }
+                }
+                if(response.moreProducts.length !=0) {
+                    for(var i=0;i<response.moreProducts.length;i++){
+                        var discount = response.moreProducts[i].discount_price == 0 ? 0 : Math.round((parseInt(response.moreProducts[i].price) - parseInt(response.moreProducts[i].discount_price))/parseInt(response.moreProducts[i].price) * 100);
+                        var url = `/each-product/${response.moreProducts[i].id}`;
+                        $('#morePrograms').append('<div class="col-lg-3 col-md-4 col-sm-6 col-12"><div class="box4" style="margin: 0;" onclick="window.location.href=\''+ url +'\'"><div class="image"><img src="'+ response.moreProducts[i].cover_photo +'" alt=""></div><div class="inside_container"><div class="text"><h5>'+ response.moreProducts[i].name +'</h5><h5 class="price-info"><span class="disount_price" style="color:'+ (response.moreProducts[i].discount_price == 0 ? 'var(--congrats);font-family:Gilroy-Medium' : 'var(--rich-black)' ) +'">'+ (response.moreProducts[i].discount_price == 0 ? 'Free' : 'Rs.' + response.moreProducts[i].discount_price ) +'</span>'+ (discount == 0 ? '' : '&nbsp;&nbsp;<span class="price">Rs.'+ response.moreProducts[i].price +'</span>&nbsp;&nbsp;<span class="discount-per">'+ discount +'% Off</span>') +'</h5></div></div>'+ (response.moreProducts[i].stock == 0 ? '<div class="outOfStock"><p>Out of stock</p></div>' : ' ') +'</div></div>');
+                    }
+                } else {
+                    document.getElementById('trainerPrograms').style.display = 'none';
+                }
+              }
+              document.getElementById('load').style.visibility="hidden";
+            },
+            error: function(err){
+                if(isDevelopment) {
+                    console.log(err);
+                }
+                alert('Some error occured !!');
+            }
+        });
+    }
+    setTimeout(() => {
+        getEachExpert();
+    },500);
+</script>
+
+
+<%- include('../components/footer/apperals_footer.ejs') %>

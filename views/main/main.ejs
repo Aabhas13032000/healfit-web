@@ -82,6 +82,19 @@
 
 <div class="main-container">
     <div class="container-fluid hero-section">
+        <div class="container clothCategory_slider" id="clothCategory_slider">
+            <br><br><br>
+            <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner" id="sliders_value">
+                </div>
+                <button class="carousel-control-prev icon4" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                    <a><span class="iconify" data-icon="eva:arrow-ios-back-fill"></span></a>
+                </button>
+                <button class="carousel-control-next icon3" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                    <a><span class="iconify" data-icon="eva:arrow-ios-forward-fill"></span></a>
+                </button>
+              </div>
+        </div>
         <div class="container" id="beforeLoginHeroSection">
             <div class="row">
                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-flex align-items-center justify-content-center justify-content-md-start">
@@ -337,6 +350,28 @@
         </div>
     </div>
     <br>
+    <% for(var i=0;i<product_categories.length;i++) { %> 
+        <% if(product_categories[i].home_imp == 1) { %> 
+            <div class="programs container" id="product_<%- product_categories[i].id %>">
+                <div class="heading">
+                    <h2><%= product_categories[i].name %></h2>
+                    <p onclick="window.open('https:\/\/curect.healfit.in/?category=<%- product_categories[i].name %>',`_black`)">View All&nbsp;&nbsp;<span class="iconify" data-icon="cil:arrow-right"></span></p>
+                </div>
+                <div class="external-container">
+                    <div class="arrow-left icon" id="left" onclick="leftButtonClicked('slider_<%- product_categories[i].id %>','box5',event)">
+                        <a><span class="iconify" data-icon="eva:arrow-ios-back-fill"></span></a>
+                    </div>
+                    <div class="arrow-right icon" id="right" onclick="rightButtonClicked('slider_<%- product_categories[i].id %>','box5',event)">
+                        <a><span class="iconify" data-icon="eva:arrow-ios-forward-fill"></span></a>
+                    </div>
+                    <div class="cards" id="slider_<%- product_categories[i].id %>">
+                        
+                    </div>
+                </div>
+            </div>
+        <% } %> 
+    <% } %> 
+    <br>
     <div class="programs blogs container" id="popularBlogs">
         <div class="heading">
             <h2>Popular blogs</h2>
@@ -405,6 +440,7 @@
 
 <script>
     var isDevelopment = '<%- isDevelopment %>' == 'true' ? true : false;
+    var mainURL = 'https://curect.healfit.in';
     
     function getPreviousDate() {
         var date = new Date(document.getElementById('currentDate').value);
@@ -525,6 +561,7 @@
     }
 
     function getInitialData() {
+        let screenWidth = screen.width;
         var today = new Date();
         document.getElementById('currentDate').value = today.toISOString().toString().split('T')[0];
         document.getElementById('currentDate').max = today.toISOString().toString().split('T')[0];
@@ -620,6 +657,47 @@
                     } else {
                         document.getElementById('testimonials').innerHTML = '';
                     }
+
+                    document.getElementById(`sliders_value`).innerHTML = '';
+                    var counter = 0;
+                    if(response.clothCategories.length != 0) {
+                        for(var i=0;i<response.clothCategories.length;i++) {
+                            var path = screenWidth <= 568 ? response.clothCategories[i].mobile_slider : response.clothCategories[i].web_slider;
+                            var url = `${mainURL}/?clothCategories=${response.clothCategories[i].name}`; 
+                            $('#topCategories').append('<div class="col-lg-2 col-md-2 col-sm-3 col-4" style="padding: 10px !important;"><div class="box6" style="width:200px;" onclick="window.open(\''+ url +'\',\'_blank\')"><div class="image"><img src="'+ response.clothCategories[i].cover_photo +'" alt="" style="border-radius:50%"></div><div class="name"><h6>'+ response.clothCategories[i].name +'</h6></div></div></div>');
+                            if(response.clothCategories[i].home_imp == 1) {
+                                counter++;
+                                if(document.getElementsByClassName('clothSliders').length == 0) {
+                                    $(`#sliders_value`).append('<div class="carousel-item active clothSliders" onclick="window.open(\''+ url +'\',\'_blank\')" data-bs-interval="2000"><img src="'+ path +'" class="d-block w-100" alt="..."></div>');
+                                } else {
+                                    $(`#sliders_value`).append('<div class="carousel-item clothSliders" onclick="window.open(\''+ url +'\',\'_blank\')" data-bs-interval="2000"><img src="'+ path +'" class="d-block w-100" alt="..."></div>');
+                                }
+                            }
+                        }
+                        if(counter == 0) {
+                            document.getElementById('clothCategory_slider').innerHTML = ''
+                        }
+                    } else {
+                        document.getElementById(`clothCategory_slider`).innerHTML = '';
+                        document.getElementById(`allCategories`).innerHTML = '';
+                    }
+                    for(var i=0;i<response.productCategories.length;i++) {
+                        if(response.productCategories[i].home_imp == 1) {
+                            document.getElementById(`slider_${response.productCategories[i].id}`).innerHTML = '';
+                            var counter = 0;
+                            for(var j=0;j<response.impProducts.length;j++) {
+                                if(response.impProducts[j].category.includes(response.productCategories[i].name)) {
+                                    counter++;
+                                    var discount = response.impProducts[j].discount_price == 0 ? 0 : Math.round((parseInt(response.impProducts[j].price) - parseInt(response.impProducts[j].discount_price))/parseInt(response.impProducts[j].price) * 100);
+                                    var url = `${mainURL}/each-product/${response.impProducts[j].id}`;
+                                    $(`#slider_${response.productCategories[i].id}`).append('<div class="box4 box5" style="margin: 0 0px 0px 20px;min-width:285px !important;max-width:285px !important" onclick="window.open(\''+ url +'\',\'_blank\')"><div class="image"><img src="'+ response.impProducts[j].cover_photo +'" alt=""></div><div class="inside_container"><div class="text"><h5>'+ response.impProducts[j].name +'</h5><h5 class="price-info"><span class="disount_price" style="color:'+ (response.impProducts[j].discount_price == 0 ? 'var(--congrats);font-family:Gilroy-Medium' : 'var(--rich-black)' ) +'">'+ (response.impProducts[j].discount_price == 0 ? 'Free' : 'Rs.' + response.impProducts[j].discount_price ) +'</span>'+ (discount == 0 ? '' : '&nbsp;&nbsp;<span class="price">Rs.'+ response.impProducts[j].price +'</span>&nbsp;&nbsp;<span class="discount-per">'+ discount +'% Off</span>') +'</h5></div></div></div>');
+                                }
+                            }
+                            if(counter == 0) {
+                                document.getElementById(`product_${response.productCategories[i].id}`).innerHTML = '';
+                            }
+                        }
+                    }    
                     var breakfast = 0;
                     var snacks = 0;
                     var lunch = 0;
@@ -729,6 +807,46 @@
                     } else {
                         document.getElementById('testimonials').innerHTML = '';
                     }
+                    document.getElementById(`sliders_value`).innerHTML = '';
+                    var counter = 0;
+                    if(response.clothCategories.length != 0) {
+                        for(var i=0;i<response.clothCategories.length;i++) {
+                            var path = screenWidth <= 568 ? response.clothCategories[i].mobile_slider : response.clothCategories[i].web_slider;
+                            var url = `${mainURL}/?clothCategories=${response.clothCategories[i].name}`; 
+                            $('#topCategories').append('<div class="col-lg-2 col-md-2 col-sm-3 col-4" style="padding: 10px !important;"><div class="box6" style="width:200px;" onclick="window.open(\''+ url +'\',\'_blank\')"><div class="image"><img src="'+ response.clothCategories[i].cover_photo +'" alt="" style="border-radius:50%"></div><div class="name"><h6>'+ response.clothCategories[i].name +'</h6></div></div></div>');
+                            if(response.clothCategories[i].home_imp == 1) {
+                                counter++;
+                                if(document.getElementsByClassName('clothSliders').length == 0) {
+                                    $(`#sliders_value`).append('<div class="carousel-item active clothSliders" onclick="window.open(\''+ url +'\',\'_blank\')" data-bs-interval="2000"><img src="'+ path +'" class="d-block w-100" alt="..."></div>');
+                                } else {
+                                    $(`#sliders_value`).append('<div class="carousel-item clothSliders" onclick="window.open(\''+ url +'\',\'_blank\')" data-bs-interval="2000"><img src="'+ path +'" class="d-block w-100" alt="..."></div>');
+                                }
+                            }
+                        }
+                        if(counter == 0) {
+                            document.getElementById('clothCategory_slider').innerHTML = ''
+                        }
+                    } else {
+                        document.getElementById(`clothCategory_slider`).innerHTML = '';
+                        document.getElementById(`allCategories`).innerHTML = '';
+                    }
+                    for(var i=0;i<response.productCategories.length;i++) {
+                        if(response.productCategories[i].home_imp == 1) {
+                            document.getElementById(`slider_${response.productCategories[i].id}`).innerHTML = '';
+                            var counter = 0;
+                            for(var j=0;j<response.impProducts.length;j++) {
+                                if(response.impProducts[j].category.includes(response.productCategories[i].name)) {
+                                    counter++;
+                                    var discount = response.impProducts[j].discount_price == 0 ? 0 : Math.round((parseInt(response.impProducts[j].price) - parseInt(response.impProducts[j].discount_price))/parseInt(response.impProducts[j].price) * 100);
+                                    var url = `${mainURL}/each-product/${response.impProducts[j].id}`;
+                                    $(`#slider_${response.productCategories[i].id}`).append('<div class="box4 box5" style="margin: 0 0px 0px 20px;min-width:285px !important;max-width:285px !important" onclick="window.open(\''+ url +'\',\'_blank\')"><div class="image"><img src="'+ response.impProducts[j].cover_photo +'" alt=""></div><div class="inside_container"><div class="text"><h5>'+ response.impProducts[j].name +'</h5><h5 class="price-info"><span class="disount_price" style="color:'+ (response.impProducts[j].discount_price == 0 ? 'var(--congrats);font-family:Gilroy-Medium' : 'var(--rich-black)' ) +'">'+ (response.impProducts[j].discount_price == 0 ? 'Free' : 'Rs.' + response.impProducts[j].discount_price ) +'</span>'+ (discount == 0 ? '' : '&nbsp;&nbsp;<span class="price">Rs.'+ response.impProducts[j].price +'</span>&nbsp;&nbsp;<span class="discount-per">'+ discount +'% Off</span>') +'</h5></div></div></div>');
+                                }
+                            }
+                            if(counter == 0) {
+                                document.getElementById(`product_${response.productCategories[i].id}`).innerHTML = '';
+                            }
+                        }
+                    }    
                     document.getElementById('load').style.visibility="hidden";
                 },
                 error: function(err){

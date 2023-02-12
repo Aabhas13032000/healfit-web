@@ -86,6 +86,28 @@
                     </div>
                     <br>
                     <div class="row">
+                        <div class="col-lg-3 d-flex align-items-center">
+                            <p>Minimum amount (for shipping charges)</p>
+                        </div>
+                        <div class="col-lg-9">
+                            <div class="form-group">
+                                <input type="number" class="form-control" id="maximum_value" name="maximum_value" placeholder="Enter amount" min="1" autocomplete="off" value="<%= data.maximum_value %>" required>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-lg-3 d-flex align-items-center">
+                            <p>Shipping charges</p>
+                        </div>
+                        <div class="col-lg-9">
+                            <div class="form-group">
+                                <input type="number" class="form-control" id="shipping_charges" name="shipping_charges" min="0" placeholder="Enter amount" autocomplete="off" value="<%= data.shipping_charges %>" required>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
                         <div class="col-lg-3 d-flex align-items-start">
                             <p>Share message</p>
                         </div>

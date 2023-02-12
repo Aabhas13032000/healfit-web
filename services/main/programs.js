@@ -65,7 +65,7 @@ module.exports = {
       if(req.headers.token) {
         var query = "SELECT * FROM `programs` WHERE `status` = 1 AND `id` = '"+ req.query.id +"'";
         var images = "SELECT * FROM `images` WHERE `iv_category` = 'image' AND `item_category` = 'program' AND `item_id` = '"+ req.query.id +"'";
-        var morePrograms = "SELECT p.*, (SELECT MIN(tp.`price`) AS price FROM `trainer_programs` tp WHERE tp.`program_id` = p.`id`) AS price FROM `programs` p WHERE p.`status` = 1 AND p.`imp` = 1 AND p.`id` <> '"+ req.query.id +"' AND p.`category` NOT LIKE '%Blocked%' ORDER BY RAND() DESC LIMIT 3 OFFSET 0";
+        var morePrograms = "SELECT p.*, (SELECT MIN(tp.`price`) AS price FROM `trainer_programs` tp WHERE tp.`program_id` = p.`id`) AS price FROM `programs` p WHERE p.`status` = 1 AND p.`id` <> '"+ req.query.id +"' AND p.`category` NOT LIKE '%Blocked%' ORDER BY RAND() DESC LIMIT 3 OFFSET 0";
         var trainers = "SELECT t.* FROM `trainer` t INNER JOIN `trainer_programs` tp ON tp.`trainer_id` = t.`id` WHERE t.`status` = 1 AND tp.`program_id` = '"+ req.query.id +"' GROUP BY tp.`trainer_id`";
         var increaseViewCount = "UPDATE `programs` SET `views` = `views` + 1 WHERE `status` = 1 AND `id` = '"+ req.query.id +"'";
         pool.query(increaseViewCount,function(err,increaseViewCount){

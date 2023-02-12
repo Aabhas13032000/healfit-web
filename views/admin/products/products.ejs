@@ -1,0 +1,1678 @@
+<%- include('../../components/header/header.ejs',{cssFile : 'adminPages',page:'Dashboard'}) %> 
+
+<div id="load"></div>
+
+<div class="alert alert-dismissible fade show" role="alert" id="success-alert">
+  <p id="alertMessage" style="margin: 0;">Edited successfully</p>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div class="modal fade" id="addProduct" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Add product</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <form onsubmit="addProduct(event)" id="form" method="post" enctype="multipart/form-data" autocomplete="off">
+                  <div class="row">
+                      <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                          <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" class="form-control" placeholder="Enter product name.." style="margin: 10px 0px;" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="gender" style="margin-top: 10px;">Gender</label>
+                              <select class="form-control" id="gender" style="margin: 10px 0px;height: 100px;" multiple name="gender" aria-label="Tags" required>
+                                <option value="MALE">MALE</option>
+                                <option value="WOMEN">WOMEN</option>
+                                <option value="UNISEX">UNISEX</option>
+                              </select>
+                          </div>
+                          <div class="form-group">
+                            <label for="cloth_category" style="margin-top: 10px;">Category</label>
+                            <select class="form-control" id="cloth_category" name="cloth_category" aria-label="Images Categories" required>
+                              <option value="">Select category</option>
+                              <% clothCategories.forEach((category,index) => { %>
+                                <option value="<%= category.name %>"><%= category.name %></option>
+                              <% }); %>
+                            </select>
+                          </div>
+                          <div class="form-group">
+                            <label for="category" style="margin-top: 10px;">Category</label>
+                              <select class="form-control" id="category" style="margin: 10px 0px;height: 100px;" name="category" aria-label="Images Categories" multiple required>
+                                <% categories.forEach((category,index) => { %>
+                                  <option value="<%= category.name %>"><%= category.name %></option>
+                                <% }); %> 
+                              </select>
+                          </div>
+                          <div class="form-group">
+                            <label for="description" style="margin: 10px 0px;">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter description here.." style="margin: 10px 0px;border-radius: 10px;" required></textarea>
+                          </div>
+                          <div class="form-group">
+                            <label for="color" style="margin-top: 10px;">Color</label>
+                            <input type="text" id="color" name="color" class="form-control" placeholder="Enter color name.." style="margin: 10px 0px;" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="price" style="margin-top: 10px;">Price (in Rs.)</label>
+                            <input type="number" id="price" name="price" class="form-control" placeholder="Enter price here.." style="margin: 10px 0px;" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="discount_price">Discount price (in Rs.)</label>
+                            <input type="number" id="discount_price" name="discount_price" class="form-control" placeholder="Enter discount price here.." style="margin: 10px 0px;" required>
+                          </div>
+                          <!-- <div class="form-group"> -->
+                            <h5 for="sizes" style="margin-top: 15px;">Sizes</h5>
+                              <!-- <select class="form-control" id="sizes" style="margin: 10px 0px;height: 100px;" name="sizes" aria-label="Images Categories" multiple required>
+                                <option value="XS">XS</option>
+                                <option value="S">S</option>
+                                <option value="M">M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                                <option value="XXL">XXL</option>
+                              </select> -->
+                          <!-- </div> -->
+                          <div class="row">
+                            <div class="col-6" style="padding-right: 5px;">
+                              <div class="form-group">
+                                <label for="size_XS">XS</label>
+                                <input type="number" id="size_XS" name="size_XS" class="form-control" placeholder="Enter Quantity of XS here.." style="margin: 10px 0px;" required>
+                              </div>
+                            </div>
+                            <div class="col-6" style="padding-left: 5px;">
+                              <div class="form-group">
+                                <label for="size_S">S</label>
+                                <input type="number" id="size_S" name="size_S" class="form-control" placeholder="Enter Quantity of S here.." style="margin: 10px 0px;" required>
+                              </div>
+                            </div>
+                            <div class="col-6" style="padding-right: 5px;">
+                              <div class="form-group">
+                                <label for="size_M">M</label>
+                                <input type="number" id="size_M" name="size_M" class="form-control" placeholder="Enter Quantity of M here.." style="margin: 10px 0px;" required>
+                              </div>
+                            </div>
+                            <div class="col-6" style="padding-left: 5px;">
+                              <div class="form-group">
+                                <label for="size_L">L</label>
+                                <input type="number" id="size_L" name="size_L" class="form-control" placeholder="Enter Quantity of L here.." style="margin: 10px 0px;" required>
+                              </div>
+                            </div>
+                            <div class="col-6" style="padding-right: 5px;">
+                              <div class="form-group">
+                                <label for="size_XL">XL</label>
+                                <input type="number" id="size_XL" name="size_XL" class="form-control" placeholder="Enter Quantity of XL here.." style="margin: 10px 0px;" required>
+                              </div>
+                            </div>
+                            <div class="col-6" style="padding-left: 5px;">
+                              <div class="form-group">
+                                <label for="size_XXL">XXL</label>
+                                <input type="number" id="size_XXL" name="size_XXL" class="form-control" placeholder="Enter Quantity of XXL here.." style="margin: 10px 0px;" required>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label for="stock" style="margin-top: 10px;">Stock</label>
+                              <select class="form-control" id="stock" style="margin: 10px 0px;" name="stock" aria-label="Tags" required>
+                                <option value="">Select stock</option>
+                                <option value="1">IN STOCK</option>
+                                <option value="0">OUT OF STOCK</option>
+                              </select>
+                          </div>
+                          <div class="form-group">
+                              <label for="product_images" style="margin: 10px 0px;">Images</label>
+                              <input class="form-control" onchange="uploadImages('add','product_images')" style="height: unset;border-radius: 8px;" type="file" multiple id="product_images" name="product_images" accept="image/*">
+                          </div>
+                          <div id="preview" class="row preview_images">
+                              
+                          </div>
+                          <div class="button">
+                              <button type="submit" id="product_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin-top: 20px;">Create</button>
+                          </div>
+                      </div>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="editProduct" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Edit Product</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <form onsubmit="saveProduct(event)" class="edit_form" id="form_" method="post" enctype="multipart/form-data" autocomplete="off">
+                  <div class="row">
+                      <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                          <div class="form-group">
+                            <label for="editname">Name</label>
+                            <input type="text" id="editname" name="editname" class="form-control" placeholder="Enter product name.." style="margin: 10px 0px;" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="editgender" style="margin-top: 10px;">Gender</label>
+                              <select class="form-control" id="editgender" style="margin: 10px 0px;height: 100px;" multiple name="editgender" aria-label="Tags" required>
+                                <option value="MALE">MALE</option>
+                                <option value="WOMEN">WOMEN</option>
+                                <option value="UNISEX">UNISEX</option>
+                              </select>
+                          </div>
+                          <div class="form-group">
+                            <label for="editcloth_category" style="margin-top: 10px;">Category</label>
+                            <select class="form-control" id="editcloth_category" name="editcloth_category" aria-label="Images Categories" required>
+                              <option value="" id="editcloth_category_option">Select category</option>
+                              <% clothCategories.forEach((category,index) => { %>
+                                <option value="<%= category.name %>"><%= category.name %></option>
+                              <% }); %>
+                            </select>
+                          </div>
+                          <div class="form-group">
+                            <label for="editcategory" style="margin-top: 10px;">Category</label>
+                              <select class="form-control" id="editcategory" style="margin: 10px 0px;height: 100px;" name="editcategory" aria-label="Images Categories" multiple required>
+                                <% categories.forEach((category,index) => { %>
+                                  <option value="<%= category.name %>"><%= category.name %></option>
+                                <% }); %> 
+                              </select>
+                          </div>
+                        <div class="form-group">
+                          <label for="editdescription" style="margin: 10px 0px;">Description</label>
+                          <textarea class="form-control" id="editdescription" name="editdescription" rows="3" placeholder="Enter description here.." style="margin: 10px 0px;border-radius: 10px;" required></textarea>
+                        </div>
+                        <div class="form-group">
+                          <label for="editcolor" style="margin-top: 10px;">Color</label>
+                          <input type="text" id="editcolor" name="editcolor" class="form-control" placeholder="Enter color name.." style="margin: 10px 0px;" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="editprice" style="margin-top: 10px;">Price (in Rs.)</label>
+                          <input type="number" id="editprice" name="editprice" class="form-control" placeholder="Enter price here.." style="margin: 10px 0px;" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="editdiscount_price">Discount price (in Rs.)</label>
+                          <input type="number" id="editdiscount_price" name="editdiscount_price" class="form-control" placeholder="Enter discount price here.." style="margin: 10px 0px;" required>
+                        </div>
+                        <!-- <div class="form-group">
+                          <label for="editsizes" style="margin-top: 10px;">Sizes</label>
+                            <select class="form-control" id="editsizes" style="margin: 10px 0px;height: 100px;" name="editsizes" aria-label="Images Categories" multiple required>
+                              <option value="XS">XS</option>
+                              <option value="S">S</option>
+                              <option value="M">M</option>
+                              <option value="L">L</option>
+                              <option value="XL">XL</option>
+                              <option value="XXL">XXL</option>
+                            </select>
+                        </div> -->
+                        <h5 for="sizes" style="margin-top: 15px;">Sizes</h5>
+                        <div class="row">
+                          <div class="col-6" style="padding-right: 5px;">
+                            <div class="form-group">
+                              <label for="editsize_XS">XS</label>
+                              <input type="number" id="editsize_XS" name="editsize_XS" class="form-control" placeholder="Enter Quantity of XS here.." style="margin: 10px 0px;" required>
+                            </div>
+                          </div>
+                          <div class="col-6" style="padding-left: 5px;">
+                            <div class="form-group">
+                              <label for="editsize_S">S</label>
+                              <input type="number" id="editsize_S" name="editsize_S" class="form-control" placeholder="Enter Quantity of S here.." style="margin: 10px 0px;" required>
+                            </div>
+                          </div>
+                          <div class="col-6" style="padding-right: 5px;">
+                            <div class="form-group">
+                              <label for="editsize_M">M</label>
+                              <input type="number" id="editsize_M" name="editsize_M" class="form-control" placeholder="Enter Quantity of M here.." style="margin: 10px 0px;" required>
+                            </div>
+                          </div>
+                          <div class="col-6" style="padding-left: 5px;">
+                            <div class="form-group">
+                              <label for="editsize_L">L</label>
+                              <input type="number" id="editsize_L" name="editsize_L" class="form-control" placeholder="Enter Quantity of L here.." style="margin: 10px 0px;" required>
+                            </div>
+                          </div>
+                          <div class="col-6" style="padding-right: 5px;">
+                            <div class="form-group">
+                              <label for="editsize_XL">XL</label>
+                              <input type="number" id="editsize_XL" name="editsize_XL" class="form-control" placeholder="Enter Quantity of XL here.." style="margin: 10px 0px;" required>
+                            </div>
+                          </div>
+                          <div class="col-6" style="padding-left: 5px;">
+                            <div class="form-group">
+                              <label for="editsize_XXL">XXL</label>
+                              <input type="number" id="editsize_XXL" name="editsize_XXL" class="form-control" placeholder="Enter Quantity of XXL here.." style="margin: 10px 0px;" required>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="editstock" style="margin-top: 10px;">Stock</label>
+                            <select class="form-control" id="editstock" style="margin: 10px 0px;" name="editstock" aria-label="Tags" required>
+                              <option value="" id="editstock_option">Select stock</option>
+                              <option value="1">IN STOCK</option>
+                              <option value="0">OUT OF STOCK</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_product_images" style="margin: 10px 0px;">Images</label>
+                            <input class="form-control" onchange="uploadImages('edit','edit_product_images')" style="height: unset;border-radius: 8px;" type="file" multiple id="edit_product_images" name="edit_product_images" accept="image/*">
+                        </div>
+                          <div id="editpreview" class="row preview_images">
+                              
+                          </div>
+                          <div class="button">
+                              <button type="submit" id="product_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin-top: 20px;">Save</button>
+                          </div>
+                      </div>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="selectCoverPhoto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Select Cover Photo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="row preview_allImages" id="allImages">
+
+              </div>
+            <div class="button">
+              <button onclick="saveSelectedImage()" type="submit" id="product_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin-top: 20px;">Save</button>
+            </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="allcategories" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable  modal-xl">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Product Categories</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p style="color: var(--warning);margin: 0px auto;text-align: center;">* Please enter values carefully, as they are non-editable *</p>
+            <br>
+              <form onsubmit="addCategory(event,'product')" method="post">
+                <div class="form-group">
+                  <label for="product_category" style="margin: 0px 0px;">Category name</label>
+                    <input type="text" id="product_category" name="product_category" class="form-control" placeholder="Enter Category Name" onkeyup="checkProductCategory(this.value,'product')"  style="margin: 10px 0px;" required>
+                    <div id="productCategoryValidationServernameFeedback" style="margin: 10px 0px;" class="invalid-feedback">
+                      Category name already exists.
+                    </div>
+                </div>
+                <div class="button">
+                    <button type="submit" id="product_category_verify" class="btn btn-primary d-flex justify-content-center align-items-center" style="width: 100%;margin-top: 0px;" >Create</button>
+                </div>
+              </form>
+              <br>
+              <table>
+                  <thead>
+                      <th>#</th>
+                      <th>CATEGORY</th>
+                      <th>IMP</th>
+                      <th>HOME IMP</th>
+                      <th>NAVBAR IMP</th>
+                      <!-- <th>MOBILE SLIDER</th> -->
+                      <!-- <th>WEBSITE SLIDER</th> -->
+                  </thead>
+                  <tbody id="category_data">
+                    <% if(categories.length == 0) { %> 
+                      <td>No categories present</td>
+                  <% } else { %>
+                      <% categories.forEach((category,index) => { %> 
+                          <tr>
+                            <th scope="row"><%= (index+1) %></th>
+                            <td><%= category.name %></td>
+                            <td> 
+                              <div class="form-check form-switch d-flex justify-content-start">
+                                <% if(category.imp == 1){ %> 
+                                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleBlocked('<%= category.id %>','/admin/products/markedProductCategoryImportant')" checked>
+                                <% } else { %>
+                                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleBlocked('<%= category.id %>','/admin/products/markedProductCategoryImportant')">
+                                <% } %>
+                              </div>
+                            </td>
+                            <td> 
+                              <div class="form-check form-switch d-flex justify-content-start">
+                                <% if(category.home_imp == 1){ %> 
+                                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleBlocked('<%= category.id %>','/admin/products/markedProductCategoryHomeImportant')" checked>
+                                <% } else { %>
+                                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleBlocked('<%= category.id %>','/admin/products/markedProductCategoryHomeImportant')">
+                                <% } %>
+                              </div>
+                            </td>
+                            <td> 
+                              <div class="form-check form-switch d-flex justify-content-start">
+                                <% if(category.nav_imp == 1){ %> 
+                                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleBlocked('<%= category.id %>','/admin/products/markedProductCategoryNavImportant')" checked>
+                                <% } else { %>
+                                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleBlocked('<%= category.id %>','/admin/products/markedProductCategoryNavImportant')">
+                                <% } %>
+                              </div>
+                            </td>
+                          </tr>
+                      <% }); %> 
+                  <% } %> 
+                  </tbody>
+                </table>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="allClothcategories" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable  modal-xl">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Cloth Categories</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p style="color: var(--warning);margin: 0px auto;text-align: center;">* Please enter values carefully, as they are non-editable *</p>
+            <br>
+              <form onsubmit="addCategory(event,'cloth')" method="post">
+                <div class="row">
+                  <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="padding: 10px !important;">
+                  <div class="form-group">
+                    <label for="product_cloth_category" style="margin: 0px 0px;">Category name</label>
+                    <input type="text" id="product_cloth_category" name="product_cloth_category" class="form-control" placeholder="Enter Category Name" onkeyup="checkProductCategory(this.value,'cloth')"  style="margin: 10px 0px;" required>
+                    <div id="productCategoryValidationServernameFeedbackCloth" style="margin: 10px 0px;" class="invalid-feedback">
+                      Category name already exists.
+                    </div>
+                </div>
+                  </div>
+                  <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="padding: 10px !important;">
+                      <div class="form-group">
+                        <label for="product_cloth_category_image" style="margin: 0px 0px 10px 0px;">Cover Image</label>
+                        <input class="form-control" onchange="uploadImages('add','product_cloth_category_image')" style="height: unset;border-radius: 8px;" type="file" id="product_cloth_category_image" name="product_cloth_category_image" accept="image/*">
+                      </div>
+                      <div id="preview_product_cloth_category_image" class="row preview_images">
+                          
+                      </div>
+                  </div>
+                  <div class="col-12" style="padding: 10px !important;">
+                    <div class="button">
+                        <button type="submit" id="product_cloth_category_verify" class="btn btn-primary d-flex justify-content-center align-items-center" style="width: 100%;margin-top: 0px;" >Create</button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+              <br>
+              <table>
+                  <thead>
+                      <th>#</th>
+                      <th>COVER PHOTO</th>
+                      <th>CATEGORY</th>
+                      <th>IMP</th>
+                      <th>HOME IMP</th>
+                      <th>WEBSITE SLIDER</th>
+                      <th>MOBILE SLIDER</th>
+                  </thead>
+                  <tbody id="category_data">
+                    <% if(categories.length == 0) { %> 
+                      <td>No categories present</td>
+                  <% } else { %>
+                      <% clothCategories.forEach((category,index) => { %> 
+                          <tr>
+                            <th scope="row"><%= (index+1) %></th>
+                            <td style="padding: 0;">
+                              <% if(category.cover_photo != null){ %> 
+                                <div class="row preview_images">
+                                  <div class="col-lg-12 col-md-12 col-sm-12 col-12" style="padding: 0 !important;" id="edit_gallery_image_cloth_<%- category.cover_photo %>" data-id="<%- category.id %>">
+                                    <div class="card" id="append_image_<%- category.cover_photo %>">
+                                      <a class="delete_gallery_image" style="width: 30px;height: 30px;" onclick="deleteEditCurrentGalleryImage('edit_gallery_image_cloth_<%- category.cover_photo %>','<%- category.cover_photo %>')">
+                                        <span class="iconify" style="width: 15px;height: 15px;" data-icon="akar-icons:cross"></span>
+                                      </a>
+                                      <img src="<%- category.cover_photo %>" id="preview_galler_image_<%- category.cover_photo %>" alt="">
+                                    </div>
+                                    <input type="hidden" class="edit_gallery_image_path" name="gallery_image_path" id="gallery_image_path_<%- category.cover_photo %>" value="<%- category.cover_photo %>">
+                                  </div>
+                                </div>
+                              <% } else { %>
+                                <div class="form-group">
+                                  <input class="form-control" onchange="uploadImages('edit','save_product_cloth_category_image_<%- category.id %>')" style="height: unset;border-radius: 8px;" type="file" id="save_product_cloth_category_image_<%- category.id %>" name="save_product_cloth_category_image" accept="image/*">
+                                </div>
+                                <div id="preview_save_product_cloth_category_image_<%- category.id %>" class="row preview_images">
+                                    
+                                </div>
+                              <% } %> 
+                            </td>
+                            <td><%= category.name %></td>
+                            <td> 
+                              <div class="form-check form-switch d-flex justify-content-start">
+                                <% if(category.imp == 1){ %> 
+                                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleBlocked('<%= category.id %>','/admin/products/markedClothCategoryImportant')" checked>
+                                <% } else { %>
+                                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleBlocked('<%= category.id %>','/admin/products/markedClothCategoryImportant')">
+                                <% } %>
+                              </div>
+                            </td>
+                            <td> 
+                              <div class="form-check form-switch d-flex justify-content-start">
+                                <% if(category.home_imp == 1){ %> 
+                                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleBlocked('<%= category.id %>','/admin/products/markedClothCategoryHomeImportant')" checked>
+                                <% } else { %>
+                                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleBlocked('<%= category.id %>','/admin/products/markedClothCategoryHomeImportant')">
+                                <% } %>
+                              </div>
+                            </td>
+                            <td>
+                              <% if(category.web_slider != null){ %> 
+                                <div class="row preview_images">
+                                  <div class="col-lg-12 col-md-12 col-sm-12 col-12" style="padding: 0 !important;" id="edit_gallery_image_cloth_web_<%- category.web_slider %>" data-id="<%- category.id %>">
+                                    <div class="card" id="append_image_<%- category.web_slider %>">
+                                      <a class="delete_gallery_image" style="width: 30px;height: 30px;" onclick="deleteEditCurrentGalleryImage('edit_gallery_image_cloth_web_<%- category.web_slider %>','<%- category.web_slider %>')">
+                                        <span class="iconify" style="width: 15px;height: 15px;" data-icon="akar-icons:cross"></span>
+                                      </a>
+                                      <img src="<%- category.web_slider %>" id="preview_galler_image_<%- category.web_slider %>" alt="">
+                                    </div>
+                                    <input type="hidden" class="edit_gallery_image_path" name="gallery_image_path" id="gallery_image_path_<%- category.web_slider %>" value="<%- category.web_slider %>">
+                                  </div>
+                                </div>
+                              <% } else { %>
+                                <div class="form-group">
+                                  <input class="form-control" onchange="uploadImages('edit','save_product_cloth_category_web_image_<%- category.id %>')" style="height: unset;border-radius: 8px;" type="file" id="save_product_cloth_category_web_image_<%- category.id %>" name="save_product_cloth_category_web_image" accept="image/*">
+                                </div>
+                                <div id="preview_save_product_cloth_category_web_image_<%- category.id %>" class="row preview_images">
+                                    
+                                </div>
+                              <% } %> 
+                            </td>
+                            <td>
+                              <% if(category.mobile_slider != null){ %> 
+                                <div class="row preview_images">
+                                  <div class="col-lg-12 col-md-12 col-sm-12 col-12" style="padding: 0 !important;" id="edit_gallery_image_cloth_mobile_<%- category.mobile_slider %>" data-id="<%- category.id %>">
+                                    <div class="card" id="append_image_<%- category.mobile_slider %>">
+                                      <a class="delete_gallery_image" style="width: 30px;height: 30px;" onclick="deleteEditCurrentGalleryImage('edit_gallery_image_cloth_mobile_<%- category.mobile_slider %>','<%- category.mobile_slider %>')">
+                                        <span class="iconify" style="width: 15px;height: 15px;" data-icon="akar-icons:cross"></span>
+                                      </a>
+                                      <img src="<%- category.mobile_slider %>" id="preview_galler_image_<%- category.mobile_slider %>" alt="">
+                                    </div>
+                                    <input type="hidden" class="edit_gallery_image_path" name="gallery_image_path" id="gallery_image_path_<%- category.mobile_slider %>" value="<%- category.mobile_slider %>">
+                                  </div>
+                                </div>
+                              <% } else { %>
+                                <div class="form-group">
+                                  <input class="form-control" onchange="uploadImages('edit','save_product_cloth_category_mobile_image_<%- category.id %>')" style="height: unset;border-radius: 8px;" type="file" id="save_product_cloth_category_mobile_image_<%- category.id %>" name="save_product_cloth_category_mobile_image" accept="image/*">
+                                </div>
+                                <div id="preview_save_product_cloth_category_mobile_image_<%- category.id %>" class="row preview_images">
+                                    
+                                </div>
+                              <% } %> 
+                            </td>
+                          </tr>
+                      <% }); %> 
+                  <% } %> 
+                  </tbody>
+                </table>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="container-fluid" id="main">
+    <div class="top" id="content">
+        <div class="title">
+            <h5>Products</h5>
+            <p>See all the Products here.</p>
+        </div>
+        <div class="button">
+          <% if(!searchPage) { %>
+            <div class="btn-group dropstart">
+              <button type="button" id="settings" class="btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false"><span class="iconify" data-icon="eva:menu-2-fill"></span></button>
+              <ul class="dropdown-menu">
+                <li data-bs-toggle="modal" data-bs-target="#allcategories"><a class="dropdown-item" href="#">Product Categories</a></li>
+                <li data-bs-toggle="modal" data-bs-target="#allClothcategories"><a class="dropdown-item" href="#">Cloth Categories</a></li>
+              </ul>
+            </div>
+          <% } %>
+        </div>
+    </div>
+    <br>
+    <div class="content_table">
+        <div class="search_bar">
+                <div class="row">
+                    <div class="col-lg-8 col-md-6 d-flex align-items-center">
+                      <form action="/admin/products/getSearchProducts" method="get" class="search-form">
+                        <div class="form-group input-group search">
+                            <a><span class="iconify" data-icon="akar-icons:search"></span></a>
+                            <input type="text" class="form-control" id="searchText" name="searchedTitle" placeholder="Search by name..." value="<%= searchValue %>">
+                        </div>
+                        <div class="form-group statusType">
+                            <select class="form-control type" id="category" name="searchedCategory" aria-label="Images Categories" value="<%= statusValue %>">
+                              <option value="" <%- statusValue == '' ? 'selected' : '' %>>All categories</option>
+                              <option value="MALE" <%- statusValue == 'MALE' ? 'selected' : '' %>>MALE</option>
+                              <option value="WOMEN" <%- statusValue == 'WOMEN' ? 'selected' : '' %>>WOMEN</option>
+                              <option value="UNISEX" <%- statusValue == 'UNISEX' ? 'selected' : '' %>>UNISEX</option>
+                            </select>
+                        </div>
+                        <input type="submit" hidden />
+                      </form>
+                    </div>
+                    <div class="col-lg-4 col-md-6 d-flex align-items-center justify-content-md-end justify-content-start">
+                      <% if(!searchPage) { %>
+                        <!-- <button id="add" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#allcategories"><span class="iconify" data-icon="bx:category"></span>&nbsp;&nbsp;Categories</button> -->
+                        <button class="btn btn-primary addButton" data-bs-toggle="modal" data-bs-target="#addProduct"><span class="iconify" data-icon="carbon:add-alt"></span>&nbsp;&nbsp;Add Product</button>
+                      <% } else { %>
+                        <button class="btn btn-primary" onclick="location.href='/admin/products?page=1'">Reload</button>
+                      <% } %>
+                    </div>
+                </div>
+        </div>
+        <br>
+        <table>
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">PRODUCT</th>
+                <th scope="col">GENDER</th>
+                <th scope="col">COLOR</th>
+                <th scope="col">CLOTH<br>CATEGORY</th>
+                <th scope="col">PRODUCT<br>CATEGORY</th>
+                <th scope="col">PRICE</th>
+                <th scope="col">DIS PRICE</th>
+                <th scope="col">SIZES</th>
+                <th scope="col">STATUS</th>
+                <th scope="col">BLOCKED</th>
+                <th scope="col">IMP</th>
+                <th scope="col">OPTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if(data.length == 0) { %> 
+                <td>No Products present</td>
+            <% } else { %>
+                <% data.forEach((product,index) => { %> 
+                    <tr>
+                      <th scope="row"><%= (index+1+metadata.offset) %></th>
+                      <td>
+                        <div class="profile_table_data">
+                            <div class="profile_image">
+                                <img src="<%= product.cover_photo %>" alt="">
+                                 <div class="edit-icon" onclick="selectCoverPhoto('<%= product.id %>','<%= product.cover_photo %>')">
+                                    <a><span class="iconify" data-icon="clarity:edit-line"></span></a>
+                                 </div>
+                            </div>
+                            <p style="margin: 0px 5px 0px 10px;"><%= product.name %></p>
+                        </div>
+                      </td>
+                      <td><%= product.gender %></td>
+                      <td><%= product.color %></td>
+                      <td><%= product.cloth_category %></td>
+                      <td><%= product.category %></td>
+                      <td><%= product.price %></td>
+                      <td><%= product.discount_price %></td>
+                      <td><%= product.sizes %></td>
+                      <td>
+                        <% if(product.status == 'ACTIVE') { %> 
+                            <a class="success">ACTIVE</a>
+                        <% } else if(product.status == 'BLOCKED') { %> 
+                            <a class="blocked">BLOCKED</a>
+                        <% } else { %>
+                            <a class="warning">DELETED</a>
+                        <% } %> 
+                      </td>
+                      <td> 
+                        <% if(product.status != 'DELETED'){ %> 
+                            <div class="form-check form-switch d-flex justify-content-start">
+                                <% if(product.status == 'BLOCKED'){ %> 
+                                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleBlocked('<%= product.id %>','/admin/products/markedProductblocked')" checked>
+                                <% } else { %>
+                                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleBlocked('<%= product.id %>','/admin/products/markedProductblocked')">
+                                <% } %>
+                            </div>
+                        <% } %>
+                      </td>
+                      <td> 
+                        <% if(product.status != 'BLOCKED'){ %> 
+                            <div class="form-check form-switch d-flex justify-content-start">
+                            <% if(product.imp == 1){ %> 
+                                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleBlocked('<%= product.id %>','/admin/products/markedProductImportant')" checked>
+                            <% } else { %>
+                                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleBlocked('<%= product.id %>','/admin/products/markedProductImportant')">
+                            <% } %>
+                            </div>
+                        <% } %>
+                      </td>
+                      <td>
+                        <div class="options">
+                            <a class="edit" onclick="editProduct('<%= product.id %>','<%= product.name %>','<%= product.gender %>','<%= product.price %>','<%= product.discount_price %>','<%= product.stock %>','<%= product.sizes %>','<%= product.cloth_category %>','<%= product.category %>','<%= product.color %>')"><span class="iconify" data-icon="akar-icons:edit"></span></a>
+                            <a class="delete" onclick="deleteProduct('<%= product.id %>')"><span class="iconify" data-icon="ant-design:delete-outlined"></span></a>
+                            <% if(product.status != 'BLOCKED'){ %> 
+                                <a class="delete" onclick="sendNotification('<%= product.name %>','<%= product.id %>','product','ckeditordescriptionvalue<%= product.id %>','<%= product.cover_photo %>','/products?item_id=<%= product.id %>','<%= product.share_url %>')"><span class="iconify" data-icon="bi:send"></span></a>
+                            <% } %>
+                            <input type="hidden" name="" id="ckeditordescriptionvalue<%= product.id %>" value="<%= product.description %>">
+                        </div>
+                      </td>
+                    </tr>
+                <% }); %> 
+            <% } %> 
+            </tbody>
+          </table>
+          <% if(!searchPage && data.length != 0 && metadata.total_pages > 1) { %> 
+            <div class="pages">
+                <div class="total_pages">
+                    <div class="form-group">
+                        <input type="number" class="form-control" id="pageNumber" name="pageNumber" placeholder="Total pages = <%= metadata.total_pages %> ">
+                    </div>
+                    <button class="btn btn-primary" onclick="goToPage()">Go</button>
+                </div>
+                <div class="inner_pages">
+                    <% if(metadata.page == 1) { %>
+                        <a id="prev" class="disabled">Prev</a>
+                    <% } else { %>
+                        <a id="prev" onclick="location.href='/admin/products?page=<%= metadata.page - 1 %>'">Prev</a>
+                    <% } %>
+                    <% if(metadata.total_pages >= 3) { %> 
+                        <% if(metadata.page == metadata.total_pages) { %> 
+                            <a class="page" onclick="location.href='/admin/products?page=<%= metadata.page - 2 %>'"><%= metadata.page - 2 %></a>
+                            <a class="page" onclick="location.href='/admin/products?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/products?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                        <% } else if(metadata.page == (metadata.total_pages - 1)) { %>
+                            <a class="page" onclick="location.href='/admin/products?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/products?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/products?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                        <% } else { %>
+                            <a class="page selected_page" onclick="location.href='/admin/products?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/products?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                            <a class="page" onclick="location.href='/admin/products?page=<%= metadata.page + 2 %>'"><%= metadata.page + 2 %></a>
+                        <% } %>
+                    <% } else if(metadata.total_pages == 2) { %>
+                        <% if(metadata.page == metadata.total_pages) { %> 
+                            <a class="page" onclick="location.href='/admin/products?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/products?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                        <% } else if(metadata.page == (metadata.total_pages - 1)) { %>
+                            <a class="page selected_page" onclick="location.href='/admin/products?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/products?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                        <% } %>
+                    <% } else if(metadata.total_pages == 1) { %>
+                        <a class="page selected_page" onclick="location.href='/admin/products?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                    <% } %>
+                    <% if(metadata.page == metadata.total_pages) { %> 
+                        <a id="next" class="disabled">Next</a>
+                    <% } else { %>
+                        <a id="next" onclick="location.href='/admin/products?page=<%= metadata.page + 1 %>'">Next</a>
+                    <% } %>
+                </div>
+            </div>
+          <% } %> 
+    </div>
+</div>
+
+<!-- Notification Modal -->
+<div class="modal fade" id="sendingNotification" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h3>Sending Notification Please Wait!!</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Common.js -->
+<script src="/javascripts/common.js"></script>
+<!---->
+
+<script>
+
+var dayTimeModal;
+
+$(function(){
+  // bootstraps modals
+    editModal = new bootstrap.Modal(document.getElementById('editProduct'));
+    selectCoverPhotoModal = new bootstrap.Modal(document.getElementById('selectCoverPhoto'));
+    if($('textarea#description').length){
+        //ckeditor defination
+        CKEDITOR.replace('description',{
+            filebrowserUploadUrl: '/admin/common/upload',
+            filebrowserUploadMethod: 'form',
+        });
+    }
+    if($('textarea#editdescription').length){
+        //ckeditor defination
+        CKEDITOR.replace('editdescription',{
+            filebrowserUploadUrl: '/admin/common/upload',
+            filebrowserUploadMethod: 'form'
+        });
+    }
+});
+  
+  /* Functions */
+
+  function saveSelectedImage() {
+    var path = document.getElementsByClassName('is-selected')[0].getAttribute('data-path');
+    var id = document.getElementsByClassName('is-selected')[0].getAttribute('data-productid');
+    // console.log(path);
+    // console.log(id);
+    if(confirm('Do you want to edit it?') == true){
+      $.ajax({
+            url : '/admin/products/saveProductCoverImage',
+            dataType: "json",
+            type: "POST",
+            data: {
+                id:id,
+                path:path
+            },
+            success: function(response){
+              if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-success');
+                document.getElementById('alertMessage').innerHTML = 'Cover photo updated successfully';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                  $("#success-alert").slideUp(500);
+                });
+              }
+              setTimeout(() => {
+                location.reload();
+              },1000);
+            },
+            error: function(err){
+                    console.log(err);
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+      });
+    } 
+  }
+
+
+  //Check category name
+  function checkProductCategory(name,value) {
+    if(value == 'product'){
+      if(document.getElementById('product_category').classList.contains('is-invalid')) {
+          document.getElementById('product_category').classList.remove('is-invalid')
+      }
+      if(document.getElementById('product_category').classList.contains('is-valid')) {
+          document.getElementById('product_category').classList.remove('is-valid')
+      }
+    } else {
+      if(document.getElementById('product_cloth_category').classList.contains('is-invalid')) {
+          document.getElementById('product_cloth_category').classList.remove('is-invalid')
+      }
+      if(document.getElementById('product_cloth_category').classList.contains('is-valid')) {
+          document.getElementById('product_cloth_category').classList.remove('is-valid')
+      }
+    }
+    if(name.length != 0){
+        $.ajax({
+            url : value == 'product' ? `/admin/products/checkProductCategory/${name}` : `/admin/products/checkClothCategory/${name}`,
+            dataType: "json",
+            type: "GET",
+            success: function(response){
+              if(value == 'product'){
+                if(response.data.length == 0){
+                    document.getElementById('product_category_verify').removeAttribute('disabled');
+                    document.getElementById('product_category').classList.add('is-valid');
+                } else {
+                    document.getElementById('product_category_verify').setAttribute('disabled','disabled');
+                    document.getElementById('product_category').classList.add('is-invalid');
+                }
+              } else {
+                if(response.data.length == 0){
+                    document.getElementById('product_cloth_category_verify').removeAttribute('disabled');
+                    document.getElementById('product_cloth_category').classList.add('is-valid');
+                } else {
+                    document.getElementById('product_cloth_category_verify').setAttribute('disabled','disabled');
+                    document.getElementById('product_cloth_category').classList.add('is-invalid');
+                }
+              }
+                console.log(response);
+            },
+            error: function(err){
+                    console.log(err);
+          if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-danger');
+                document.getElementById('alertMessage').innerHTML = 'Some error occurred';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+            }
+        });
+    } else {
+      if(value == 'product'){
+        document.getElementById('product_category_verify').removeAttribute('disabled');
+        if(document.getElementById('product_category').classList.contains('is-invalid')) {
+            document.getElementById('product_category').classList.remove('is-invalid')
+        }
+        if(document.getElementById('product_category').classList.contains('is-valid')) {
+            document.getElementById('product_category').classList.remove('is-valid')
+        }
+      } else {
+        document.getElementById('product_cloth_category_verify').removeAttribute('disabled');
+        if(document.getElementById('product_cloth_category').classList.contains('is-invalid')) {
+            document.getElementById('product_cloth_category').classList.remove('is-invalid')
+        }
+        if(document.getElementById('product_cloth_category').classList.contains('is-valid')) {
+            document.getElementById('product_cloth_category').classList.remove('is-valid')
+        }
+      }
+    }
+}
+
+  //Add category
+  function addCategory(event,value) {
+    event.preventDefault();
+
+    var category_name = value == 'product' ? document.getElementById('product_category').value : document.getElementById('product_cloth_category').value;
+    var gallery = document.getElementsByClassName("category_gallery_image_path");
+    var gallery_values = [];
+    if(value != 'product') {
+      if(gallery.length != 0) {
+            for(var i =0;i<gallery.length;i++) {
+                gallery_values.push(gallery[i].value);
+            }
+          $.ajax({
+              url : value == 'product' ? `/admin/products/addCategories` : `/admin/products/addClothCategories`,
+              dataType: "json",
+              type: "POST",
+              data: {
+                value:category_name,
+                gallery:gallery_values,
+              },
+              success: function(response){
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-success');
+                        document.getElementById('alertMessage').innerHTML = 'Category added successfully';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+                    setTimeout(() => {
+                        location.reload();
+                    },1000);
+              },
+              error: function(err){
+                          console.log(err);
+                if(document.getElementById('success-alert')) {
+                      document.getElementById('success-alert').classList.add('alert-danger');
+                      document.getElementById('alertMessage').innerHTML = 'Some error occurred';
+                      $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                          $("#success-alert").slideUp(500);
+                      });
+                  }
+              }
+          });
+      } else {
+        if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-warning');
+                if(gallery.length == 0) {
+                  document.getElementById('alertMessage').innerHTML = 'Select an image first';
+                }
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+      }
+    } else {
+      $.ajax({
+              url : value == 'product' ? `/admin/products/addCategories` : `/admin/products/addClothCategories`,
+              dataType: "json",
+              type: "POST",
+              data: {
+                value:category_name,
+
+              },
+              success: function(response){
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-success');
+                        document.getElementById('alertMessage').innerHTML = 'Category added successfully';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+                    setTimeout(() => {
+                        location.reload();
+                    },1000);
+              },
+              error: function(err){
+                          console.log(err);
+                if(document.getElementById('success-alert')) {
+                      document.getElementById('success-alert').classList.add('alert-danger');
+                      document.getElementById('alertMessage').innerHTML = 'Some error occurred';
+                      $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                          $("#success-alert").slideUp(500);
+                      });
+                  }
+              }
+          });
+    }
+  }
+
+  //move select image box
+  function changeSelectedImage(i) {
+    var item = document.getElementsByClassName('selected_save_profile')[i];
+    var inside_selected_list = document.getElementsByClassName('is-selected')[0];
+    if(inside_selected_list) {
+      inside_selected_list.classList.remove('is-selected');
+      inside_selected_list.classList.add('is-not-selected');
+    }
+    if(item.classList.contains('is-not-selected')){
+      item.classList.remove('is-not-selected');
+    }
+    item.classList.add('is-selected');
+  }
+
+  //Select profile image
+  function selectCoverPhoto(id ,profile_image) {
+    selectCoverPhotoModal.toggle();
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    document.getElementById('allImages').innerHTML = "";
+    $.ajax({
+            url : `/admin/getImages?item_id=${id}&item_category=products`,
+            dataType: "json",
+            type: "GET",
+            success: function(response){
+                    console.log(response);
+                for(var i=0;i<response.data.length;i++) {
+                        var path = response.data[i].path;
+                        $('#allImages').append('<div class="select" onclick="changeSelectedImage(\''+ i +'\')" id="edit_gallery_image_'+ path +'"><div class="card" id="append_image_'+ path +'" ><img src="'+ path +'" id="preview_galler_image_'+ path +'" alt=""></div><div class="selected_save_profile '+ (path == profile_image ? 'is-selected' : 'is-not-selected' ) +'" data-path="'+ path +'" data-productid="'+ id +'"><a><span class="iconify" data-icon="teenyicons:tick-circle-solid"></span></a></div></div>');
+                    }
+            },
+            error: function(err){
+                    console.log(err);
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+        });
+  }
+
+  //Get images
+  function getImages(id,value) {
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    $.ajax({
+            url : `/admin/getImages?item_id=${id}&item_category=products`,
+            dataType: "json",
+            type: "GET",
+            success: function(response){
+                    console.log(response);
+                if(value == 'edit') {
+                    for(var i=0;i<response.data.length;i++) {
+                        var path = response.data[i].path;
+                        $('#editpreview').append('<div class="col-lg-4 col-md-4 col-sm-6 col-6" id="edit_gallery_image_'+ path +'"><div class="card" id="append_image_'+ path +'"><a class="delete_gallery_image" onclick="deleteEditCurrentGalleryImage(\''+ ( "edit_gallery_image_"+ path )  +'\',\''+ path +'\')"><span class="iconify" data-icon="akar-icons:cross"></span></a><img src="'+ path +'" id="preview_galler_image_'+ path +'" alt=""></div><input type="hidden" class="edit_gallery_image_path" name="gallery_image_path" id="gallery_image_path_'+ path +'" value="'+ path +'"></div>');
+                    }
+                } 
+            },
+            error: function(err){
+                    console.log(err);
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+        });
+  }
+
+  //Go to page 
+  function goToPage() {
+      var page = document.getElementById('pageNumber').value;
+      var total_pages = '<%- metadata.total_pages %>';
+      if(page.length != 0) {
+          if(parseInt(page) > parseInt(total_pages)){
+              alert('Please enter a page number less than total pages');
+          } else if(parseInt(page) == 0) {
+              alert('Please enter a page number greater than 0');
+          } else {
+              location.href=`/admin/products?page=${page}`;
+          }
+      } else {
+          alert('Please enter a page number first');
+      }
+  }
+
+
+  //Get Users
+  function getProductSizesQuantity(id) {
+    $.ajax({
+            url : `/admin/products/getProductSizesQuantity?product_id=${id}`,
+            dataType: "json",
+            type: "GET",
+            success: function(response){
+              console.log(response);
+              if(response.productSizesQuantity.length != 0){
+                for(var i=0;i<response.productSizesQuantity.length;i++) {
+                  document.getElementById(`editsize_${response.productSizesQuantity[i].size}`).value = response.productSizesQuantity[i].quantity;
+                }
+              }
+            },
+            error: function(err){
+                    console.log(err);
+                alert('Some error occured !!');
+            }
+        });
+  }
+
+  //Edit Product
+  function editProduct(id,name,gender,price,discount_price,stock,sizes,cloth_category,category,color) {
+    document.getElementById('editpreview').innerHTML = '';
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    getImages(id,'edit');
+    getProductSizesQuantity(id);
+    var selected_array = category.split(',');
+    for(var option of document.getElementById('editcategory').options){
+      option.selected = '';
+      if(selected_array.includes(option.value)){
+        option.selected = 'selected';
+      }
+    }
+    // var selected_array = sizes.split(',');
+    // for(var option of document.getElementById('editsizes').options){
+    //   option.selected = '';
+    //   if(selected_array.includes(option.value)){
+    //     option.selected = 'selected';
+    //   }
+    // }
+    var selected_array = gender.split(',');
+    for(var option of document.getElementById('editgender').options){
+      option.selected = '';
+      if(selected_array.includes(option.value)){
+        option.selected = 'selected';
+      }
+    }
+    document.getElementById('editname').value = name;
+    document.getElementById('editprice').value = price;
+    document.getElementById('editdiscount_price').value = discount_price;
+    document.getElementById('editcolor').value = color;
+    // document.getElementById('editgender_option').innerHTML = gender;
+    // document.getElementById('editgender_option').setAttribute('value',gender);
+    document.getElementById('editcloth_category_option').innerHTML = cloth_category;
+    document.getElementById('editcloth_category_option').setAttribute('value',cloth_category);
+    document.getElementById('editstock_option').innerHTML = stock == 1 ? "IN STOCK" : "OUT OF STOCK";
+    document.getElementById('editstock_option').setAttribute('value',stock);
+      CKEDITOR.instances['editdescription'].setData(document.getElementById('ckeditordescriptionvalue' + id).value);
+      document.getElementsByClassName('edit_form')[0].setAttribute('id',`form_${id}`);
+      editModal.toggle();
+  }
+
+  //Delete product
+  function deleteProduct(id) {
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    if(confirm('Do you want to delete it?') == true){
+      $.ajax({
+            url : '/admin/products/deleteProduct',
+            dataType: "json",
+            type: "POST",
+            data: {
+                id:id
+            },
+            success: function(response){
+              if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-success');
+                document.getElementById('alertMessage').innerHTML = 'Product deleted successfully';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                  $("#success-alert").slideUp(500);
+                });
+              }
+              setTimeout(() => {
+                location.reload();
+              },1000);
+            },
+            error: function(err){
+                    console.log(err);
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+      });
+    } 
+  }
+
+  //Upload image
+function uploadImages(value,id) {
+    document.getElementById('load').style.visibility="visible";
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+      if(value != 'edit'){
+        var imageFiles = document.getElementById(id).files;
+        var form = new FormData();
+        for(var i=0;i<imageFiles.length;i++){
+            if(imageFiles[i] != undefined){
+                form.append(`book_images`, imageFiles[i]);
+            }
+        }
+
+        $.ajax({
+            url : id == 'product_cloth_category_image' ? "/admin/common/saveBookImages?category=slider" : "/admin/common/saveBookImages",
+            type: "POST",
+            cache: false,
+            contentType: false,
+            processData: false,
+            data : form,
+            success: function(response){
+                // console.log(response.files);
+                for(var i=0;i<response.files.length;i++) {
+                    var path = response.files[i].slice(6,response.files[i].length);
+                    if(id == 'product_cloth_category_image') {
+                      $('#preview_product_cloth_category_image').append('<div class="col-lg-4 col-md-4 col-sm-6 col-6" id="gallery_image_'+ path +'"><div class="card" id="append_image_'+ path +'"><a class="delete_gallery_image" onclick="deleteCurrentGalleryImage(\''+ ( "gallery_image_"+ path )  +'\',\'gallery_image_path_'+ path +'\')"><span class="iconify" data-icon="akar-icons:cross"></span></a><img src="'+ path +'" id="preview_galler_image_'+ path +'" alt=""><input type="hidden" class="category_gallery_image_path" name="gallery_image_path" id="gallery_image_path_'+ path +'" value="'+ path +'"></div></div>');
+                    } else {
+                      $('#preview').append('<div class="col-lg-4 col-md-4 col-sm-6 col-6" id="gallery_image_'+ path +'"><div class="card" id="append_image_'+ path +'"><a class="delete_gallery_image" onclick="deleteCurrentGalleryImage(\''+ ( "gallery_image_"+ path )  +'\',\'gallery_image_path_'+ path +'\')"><span class="iconify" data-icon="akar-icons:cross"></span></a><img src="'+ path +'" id="preview_galler_image_'+ path +'" alt=""><input type="hidden" class="gallery_image_path" name="gallery_image_path" id="gallery_image_path_'+ path +'" value="'+ path +'"></div></div>');
+                    }
+                }
+                document.getElementById(id).value='';
+                document.getElementById('load').style.visibility="hidden";
+            },
+            error: function(err){
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+        });
+      } else {
+        var imageFiles = document.getElementById(id).files;
+        var inputId = id;
+        if(inputId.includes('save_product_cloth_category_mobile_image_')) {
+          var id = inputId.split('save_product_cloth_category_mobile_image_')[1];
+        } else if(inputId.includes('save_product_cloth_category_web_image_')) {
+          var id = inputId.split('save_product_cloth_category_web_image_')[1];
+        } else if(inputId.includes('save_product_cloth_category')) {
+          var id = inputId.split('save_product_cloth_category_image_')[1];
+        } else {
+          var id = document.getElementsByClassName('edit_form')[0].getAttribute('id').split('_')[1];
+        }
+        //   console.log(imageFiles);
+        var form = new FormData();
+        for(var i=0;i<imageFiles.length;i++){
+            if(imageFiles[i] != undefined){
+                form.append(`book_images`, imageFiles[i]);
+            }
+        }
+
+        $.ajax({
+            url : inputId.includes('save_product_cloth_category_mobile_image_') ? `/admin/common/uploadSingleSliderImage/${id}/cloth/mobile` : inputId.includes('save_product_cloth_category_web_image_') ? `/admin/common/uploadSingleSliderImage/${id}/cloth/web` : inputId.includes('save_product_cloth_category') ? `/admin/common/saveCategoryEditImages/${id}?category=slider` : `/admin/common/saveEditImages/${id}/products`,
+            type: "POST",
+            cache: false,
+            contentType: false,
+            processData: false,
+            data : form,
+            success: function(response){
+                // console.log(response.files);
+                for(var i=0;i<response.files.length;i++) {
+                  var path = response.files[i].slice(6,response.files[i].length);
+                  if(inputId.includes('save_product_cloth_category_mobile_image_')) {
+                    $('#preview_save_product_cloth_category_mobile_image_' + id).append('<div class="col-lg-12 col-md-12 col-sm-12 col-12" id="edit_gallery_image_cloth_mobile_'+ path +'" data-id="'+ id +'" style="padding:0px !important"><div class="card" id="append_image_'+ path +'"><a class="delete_gallery_image" onclick="deleteEditCurrentGalleryImage(\''+ ( "edit_gallery_image_mobile_mobile_cloth_"+ path )  +'\',\''+ path +'\')"><span class="iconify" data-icon="akar-icons:cross"></span></a><img src="'+ path +'" id="preview_galler_image_'+ path +'" alt=""></div><input type="hidden" class="edit_gallery_image_path" name="gallery_image_path" id="gallery_image_path_'+ path +'" value="'+ path +'"></div>');
+                  } else if(inputId.includes('save_product_cloth_category_web_image_')) {
+                    $('#preview_save_product_cloth_category_web_image_' + id).append('<div class="col-lg-12 col-md-12 col-sm-12 col-12" id="edit_gallery_image_cloth_web_'+ path +'" data-id="'+ id +'" style="padding:0px !important"><div class="card" id="append_image_'+ path +'"><a class="delete_gallery_image" onclick="deleteEditCurrentGalleryImage(\''+ ( "edit_gallery_image_cloth_web_"+ path )  +'\',\''+ path +'\')"><span class="iconify" data-icon="akar-icons:cross"></span></a><img src="'+ path +'" id="preview_galler_image_'+ path +'" alt=""></div><input type="hidden" class="edit_gallery_image_path" name="gallery_image_path" id="gallery_image_path_'+ path +'" value="'+ path +'"></div>');
+                  } else if(inputId.includes('save_product_cloth_category')){
+                    $('#preview_save_product_cloth_category_image_' + id).append('<div class="col-lg-12 col-md-12 col-sm-12 col-12" id="edit_gallery_image_cloth_'+ path +'" data-id="'+ id +'"><div class="card" id="append_image_'+ path +'"><a class="delete_gallery_image" onclick="deleteEditCurrentGalleryImage(\''+ ( "edit_gallery_image_cloth_"+ path )  +'\',\''+ path +'\')"><span class="iconify" data-icon="akar-icons:cross"></span></a><img src="'+ path +'" id="preview_galler_image_'+ path +'" alt=""></div><input type="hidden" class="edit_gallery_image_path" name="gallery_image_path" id="gallery_image_path_'+ path +'" value="'+ path +'"></div>');
+                  } else {
+                    $('#editpreview').append('<div class="col-lg-4 col-md-4 col-sm-6 col-6" id="edit_gallery_image_'+ path +'"><div class="card" id="append_image_'+ path +'"><a class="delete_gallery_image" onclick="deleteEditCurrentGalleryImage(\''+ ( "edit_gallery_image_"+ path )  +'\',\''+ path +'\')"><span class="iconify" data-icon="akar-icons:cross"></span></a><img src="'+ path +'" id="preview_galler_image_'+ path +'" alt=""></div><input type="hidden" class="edit_gallery_image_path" name="gallery_image_path" id="gallery_image_path_'+ path +'" value="'+ path +'"></div>');
+                  }
+                }
+                document.getElementById(inputId).value='';
+                document.getElementById('load').style.visibility="hidden";
+            },
+            error: function(err){
+                if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+            }
+        });
+      }
+  }
+
+  //Delete  Pdf
+  function deleteCurrentPdf(path) {
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    if(confirm('Do you want to delete it?') == true){
+        console.log(path);
+        if(path != '/images/extra/nopreview.jpeg') {
+            $.ajax({
+                url : '/admin/common/deletePDF',
+                dataType: "json",
+                type: "POST",
+                data: {
+                    path:path
+                },
+                success: function(response){
+                    // alert('Removed Successfully');
+                    if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-success');
+                document.getElementById('alertMessage').innerHTML = 'Removed successfully';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+                    document.getElementById('pdf_'+path).remove();
+                },
+                error: function(err){
+                    console.log(err);
+                    // alert('Some error occured !!');
+                    if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-warning');
+                document.getElementById('alertMessage').innerHTML = 'Please fill all the values first.';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+                }
+            });
+        }
+    } 
+}
+
+  //Add product
+  function addProduct(event) {
+    event.preventDefault();
+    document.getElementById('load').style.visibility="visible";
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    var description = CKEDITOR.instances['description'].getData();
+    var name = document.getElementById('name').value;
+    var price = document.getElementById('price').value;
+    var discount_price = document.getElementById('discount_price').value;
+    // var gender = document.getElementById('gender').value;
+    var cloth_category = document.getElementById('cloth_category').value;
+    var color = document.getElementById('color').value;
+    var stock = document.getElementById('stock').value;
+    var size_XS = document.getElementById('size_XS').value;
+    var size_S = document.getElementById('size_S').value;
+    var size_M = document.getElementById('size_M').value;
+    var size_L = document.getElementById('size_L').value;
+    var size_XL = document.getElementById('size_XL').value;
+    var size_XXL = document.getElementById('size_XXL').value;
+    var sizes = [];
+    var size_quantity = [];
+    if(parseInt(size_XS) != 0) {
+      sizes.push('XS');
+    }
+    if(parseInt(size_S) != 0) {
+      sizes.push('S');
+    }
+    if(parseInt(size_M) != 0) {
+      sizes.push('M');
+    }
+    if(parseInt(size_L) != 0) {
+      sizes.push('L');
+    }
+    if(parseInt(size_XL) != 0) {
+      sizes.push('XL');
+    }
+    if(parseInt(size_XXL) != 0) {
+      sizes.push('XXL');
+    }
+    size_quantity = [
+      {
+        size:'XS',
+        quantity:parseInt(size_XS),
+      },
+      {
+        size:'S',
+        quantity:parseInt(size_S),
+      },
+      {
+        size:'M',
+        quantity:parseInt(size_M),
+      },
+      {
+        size:'L',
+        quantity:parseInt(size_L),
+      },
+      {
+        size:'XL',
+        quantity:parseInt(size_XL),
+      },
+      {
+        size:'XXL',
+        quantity:parseInt(size_XXL),
+      },
+    ]
+    // for(var option of document.getElementById('sizes').options){
+    //   if (option.selected) {
+    //     sizes.push(option.value);    
+    //   }
+    // }
+    var categories = [];
+    for(var option of document.getElementById('category').options){
+      if (option.selected) {
+        categories.push(option.value);    
+      }
+    }
+    var gender = [];
+    for(var option of document.getElementById('gender').options){
+      if (option.selected) {
+        gender.push(option.value);    
+      }
+    }
+    if(description.length != 0) {
+        var gallery = document.getElementsByClassName("gallery_image_path");
+        var gallery_values = [];
+        if(gallery.length != 0) {
+            for(var i =0;i<gallery.length;i++) {
+                gallery_values.push(gallery[i].value);
+            }
+            $.ajax({
+                url : '/admin/products/addProduct',
+                dataType: "json",
+                type: "POST",
+                data: {
+                    name:name,
+                    price:price,
+                    discount_price:discount_price,
+                    description:description,
+                    gallery:gallery_values,
+                    gender:gender.toString(),
+                    stock:stock,
+                    sizes:sizes.toString(),
+                    cloth_category:cloth_category,
+                    category:categories.toString(),
+                    size_quantity:JSON.stringify(size_quantity),
+                    color:color,
+                },
+                success: function(response){
+                  document.getElementById('load').style.visibility="hidden";
+                    if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-success');
+                        document.getElementById('alertMessage').innerHTML = 'Product added successfully';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+                    setTimeout(() => {
+                        location.reload();
+                    },1000);
+                },
+                error: function(err){
+                    console.log(err);
+                    document.getElementById('load').style.visibility="hidden";
+                    if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+                }
+            });
+      } else {
+        if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-warning');
+                if(gallery.length == 0) {
+                  document.getElementById('alertMessage').innerHTML = 'Select an image first';
+                }
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+      }
+    } else {
+        if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-warning');
+                document.getElementById('alertMessage').innerHTML = 'Please fill all the values first.';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+    }
+    // console.log(data);
+  }
+
+  //Save Product
+  function saveProduct(event) {
+    event.preventDefault();
+    document.getElementById('load').style.visibility="visible";
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    var description = CKEDITOR.instances['editdescription'].getData();
+    var name = document.getElementById('editname').value;
+    var price = document.getElementById('editprice').value;
+    var discount_price = document.getElementById('editdiscount_price').value;
+    // var gender = document.getElementById('editgender').value;
+    var cloth_category = document.getElementById('editcloth_category').value;
+    var color = document.getElementById('editcolor').value;
+    var stock = document.getElementById('editstock').value;
+    var size_XS = document.getElementById('editsize_XS').value;
+    var size_S = document.getElementById('editsize_S').value;
+    var size_M = document.getElementById('editsize_M').value;
+    var size_L = document.getElementById('editsize_L').value;
+    var size_XL = document.getElementById('editsize_XL').value;
+    var size_XXL = document.getElementById('editsize_XXL').value;
+    var sizes = [];
+    var size_quantity = [];
+    if(parseInt(size_XS) != 0) {
+      sizes.push('XS');
+    }
+    if(parseInt(size_S) != 0) {
+      sizes.push('S');
+    }
+    if(parseInt(size_M) != 0) {
+      sizes.push('M');
+    }
+    if(parseInt(size_L) != 0) {
+      sizes.push('L');
+    }
+    if(parseInt(size_XL) != 0) {
+      sizes.push('XL');
+    }
+    if(parseInt(size_XXL) != 0) {
+      sizes.push('XXL');
+    }
+    size_quantity = [
+      {
+        size:'XS',
+        quantity:parseInt(size_XS),
+      },
+      {
+        size:'S',
+        quantity:parseInt(size_S),
+      },
+      {
+        size:'M',
+        quantity:parseInt(size_M),
+      },
+      {
+        size:'L',
+        quantity:parseInt(size_L),
+      },
+      {
+        size:'XL',
+        quantity:parseInt(size_XL),
+      },
+      {
+        size:'XXL',
+        quantity:parseInt(size_XXL),
+      },
+    ]
+    // for(var option of document.getElementById('sizes').options){
+    //   if (option.selected) {
+    //     sizes.push(option.value);    
+    //   }
+    // }
+    var categories = [];
+    for(var option of document.getElementById('editcategory').options){
+      if (option.selected) {
+        categories.push(option.value);    
+      }
+    }
+    var gender = [];
+    for(var option of document.getElementById('editgender').options){
+      if (option.selected) {
+        gender.push(option.value);    
+      }
+    }
+    var id = document.getElementsByClassName('edit_form')[0].getAttribute('id').split('_')[1];
+    if(description.length != 0) {
+        var gallery = document.getElementsByClassName("edit_gallery_image_path");
+        var gallery_values = [];
+        if(gallery.length != 0) {
+            for(var i =0;i<gallery.length;i++) {
+                gallery_values.push(gallery[i].value);
+            }
+            $.ajax({
+                url : '/admin/products/saveProduct',
+                dataType: "json",
+                type: "POST",
+                data: {
+                    name:name,
+                    price:price,
+                    discount_price:discount_price,
+                    description:description,
+                    gallery:gallery_values,
+                    id:id,
+                    gender:gender.toString(),
+                    stock:stock,
+                    sizes:sizes.toString(),
+                    cloth_category:cloth_category,
+                    category:categories.toString(),
+                    size_quantity: JSON.stringify(size_quantity),
+                    color:color,
+                },
+                success: function(response){
+                  document.getElementById('load').style.visibility="hidden";
+                    if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-success');
+                        document.getElementById('alertMessage').innerHTML = 'Product edited successfully';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+                    setTimeout(() => {
+                        location.reload();
+                    },1000);
+                },
+                error: function(err){
+                    console.log(err);
+                    document.getElementById('load').style.visibility="hidden";
+                    if(document.getElementById('success-alert')) {
+                        document.getElementById('success-alert').classList.add('alert-danger');
+                        document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                            $("#success-alert").slideUp(500);
+                        });
+                    }
+                }
+            });
+      } else {
+        if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-warning');
+                if(gallery.length == 0) {
+                  document.getElementById('alertMessage').innerHTML = 'Select an image first';
+                } 
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+      }
+    } else {
+        if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-warning');
+                document.getElementById('alertMessage').innerHTML = 'Please fill all the values first.';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+    }
+    // console.log(data);
+  }
+
+</script>
+
+<%- include('../../components/footer/footer.ejs') %> 

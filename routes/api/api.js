@@ -35,15 +35,15 @@ const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     auth: {
       user: 'fitmangurugram@gmail.com',
-      pass: 'tphcsykeqlqkzydz',
+      pass: 'yhufnlnuckhbdsxx',
     },
 });
 
-async function sendMail(email,name,phone,body) {
+async function sendMail(email,name,phone,body,toMail) {
   var string = `Name : ${name}\n` + `Email : ${email}\n` + `Phone number : ${phone + '\nmessage: ' + body}`;
   const mailData = {
     from: 'fitmangurugram@gmail.com',  // sender address
-    to: 'contact@healfit.in',   // list of receivers
+    to: toMail,   // list of receivers
     subject: 'Contact form response',
     text: 'Contact us',
     html: string,
@@ -71,6 +71,9 @@ router.post('/updatePhoneNumber', authenticationMiddleware.tokenAuthentication,m
 
 /* Update User data. */
 router.post('/updateData',authenticationMiddleware.tokenAuthentication, middlewares.updateData);
+
+/* Update User data. */
+router.post('/updateApperalData',authenticationMiddleware.tokenAuthentication, middlewares.updateApperalData);
 
 /* get User data. */
 router.get('/getUserProfile',authenticationMiddleware.tokenAuthentication, middlewares.getUserProfile);
@@ -116,7 +119,7 @@ router.post('/generateShareLink',middlewares.generateShareLink);
 
 //Send Mail
 router.post('/sendMail', function (req,res,next){
-  sendMail(req.body.email,req.body.name,req.body.phone,req.body.message).then((result) => {
+  sendMail(req.body.email,req.body.name,req.body.phone,req.body.message,req.body.toMail).then((result) => {
     res.json({
       message:'success',
       result:result,

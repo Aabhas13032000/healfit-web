@@ -328,25 +328,53 @@ module.exports = {
                     res.json({
                     message:'Updated_successfully',
                     user:[
-                        {
+                      {
                         id: req.body.user_id,
                         name: req.body.name,
                         email: req.body.email,
                         gender: req.body.gender,
-                        age: parseInt(req.body.age),
-                        weight: parseFloat(req.body.weight),
-                        target_weight: parseFloat(req.body.target_weight),
+                        age: parseInt(req.body.age.toString()),
+                        weight: req.body.weight,
+                        target_weight: req.body.target_weight,
                         logged_in: 1,
                         device_id: req.headers.token,
                         profile_image: req.body.profile_image,
                         phoneNumber: req.body.phoneNumber,
-                        height: parseFloat(req.body.height),
+                        height: req.body.height,
                         device: req.headers.platform,
                         status: "ACTIVE",
                         is_otp_verified: 1,
                         created_at: date.toISOString()
-                        }
+                      }
                     ],
+                    });
+                }
+              });
+            });
+        } else {
+            res.json({
+            message : 'Auth_token_failure',
+            user:[],
+            });
+        }
+      },
+      updateApperalData : (req,res,next) => {
+        var date = new Date();
+        if(req.headers.token) {
+            const user = "UPDATE `users` SET `name` = '"+ req.body.name +"',`email` = '"+ req.body.email +"',`gender` = '"+ req.body.gender +"',`profile_image` = '"+ req.body.profile_image +"' WHERE `id` = '"+ req.body.user_id +"'";
+            const userId = "UPDATE `user_devices` SET `logged_in` = 1 WHERE `device_id` = '"+ req.headers.token +"'";
+            pool.query(user,function(err,user){
+              pool.query(userId,function(err,userId){
+                if(err) {
+                  console.log(err);
+                    res.json({
+                        message:'Database_connection_error',
+                        user:[],
+                    });
+                } else {
+                    res.json({
+                    message:'Updated_successfully',
+                    user:[],
                     });
                 }
               });

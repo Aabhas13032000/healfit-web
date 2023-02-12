@@ -156,6 +156,7 @@
 
 var date = '<%- date %>';
     var isDevelopment = '<%- isDevelopment %>' == 'true' ? true : false;
+    var waitTime = 1500;
 
 var addFoodModal;
     $(function(){
@@ -172,6 +173,13 @@ var addFoodModal;
     }
 
 function searchFood(value) {
+    clearTimeout(timer);
+    var timer = setTimeout(() => {
+        search(value);
+    },waitTime);
+}
+
+function search(value) {
     if(value.length != 0) {
         var array = document.cookie.split(';');
         var counter = 0;

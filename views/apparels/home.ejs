@@ -1,0 +1,260 @@
+<%- include('../components/header/apperals_header.ejs',{cssFile : 'index',page:page,isDevelopment: isDevelopment,mainUrl:mainUrl,product_categories:product_categories}) %> 
+
+<div id="load"></div>
+
+<div class="main-container">
+    <br><br><br>
+
+    <!-- <div class="maintinance">
+        <article>
+            <br><br><br>
+            <h1>We&rsquo;ll be back soon!</h1>
+            <div>
+                <p>Sorry for the inconvenience. We&rsquo;re performing some maintenance at the moment. We&rsquo;ll be back up shortly!</p>
+                <p>&mdash; The Curect Team</p>
+            </div>
+            <br><br><br>
+        </article>
+    </div> -->
+
+    <div class="container clothCategory_slider" id="clothCategory_slider">
+        <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner" id="sliders_value">
+            </div>
+            <button class="carousel-control-prev icon4" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                <a><span class="iconify" data-icon="eva:arrow-ios-back-fill"></span></a>
+            </button>
+            <button class="carousel-control-next icon3" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                <a><span class="iconify" data-icon="eva:arrow-ios-forward-fill"></span></a>
+            </button>
+          </div>
+    </div>
+    <br>
+    <!-- <div class="programs container" id="topGenders">
+        <div class="row">
+            <div class="col-lg-2 col-md-2 col-sm-3 col-4" style="padding: 10px !important;">
+                <div class="box6" onclick="window.location.href = '/?gender=MALE'">
+                    <div class="image" style="padding: 0px;">
+                        <img src="/images/local/male.png" alt="">
+                    </div>
+                    <div class="name">
+                        <h6>Men</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-3 col-4" style="padding: 10px !important;">
+                <div class="box6" onclick="window.location.href = '/?gender=FEMALE'">
+                    <div class="image" style="padding: 0px;">
+                        <img src="/images/local/female.png" alt="">
+                    </div>
+                    <div class="name">
+                        <h6>Women</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-3 col-4" style="padding: 10px !important;">
+                <div class="box6" onclick="window.location.href = '/?gender=OTHERS`'">
+                    <div class="image" style="padding: 0px;">
+                        <img src="/images/local/trans.png" alt="">
+                    </div>
+                    <div class="name">
+                        <h6>Unisex</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+    <br>
+    <% for(var i=0;i<product_categories.length;i++) { %> 
+        <% if(product_categories[i].imp == 1) { %> 
+            <div class="programs container" id="product_<%- product_categories[i].id %>">
+                <div class="heading">
+                    <h2><%= product_categories[i].name %></h2>
+                    <p onclick="window.location.href = '/?category=<%- product_categories[i].name %>'">View All&nbsp;&nbsp;<span class="iconify" data-icon="cil:arrow-right"></span></p>
+                </div>
+                <div class="external-container">
+                    <div class="arrow-left icon" id="left" onclick="leftButtonClicked('slider_<%- product_categories[i].id %>','box5',event)">
+                        <a><span class="iconify" data-icon="eva:arrow-ios-back-fill"></span></a>
+                    </div>
+                    <div class="arrow-right icon" id="right" onclick="rightButtonClicked('slider_<%- product_categories[i].id %>','box5',event)">
+                        <a><span class="iconify" data-icon="eva:arrow-ios-forward-fill"></span></a>
+                    </div>
+                    <div class="cards" id="slider_<%- product_categories[i].id %>">
+                        
+                    </div>
+                </div>
+            </div>
+        <% } %> 
+    <% } %> 
+    <br>
+    <div class="programs container" id="allCategories">
+        <div class="heading">
+            <h2>Top Categories</h2>
+        </div>
+        <div class="row" id="topCategories">
+        </div>
+    </div>
+    <br><br>
+    <%- include('footer.ejs',{isDevelopment: isDevelopment,mainUrl:mainUrl}) %> 
+</div>
+
+<script>
+    var isDevelopment = '<%- isDevelopment %>' == 'true' ? true : false;
+    var baseUrl = '<%- baseUrl %>';
+    var mainUrl = '<%- mainUrl %>';
+    var gender = '<%- gender %>';
+
+    function getInitialData() {
+        let screenWidth = screen.width;
+        if(document.cookie.length != 0){
+            var array = document.cookie.split(';');
+            var counter = 0;
+            var index = 0;
+            var userIndex = 0;
+            for(var i=0;i<array.length;i++) {
+                if(array[i].includes('apperalUserToken=')){
+                    counter++;
+                    index = i;
+                }
+                if(array[i].includes('user_id=')){
+                    counter++;
+                    userIndex = i;
+                }
+            }
+            if(decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1]) {
+                var token = decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1];
+                var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+            } else {
+                var token = document.cookie.split(';')[index].split('apperalUserToken=')[1];
+                var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+            }
+            document.getElementById('load').style.visibility="visible";
+            $.ajax({
+                url : `${baseUrl}api/products/getProductsInitialData`,
+                dataType: "json",
+                type: "GET",
+                headers: {
+                    'token':token ? token : 'testing',
+                    'Content-Type':'application/json',
+                    'platform': 'WEB'
+                },
+                success: function(response){
+                    if(isDevelopment) {
+                        console.log(response);
+                    } 
+                    document.getElementById(`sliders_value`).innerHTML = '';
+                    var counter = 0;
+                    if(response.clothCategories.length != 0) {
+                        for(var i=0;i<response.clothCategories.length;i++) {
+                            var path = screenWidth <= 568 ? response.clothCategories[i].mobile_slider : response.clothCategories[i].web_slider;
+                            var url = `/?clothCategories=${response.clothCategories[i].name}`; 
+                            $('#topCategories').append('<div class="col-lg-2 col-md-2 col-sm-3 col-4" style="padding: 10px !important;"><div class="box6" style="width:200px;" onclick="window.location.href=\''+ url +'\'"><div class="image"><img src="'+ response.clothCategories[i].cover_photo +'" alt="" style="border-radius:50%"></div><div class="name"><h6>'+ response.clothCategories[i].name +'</h6></div></div></div>');
+                            if(response.clothCategories[i].imp == 1) {
+                                counter++;
+                                if(document.getElementsByClassName('clothSliders').length == 0) {
+                                    $(`#sliders_value`).append('<div class="carousel-item active clothSliders" onclick="window.location.href=\''+ url +'\'" data-bs-interval="2000"><img src="'+ path +'" class="d-block w-100" alt="..."></div>');
+                                } else {
+                                    $(`#sliders_value`).append('<div class="carousel-item clothSliders" onclick="window.location.href=\''+ url +'\'" data-bs-interval="2000"><img src="'+ path +'" class="d-block w-100" alt="..."></div>');
+                                }
+                            }
+                        }
+                        if(counter == 0) {
+                            document.getElementById('clothCategory_slider').style.innerHTML = '';
+                        }
+                    } else {
+                        document.getElementById(`clothCategory_slider`).innerHTML = '';
+                        document.getElementById(`allCategories`).innerHTML = '';
+                    }
+                    for(var i=0;i<response.productCategories.length;i++) {
+                        document.getElementById(`slider_${response.productCategories[i].id}`).innerHTML = '';
+                        var counter = 0;
+                        for(var j=0;j<response.impProducts.length;j++) {
+                            if(response.impProducts[j].category.includes(response.productCategories[i].name)) {
+                                counter++;
+                                var discount = response.impProducts[j].discount_price == 0 ? 0 : Math.round((parseInt(response.impProducts[j].price) - parseInt(response.impProducts[j].discount_price))/parseInt(response.impProducts[j].price) * 100);
+                                var url = `/each-product/${response.impProducts[j].id}`;
+                                $(`#slider_${response.productCategories[i].id}`).append('<div class="box4 box5" style="margin: 0 0px 0px 20px;min-width:285px !important;max-width:285px !important" onclick="window.location.href=\''+ url +'\'"><div class="image"><img src="'+ response.impProducts[j].cover_photo +'" alt=""></div><div class="inside_container"><div class="text"><h5>'+ response.impProducts[j].name +'</h5><h5 class="price-info"><span class="disount_price" style="color:'+ (response.impProducts[j].discount_price == 0 ? 'var(--congrats);font-family:Gilroy-Medium' : 'var(--rich-black)' ) +'">'+ (response.impProducts[j].discount_price == 0 ? 'Free' : 'Rs.' + response.impProducts[j].discount_price ) +'</span>'+ (discount == 0 ? '' : '&nbsp;&nbsp;<span class="price">Rs.'+ response.impProducts[j].price +'</span>&nbsp;&nbsp;<span class="discount-per">'+ discount +'% Off</span>') +'</h5></div></div>'+ (response.impProducts[j].stock == 0 ? '<div class="outOfStock"><p>Out of stock</p></div>' : ' ') +'</div>');
+                            }
+                        }
+                        if(counter == 0) {
+                            document.getElementById(`product_${response.productCategories[i].id}`).innerHTML = '';
+                        }
+                    }            
+                    document.getElementById('load').style.visibility="hidden";
+                },
+                error: function(err){
+                    if(isDevelopment) {
+                    console.log(err);
+                }
+                    alert('Some error occured !!');
+                }
+            });
+        } else {
+            document.getElementById('load').style.visibility="visible";
+            $.ajax({
+                url : `${baseUrl}api/products/getProductsInitialData`,
+                dataType: "json",
+                type: "GET",
+                headers: {
+                    'Content-Type':'application/json',
+                    'platform': 'WEB'
+                },
+                success: function(response){
+                    if(isDevelopment) {
+                        console.log(response);
+                    } 
+                    document.getElementById(`sliders_value`).innerHTML = '';
+                    var counter = 0;
+                    if(response.clothCategories.length != 0) {
+                        for(var i=0;i<response.clothCategories.length;i++) {
+                            var path = screenWidth <= 568 ? response.clothCategories[i].mobile_slider : response.clothCategories[i].web_slider;
+                            var url = `/?clothCategories=${response.clothCategories[i].name}`; 
+                            $('#topCategories').append('<div class="col-lg-2 col-md-2 col-sm-3 col-4" style="padding: 10px !important;"><div class="box6" style="width:200px;" onclick="window.location.href=\''+ url +'\'"><div class="image"><img src="'+ response.clothCategories[i].cover_photo +'" alt="" style="border-radius:50%"></div><div class="name"><h6>'+ response.clothCategories[i].name +'</h6></div></div></div>');
+                            if(response.clothCategories[i].imp == 1) {
+                                counter++;
+                                if(document.getElementsByClassName('clothSliders').length == 0) {
+                                    $(`#sliders_value`).append('<div class="carousel-item active clothSliders" onclick="window.location.href=\''+ url +'\'" data-bs-interval="2000"><img src="'+ path +'" class="d-block w-100" alt="..."></div>');
+                                } else {
+                                    $(`#sliders_value`).append('<div class="carousel-item clothSliders" onclick="window.location.href=\''+ url +'\'" data-bs-interval="2000"><img src="'+ path +'" class="d-block w-100" alt="..."></div>');
+                                }
+                            }
+                        }
+                        if(counter == 0) {
+                            document.getElementById('clothCategory_slider').style.innerHTML = '';
+                        }
+                    } else {
+                        document.getElementById(`clothCategory_slider`).innerHTML = '';
+                        document.getElementById(`allCategories`).innerHTML = '';
+                    }
+                    for(var i=0;i<response.productCategories.length;i++) {
+                        document.getElementById(`slider_${response.productCategories[i].id}`).innerHTML = '';
+                        var counter = 0;
+                        for(var j=0;j<response.impProducts.length;j++) {
+                            if(response.impProducts[j].category.includes(response.productCategories[i].name)) {
+                                counter++;
+                                var discount = response.impProducts[j].discount_price == 0 ? 0 : Math.round((parseInt(response.impProducts[j].price) - parseInt(response.impProducts[j].discount_price))/parseInt(response.impProducts[j].price) * 100);
+                                var url = `/each-product/${response.impProducts[j].id}`;
+                                $(`#slider_${response.productCategories[i].id}`).append('<div class="box4 box5" style="margin: 0 0px 0px 20px;min-width:285px !important;max-width:285px !important" onclick="window.location.href=\''+ url +'\'"><div class="image"><img src="'+ response.impProducts[j].cover_photo +'" alt=""></div><div class="inside_container"><div class="text"><h5>'+ response.impProducts[j].name +'</h5><h5 class="price-info"><span class="disount_price" style="color:'+ (response.impProducts[j].discount_price == 0 ? 'var(--congrats);font-family:Gilroy-Medium' : 'var(--rich-black)' ) +'">'+ (response.impProducts[j].discount_price == 0 ? 'Free' : 'Rs.' + response.impProducts[j].discount_price ) +'</span>'+ (discount == 0 ? '' : '&nbsp;&nbsp;<span class="price">Rs.'+ response.impProducts[j].price +'</span>&nbsp;&nbsp;<span class="discount-per">'+ discount +'% Off</span>') +'</h5></div></div>'+ (response.impProducts[j].stock == 0 ? '<div class="outOfStock"><p>Out of stock</p></div>' : ' ') +'</div>');
+                            }
+                        }
+                        if(counter == 0) {
+                            document.getElementById(`product_${response.productCategories[i].id}`).innerHTML = '';
+                        }
+                    }            
+                    document.getElementById('load').style.visibility="hidden";
+                },
+                error: function(err){
+                    if(isDevelopment) {
+                    console.log(err);
+                }
+                    alert('Some error occured !!');
+                }
+            });
+        }
+    }
+    setTimeout(() => {
+        getInitialData();
+    },500);
+</script>
+
+<%- include('../components/footer/apperals_footer.ejs') %>

@@ -103,6 +103,7 @@
 
 var date = '<%- date %>';
     var isDevelopment = '<%- isDevelopment %>' == 'true' ? true : false;
+    var waitTime = 1500;
 
 var addExerciseModal;
     $(function(){
@@ -119,6 +120,13 @@ var addExerciseModal;
     }
 
 function searchExercise(value) {
+    clearTimeout(timer);
+    var timer = setTimeout(() => {
+        search(value);
+    },waitTime);
+}
+
+function search(value) {
     if(value.length != 0) {
         var array = document.cookie.split(';');
         var counter = 0;

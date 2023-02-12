@@ -14,12 +14,18 @@ const pool = require('../../database/connection');
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-    service : "gmail",
-    port: 465,               // true for 465, false for other ports
+    // pool: true,
+    // secure: true, // use TLS
+    // port: 465,// true for 465, false for other ports
+    port: 587,
+    secure: false,
+    requireTLS: true,
     host: "smtp.gmail.com",
     auth: {
-      user: 'fitmangurugram@gmail.com',
-      pass: 'tphcsykeqlqkzydz',
+      // user: 'fitmangurugram@gmail.com',
+      // pass: 'tphcsykeqlqkzydz',
+      user: 'contact@healfit.in',
+      pass: 'Lalit01**',
     },
 });
 
@@ -55,13 +61,13 @@ async function sendMail(user_id,array) {
           var htmlString = string + string2 + string3;
           // console.log(htmlString);
           const mailData = {
-            from: 'fitmangurugram@gmail.com',  // sender address
+            from: 'contact@healfit.in',  // sender address
             to: user[0].email,   // list of receivers
             subject: 'HealFit purchased order details reciept',
             text: 'That was easy!',
             html: htmlString,
           };
-        
+
           transporter.sendMail(mailData, function (err, info) {
               if(err){
                   console.log(err);
@@ -296,6 +302,79 @@ router.post('/purchaseSingleItem',function (req,res,next){
     }
   });
 });
+
+// router.post('/purchaseSingleProduct',function (req,res,next){
+//   var item_id = req.query.item_id;
+//   var item_category = 'product';
+//   var user_id = req.query.user_id;
+//   var array = [];
+//   instance.payments.fetch(req.body.razorpay_payment_id).then((paymentDocument) => {
+//     if (paymentDocument.status == "captured") {
+//       var itemData = "SELECT `name`,`discount_price` FROM `products` WHERE `id` = '"+item_id+"'";
+//       var checkCart = "SELECT * FROM `cart` WHERE `item_category` = '"+ item_category +"' AND `item_id` = '"+ item_id +"' AND `user_id` = '"+ user_id +"' AND `cart_category` = 'cart' AND `trainer_program_id` = 0";
+//       pool.query(itemData,function(err,itemData){
+//           pool.query(checkCart,function(err,checkCart){
+//             if(err) {
+//               console.log(err);
+//                 res.json({message:'Database_connection_error'});
+//             } else {
+//                 if(checkCart.length != 0){
+//                   var deleteFromCart = "DELETE FROM `cart` WHERE `id` = '"+ checkCart[0].id +"'";
+//                   pool.query(deleteFromCart,function(err,deleteFromCart){
+//                     if(err) {
+//                       console.log(err);
+//                       res.redirect(`/myPrograms?message=payment_failed`);
+//                     } else {
+//                       var end_date = new Date(new Date().getTime() + parseInt(90) * 24 * 60 * 60 * 1000);
+//                       var query  = "INSERT INTO `orders` (`item_id`,`item_category`,`end_date`,`user_id`,`session_count`,`trainer_program_id`) VALUES ('"+ item_id +"','"+ item_category +"','"+ end_date.toISOString().slice(0, 19).replace('T', ' ') +"','"+ user_id +"',0,'"+ trainer_program_id +"')";
+//                       pool.query(query,function(err,results,fields){
+//                           if(err) {
+//                             console.log(err);
+//                               res.redirect(`/myOrders?message=payment_failed`);
+//                           } else {
+//                             array.push({
+//                               name:itemData[0].name,
+//                               quantity:req.query.quantity,
+//                               price:itemData[0].discount_price
+//                             })
+//                             sendMail(req.query.user_id,array).then((result) => {
+//                               res.redirect(`/myOrders?message=payment_successfull`);
+//                             }).catch((err) => {
+//                               res.redirect(`/myOrders?message=payment_successfull`);
+//                             });
+//                           }
+//                       });
+//                     }
+//                   });
+//                 } else {
+//                   var end_date = new Date(new Date().getTime() + parseInt(90) * 24 * 60 * 60 * 1000);
+//                   var query  = "INSERT INTO `subscription` (`item_id`,`item_category`,`end_date`,`user_id`,`session_count`,`trainer_program_id`) VALUES ('"+ item_id +"','"+ item_category +"','"+ end_date.toISOString().slice(0, 19).replace('T', ' ') +"','"+ user_id +"',0,'"+ trainer_program_id +"')";
+//                   pool.query(query,function(err,results,fields){
+//                       if(err) {
+//                         console.log(err);
+//                           res.redirect(`/myPrograms?message=payment_failed`);
+//                       } else {
+//                         array.push({
+//                           name:itemData[0].title,
+//                           quantity:1,
+//                           price:itemData[0].price
+//                         })
+//                         sendMail(req.query.user_id,array).then((result) => {
+//                           res.redirect(`/myPrograms?message=payment_successfull`);
+//                         }).catch((err) => {
+//                           res.redirect(`/myPrograms?message=payment_successfull`);
+//                         });
+//                       }
+//                   });
+//                 }
+//             }
+//         });
+//       });
+//     } else {
+//       res.redirect(`/myPrograms?message=payment_failed`);
+//     }
+//   });
+// });
 
 router.post('/purchaseSingleItemMobile',function (req,res,next){
   var item_id = req.query.item_id;

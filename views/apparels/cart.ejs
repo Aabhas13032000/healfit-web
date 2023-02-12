@@ -1,0 +1,912 @@
+<%- include('../components/header/apperals_header.ejs',{cssFile : 'index',page:page,isDevelopment: isDevelopment,mainUrl:mainUrl,product_categories:product_categories}) %> 
+
+<div id="load"></div>
+
+<div class="modal fade" id="changeAddressModal" tabindex="-1" aria-labelledby="changeaddressmodal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Select Address</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="allAddress">
+
+                </div>
+                <br>
+                <button type="button" style="border: 0;width: 100%;display: flex;align-items: center;justify-content: center" class="btn btn-primary" onclick="openAddModal()">
+                    Add address
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addadressmodel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Add Address</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="addAddress(event)" id="form" method="post" enctype="multipart/form-data" autocomplete="off">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="form-group">
+                              <label for="full_name">Full name</label>
+                              <input type="text" id="full_name" name="full_name" class="form-control" placeholder="Enter your full name.." style="margin: 10px 0px;" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="addressPhoneNumber">Mobile number</label>
+                                <input type="text" id="addressPhoneNumber" name="addressPhoneNumber" class="form-control" placeholder="Enter your phone number.." style="margin: 10px 0px;" maxlength="15" minlength="10" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="pincode">Pincode</label>
+                                <input type="text" id="pincode" name="pincode" class="form-control" placeholder="Enter your phone number.." style="margin: 10px 0px;" maxlength="6" minlength="5" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="flat_no">Flat, House no., Building, Company, Apartment</label>
+                                <input type="text" id="flat_no" name="flat_no" class="form-control" placeholder="Enter your flat no.." style="margin: 10px 0px;" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="area">Area, Street, Sector, Village</label>
+                                <input type="text" id="area" name="area" class="form-control" placeholder="Enter your area.." style="margin: 10px 0px;" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="landmark">Landmark</label>
+                                <input type="text" id="landmark" name="landmark" class="form-control" placeholder="Enter your landmark.." style="margin: 10px 0px;" required>
+                            </div>
+                            <div class="form-group">
+                              <label for="city" style="margin: 10px 0px;">Town/City</label>
+                              <select class="form-control" id="city" name="city" aria-label="cities" onchange="selectState(this.value,'add')" required>
+                                <option value="">Select city</option>
+                                <% cities.forEach((city,index) => { %>
+                                  <option value="<%- city.name %>_<%- city.state_name %>"><%= city.name %></option>
+                                <% }); %>
+                              </select>
+                            </div>
+                            <!-- <div class="form-group">
+                                <input type="text" id="location">
+                            </div> -->
+                            <div class="form-group">
+                              <label for="state" style="margin: 10px 0px;">States</label>
+                              <select class="form-control" id="state" name="state" aria-label="states" required>
+                                <option value="">Select state</option>
+                                <% states.forEach((state,index) => { %>
+                                  <option value="<%- state.name %>"><%= state.name %></option>
+                                <% }); %>
+                              </select>
+                            </div>
+                            <div class="form-group">
+                              <label for="category" style="margin: 10px 0px;">Address type</label>
+                              <select class="form-control" id="category" name="category" aria-label="category" required>
+                                <option value="HOME">HOME</option>
+                                <option value="OFFICE">OFFICE</option>
+                                <option value="OTHER">OTHER</option>
+                              </select>
+                            </div>
+                            <br>
+                            <div class="form-check" style="margin: 10px 0px;">
+                                <input class="form-check-input" type="checkbox" value="1" id="default_address">
+                                <label class="form-check-label" for="default_address">
+                                  Do you want to make this your default address
+                                </label>
+                            </div>
+                            <div class="button">
+                                <button type="submit" id="blog_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin-top: 20px;">Add</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editAddressModal" tabindex="-1" aria-labelledby="addadressmodel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Edit Address</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="saveAddress(event)" class="edit_form" id="form_" method="post" enctype="multipart/form-data" autocomplete="off">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="form-group">
+                              <label for="editfull_name">Full name</label>
+                              <input type="text" id="editfull_name" name="editfull_name" class="form-control" placeholder="Enter your full name.." style="margin: 10px 0px;" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editaddressPhoneNumber">Mobile number</label>
+                                <input type="text" id="editaddressPhoneNumber" name="editaddressPhoneNumber" class="form-control" placeholder="Enter your phone number.." style="margin: 10px 0px;" maxlength="15" minlength="10" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editpincode">Pincode</label>
+                                <input type="text" id="editpincode" name="editpincode" class="form-control" placeholder="Enter your phone number.." style="margin: 10px 0px;" maxlength="6" minlength="5" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editflat_no">Flat, House no., Building, Company, Apartment</label>
+                                <input type="text" id="editflat_no" name="editflat_no" class="form-control" placeholder="Enter your flat no.." style="margin: 10px 0px;" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editarea">Area, Street, Sector, Village</label>
+                                <input type="text" id="editarea" name="editarea" class="form-control" placeholder="Enter your area.." style="margin: 10px 0px;" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editlandmark">Landmark</label>
+                                <input type="text" id="editlandmark" name="editlandmark" class="form-control" placeholder="Enter your landmark.." style="margin: 10px 0px;" required>
+                            </div>
+                            <div class="form-group">
+                              <label for="editcity" style="margin: 10px 0px;">Town/City</label>
+                              <select class="form-control" id="editcity" name="editcity" aria-label="cities" onchange="selectState(this.value,'edit')" required>
+                                <option value="" id="editCityOptionValue">Select city</option>
+                                <% cities.forEach((city,index) => { %>
+                                  <option value="<%- city.name %>_<%- city.state_name %>"><%= city.name %></option>
+                                <% }); %>
+                              </select>
+                            </div>
+                            <div class="form-group">
+                              <label for="editstate" style="margin: 10px 0px;">States</label>
+                              <select class="form-control" id="editstate" name="editstate" aria-label="states" required>
+                                <option value="" id="editStateOptionValue">Select state</option>
+                                <% states.forEach((state,index) => { %>
+                                  <option value="<%- state.name %>"><%= state.name %></option>
+                                <% }); %>
+                              </select>
+                            </div>
+                            <div class="form-group">
+                              <label for="editcategory" style="margin: 10px 0px;">Address type</label>
+                              <select class="form-control" id="editcategory" name="editcategory" aria-label="category" required>
+                                <option value="" id="editCategoryOptionValue">Select state</option>
+                                <option value="HOME">HOME</option>
+                                <option value="OFFICE">OFFICE</option>
+                                <option value="OTHER">OTHER</option>
+                              </select>
+                            </div>
+                            <br>
+                            <div class="form-check" style="margin: 10px 0px;">
+                                <input class="form-check-input" type="checkbox" value="1" id="editdefault_address">
+                                <label class="form-check-label" for="editdefault_address">
+                                  Do you want to make this your default address
+                                </label>
+                            </div>
+                            <div class="button">
+                                <button type="submit" id="blog_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin-top: 20px;">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="main-container">
+    <br><br><br><br>
+    <div class="container">
+        <div class="row d-flex align-items-center">
+            <div class="col-lg-9 col-md-8 col-sm-4 col-12" style="padding: 0px 0px 0px 10px !important;">
+                <div class="heading">
+                    <h5>Shopping cart</h5>
+                    <p>See all the cart items here.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-8 col-12" style="padding: 0px 10px 0px 10px !important;">
+            </div>
+        </div>
+        <br>
+        <div class="row" id="cartTotal">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="padding: 0px 10px 0px 10px !important;" id="cartItems">
+                
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-12" id="final_price" style="padding: 0px 10px 0px 10px !important;">
+                <div class="addresses card">
+                    <h5>Shipping Address</h5>
+                    <hr>
+                    <div class="address" id="userAddresses" data-showAddAddressPopup="">
+                        <div class="button" id="addAddress">
+                            <button type="button" style="border: 0;width: 100%;display: flex;align-items: center;justify-content: center" class="btn btn-primary" onclick="openAddModal()">
+                                Add address
+                            </button>
+                        </div>
+                        <div id="selectAddress">
+                            <div class="row">
+                                <div class="col-lg-8 col-md-6 col-sm-12">
+                                    <p id="defaultAddress">Default Address</p>
+                                    <p style="margin: 10px 0px 0px 0px;"><span id="namePhone"></span>, <span id="namePhoneNumber"></span></p>
+                                    <p id="selectedAddress"></p>
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                    <div class="button">
+                                        <button type="button" style="border: 0;width: 100%;display: flex;align-items: center;justify-content: center" class="btn btn-primary" onclick="openchangeModal()">
+                                            Change address
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="final_price card">
+                    <div class="details">
+                        <p>Items : </p>
+                        <p id="totalItems"></p>
+                    </div>
+                    <div class="details">
+                        <p style="margin-bottom: 0;">Shipping Cost : </p>
+                        <p style="margin-bottom: 0;" id="shipping-cost"></p>
+                    </div>
+                    <div class="details">
+                        <p id="add-item-note" style="margin-bottom: 0;color:var(--warning);font-size:14px">Note : Shipping free above Rs. <span id="shipping-price"></span></p>
+                    </div>
+                    <hr>
+                    <div class="total">
+                        <h5>Total : </h5>
+                        <h5>Rs <span id="totalPrice">0</span></h5>
+                    </div>
+                    <br>
+                    <div class="button d-flex" style="margin:0px 0px 0px 0px;">
+                        <button type="submit" style="border: 0;width: 100%;display: flex;align-items: center;justify-content: center" class="btn btn-primary" onclick="callRazorPayFunctionForCart()">
+                            Proceed to pay
+                        </button>
+                        <button type="button" onclick="payOnDelivery()" class="btn btn-primary d-flex justify-content-center" style="background-color: transparent !important;color: var(--highlight);width: 100%;margin-left:5px">Pay on delivery</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <%- include('footer.ejs',{isDevelopment: isDevelopment,mainUrl:mainUrl}) %> 
+</div>
+
+<!-- Google Maps -->
+<!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAfYJUOIT5VHxGXJrDzrluW79DMbuwipv0&callback=initMap&libraries=places&v=weekly" defer></script> -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+    var isDevelopment = '<%- isDevelopment %>' == 'true' ? true : false;
+    var userAddress = [];
+    var products = [];
+    var changeAddressModal;
+    var addAddressModal;
+    var editModal;
+    var baseUrl = '<%- baseUrl %>';
+
+    $(function(){
+        changeAddressModal = new bootstrap.Modal(document.getElementById('changeAddressModal'));
+        addAddressModal = new bootstrap.Modal(document.getElementById('addAddressModal'));
+        editModal = new bootstrap.Modal(document.getElementById('editAddressModal'));
+    });
+
+    function openAddModal() {
+        addAddressModal.toggle();
+    }
+
+    function openchangeModal() {
+        changeAddressModal.toggle();
+    }
+
+    //addAddress
+    function addAddress(event) {
+        event.preventDefault();
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('apperalUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('apperalUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        var full_name = document.getElementById('full_name').value;
+        var phoneNumber = document.getElementById('addressPhoneNumber').value;
+        var flat_no = document.getElementById('flat_no').value;
+        var area = document.getElementById('area').value;
+        var landmark = document.getElementById('landmark').value;
+        var pincode = document.getElementById('pincode').value;
+        var city = (document.getElementById('city').value).split('_')[0];
+        var state = document.getElementById('state').value;
+        var category = document.getElementById('category').value;
+        var default_address = document.getElementById('default_address').checked ? 1 : 0;
+        document.getElementById('load').style.visibility="visible";
+        $.ajax({
+            url : `${baseUrl}api/cart/addAddress`,
+            dataType: "json",
+            type: "POST",
+            headers: {
+                'token':token ? token : 'testing',
+                'platform': 'WEB'
+            },
+            data: {
+                full_name:full_name,
+                phoneNumber:phoneNumber,
+                flat_no:flat_no,
+                area:area,
+                landmark:landmark,
+                pincode:pincode,
+                city:city,
+                state:state,
+                category:category,
+                default_address:default_address,
+                user_id:user_id,
+            },
+            success: function(response){
+                location.reload();
+            },
+            error: function(err){
+                location.reload();
+            }
+        });
+    }
+
+  //Save Address
+  function saveAddress(event) {
+    event.preventDefault();
+    var id = document.getElementsByClassName('edit_form')[0].getAttribute('id').split('_')[1];
+    var array = document.cookie.split(';');
+    var counter = 0;
+    var index = 0;
+    var userIndex = 0;
+    for(var i=0;i<array.length;i++) {
+        if(array[i].includes('apperalUserToken=')){
+            counter++;
+            index = i;
+        }
+        if(array[i].includes('user_id=')){
+            counter++;
+            userIndex = i;
+        }
+    }
+    if(decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1]) {
+        var token = decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1];
+        var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+    } else {
+        var token = document.cookie.split(';')[index].split('apperalUserToken=')[1];
+        var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+    }
+    var full_name = document.getElementById('editfull_name').value;
+    var phoneNumber = document.getElementById('editaddressPhoneNumber').value;
+    var flat_no = document.getElementById('editflat_no').value;
+    var area = document.getElementById('editarea').value;
+    var landmark = document.getElementById('editlandmark').value;
+    var pincode = document.getElementById('editpincode').value;
+    var city = (document.getElementById('editcity').value).split('_')[0];
+    var state = document.getElementById('editstate').value;
+    var category = document.getElementById('editcategory').value;
+    var default_address = document.getElementById('editdefault_address').checked ? 1 : 0;
+    document.getElementById('load').style.visibility="visible";
+    $.ajax({
+        url : `${baseUrl}api/cart/saveAddress`,
+        dataType: "json",
+        type: "POST",
+        headers: {
+            'token':token ? token : 'testing',
+            'platform': 'WEB'
+        },
+        data: {
+            full_name:full_name,
+            phoneNumber:phoneNumber,
+            flat_no:flat_no,
+            area:area,
+            landmark:landmark,
+            pincode:pincode,
+            city:city,
+            state:state,
+            category:category,
+            default_address:default_address,
+            user_id:user_id,
+            id:id
+        },
+        success: function(response){
+            window.location.href = '/cart';
+        },
+        error: function(err){
+            console.log(err);
+            location.reload();
+        }
+    });
+  }
+
+  //Delete Address
+  function deleteAddress(id) {
+    if(confirm('Do you want to delete it?') == true){
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('apperalUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('apperalUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+      $.ajax({
+            url : `${baseUrl}api/cart/deleteAddress`,
+            dataType: "json",
+            type: "POST",
+            headers: {
+                'token':token ? token : 'testing',
+                'platform': 'WEB'
+            },
+            data: {
+                id:id
+            },
+            success: function(response){
+                location.reload();
+            },
+            error: function(err){
+                console.log(err);
+                location.reload();
+            }
+      });
+    } 
+}
+
+    function onChangeAddress(value) {
+        var fullname = value.split('_*_')[0];
+        var phoneNumber = value.split('_*_')[1];
+        var fullAddress = value.split('_*_')[2];
+        var id = value.split('_*_')[3];
+
+        var defaultAddress = userAddress.find((e) => e.id == id).default_address;
+        
+        document.getElementById('defaultAddress').style.display= defaultAddress != null ? "inline" : "none";
+        document.getElementById('namePhone').innerHTML = fullname;
+        document.getElementById('namePhoneNumber').innerHTML = phoneNumber;
+        document.getElementById('selectedAddress').innerHTML = fullAddress;
+        changeAddressModal.toggle();
+    }
+
+    function selectState(city,value) {
+        var state = city.split('_')[1];
+        var select = value == 'add' ? document.getElementById("state") : document.getElementById("editstate") ;
+        var length = select.options.length;
+        for (var i = length-1; i >= 0; i--) {
+            if(state == select[i].value) {
+                select[i].setAttribute('selected','selected');
+            }
+        }
+    }
+
+    function incrementDecrement(value,id,maximum_quantity) {
+        var quantity = document.getElementById(id).innerHTML;
+        var cartId = id.split('item-quantity')[1];
+        if(parseInt(quantity) > 1) {
+            if(value == 'add') {
+                if(isDevelopment) {
+                    console.log('add one more');
+                }
+                var newQuantity = parseInt(quantity) + 1
+                if(newQuantity > parseInt(maximum_quantity)) {
+                    alert('You reached maximum quantity in stock');
+                } else {
+                    incrementDecrementValue(value,cartId);
+                }
+            } else {
+                if(isDevelopment) {
+                    console.log('removing one');
+                }
+                incrementDecrementValue(value,cartId);
+            }
+        } else {
+            if(value == 'add') {
+                if(isDevelopment) {
+                    console.log('add one more');
+                }
+                var newQuantity = parseInt(quantity) + 1
+                if(newQuantity > parseInt(maximum_quantity)) {
+                    alert('You reached maximum quantity in stock');
+                } else {
+                    incrementDecrementValue(value,cartId);
+                }
+            } else {
+                if(isDevelopment) {
+                    console.log('removing one');
+                }
+                removeFromCart(cartId)
+            }
+        }
+    }
+
+
+function incrementDecrementValue(value,id) {
+    document.getElementById('load').style.visibility="visible";
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('apperalUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('apperalUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        $.ajax({
+            url : `${baseUrl}api/cart/increaseDecreaseQuantity`,
+            dataType: "json",
+            type: "POST",
+            headers: {
+                'token':token ? token : 'testing',
+                'platform': 'WEB'
+            },
+            data:{
+                id: id,
+                value:value,
+            },
+            success: function(response){
+                if(isDevelopment) {
+                    console.log(response);
+                }
+                if(response.message == 'success') {
+                    location.reload();
+                }
+            },
+            error: function(err){
+                if(isDevelopment) {
+                    console.log(err);
+                }
+                alert('Some error occured !!');
+            }
+        });
+}
+
+    function callRazorPayFunctionForCart(){
+        var showPopup = document.getElementById('userAddresses').getAttribute('data-showAddAddressPopup');
+        if(showPopup == 1) {
+            alert('Please add address');
+        } else {
+            var fullName = document.getElementById('namePhone').innerHTML;
+            var phoneNumber = document.getElementById('namePhoneNumber').innerHTML;
+            var finalAddress = document.getElementById('selectedAddress').innerHTML;
+            var array = document.cookie.split(';');
+            var counter = 0;
+            var index = 0;
+            var userIndex = 0;
+            for(var i=0;i<array.length;i++) {
+                if(array[i].includes('apperalUserToken=')){
+                    counter++;
+                    index = i;
+                }
+                if(array[i].includes('user_id=')){
+                    counter++;
+                    userIndex = i;
+                }
+            }
+            if(decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1]) {
+                var token = decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1];
+                var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+            } else {
+                var token = document.cookie.split(';')[index].split('apperalUserToken=')[1];
+                var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+            }
+            var price = document.getElementById('totalPrice').innerHTML;
+            var data = {
+                total: price,
+                name:"",
+                email:"",
+                phone:"",
+                user_id:user_id,
+                companyName:'Curect',
+                description:"Payment for the cart"
+            }
+            $.ajax({
+                url:"/productPayment/paymentInitiate",
+                dataType: "json",
+                type:"POST",
+                headers: {
+                    'token':token ? token : 'testing',
+                    'platform': 'WEB'
+                },
+                data: data,
+                success: function(info){
+                    document.getElementById('load').style.visibility="hidden";
+                    
+                    info["callback_url"] = `https://curect.healfit.in/productPayment/purchaseCartItem?user_id=${user_id}&fullName=${fullName}&phoneNumber=${phoneNumber}&finalAddress=${finalAddress}&price=${price}`;
+                    var rzp1 = new Razorpay(info);
+                    rzp1.open();
+                },
+                error: function(err){
+                    if(isDevelopment) {
+                            console.log(err);
+                    }
+                    alert('Some Error occurred!');
+                    // location.reload();
+                }
+            });
+        }
+    }
+
+    function payOnDelivery(){
+        var showPopup = document.getElementById('userAddresses').getAttribute('data-showAddAddressPopup');
+        if(showPopup == 1) {
+            alert('Please add address');
+        } else {
+            var fullName = document.getElementById('namePhone').innerHTML;
+            var phoneNumber = document.getElementById('namePhoneNumber').innerHTML;
+            var finalAddress = document.getElementById('selectedAddress').innerHTML;
+            var array = document.cookie.split(';');
+            var counter = 0;
+            var index = 0;
+            var userIndex = 0;
+            for(var i=0;i<array.length;i++) {
+                if(array[i].includes('apperalUserToken=')){
+                    counter++;
+                    index = i;
+                }
+                if(array[i].includes('user_id=')){
+                    counter++;
+                    userIndex = i;
+                }
+            }
+            if(decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1]) {
+                var token = decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1];
+                var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+            } else {
+                var token = document.cookie.split(';')[index].split('apperalUserToken=')[1];
+                var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+            }
+            var price = document.getElementById('totalPrice').innerHTML;
+            var data = {
+                user_id: user_id,
+                fullName : fullName,
+                phoneNumber : phoneNumber,
+                finalAddress : finalAddress,
+                price : price,
+            }
+            document.getElementById('load').style.visibility="visible";
+            $.ajax({
+                url:"/productPayment/purchaseCartItemMobile",
+                dataType: "json",
+                type:"POST",
+                headers: {
+                    'token':token ? token : 'testing',
+                    'platform': 'WEB'
+                },
+                data: data,
+                success: function(info){
+                    document.getElementById('load').style.visibility="hidden";
+                    window.location.href = '/myOrders?message=payment_successfull';
+                },
+                error: function(err){
+                    if(isDevelopment) {
+                            console.log(err);
+                    }
+                    alert('Some Error occurred!');
+                    // location.reload();
+                }
+            });
+        }
+    }
+
+function removeFromCart(id) {
+    if(confirm('Are you sure you want to remove this item from cart?') == true){
+        document.getElementById('load').style.visibility="visible";
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('apperalUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('apperalUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        $.ajax({
+            url : `${baseUrl}api/cart/removeFromCart`,
+            dataType: "json",
+            type: "POST",
+            headers: {
+                'token':token ? token : 'testing',
+                'platform': 'WEB'
+            },
+            data:{
+                cart_id: id,
+            },
+            success: function(response){
+                if(isDevelopment) {
+                    console.log(response);
+                }
+                if(response.message == 'success') {
+                    location.reload();
+                }
+            },
+            error: function(err){
+                if(isDevelopment) {
+                    console.log(err);
+                }
+                alert('Some error occured !!');
+            }
+        });
+    }
+}
+
+function editAddress(id,full_name,phoneNumber,flat_no,area,landmark,city,state,pincode,category,default_address) {
+    var defaultAddressValue = document.getElementById('editdefault_address').getAttribute('checked') == 'checked'
+    if(defaultAddressValue) {
+        document.getElementById('editdefault_address').removeAttribute('checked');
+    }
+    if(default_address != 'null') {
+        document.getElementById('editdefault_address').setAttribute('checked','checked');
+    }
+    document.getElementById('editfull_name').value = full_name;
+    document.getElementById('editaddressPhoneNumber').value = phoneNumber;
+    document.getElementById('editflat_no').value = flat_no;
+    document.getElementById('editarea').value = area;
+    document.getElementById('editlandmark').value = landmark;
+    document.getElementById('editpincode').value = pincode;
+    document.getElementById('editCityOptionValue').innerHTML = city;
+    document.getElementById('editCityOptionValue').setAttribute('value',`${city}_${state}`);
+    document.getElementById('editStateOptionValue').innerHTML = state;
+    document.getElementById('editStateOptionValue').setAttribute('value',state);
+    document.getElementById('editCategoryOptionValue').innerHTML = category;
+    document.getElementById('editCategoryOptionValue').setAttribute('value',category);
+    document.getElementsByClassName('edit_form')[0].setAttribute('id',`form_${id}`);
+    editModal.toggle();
+}
+    
+    function getUserCart() {
+        var array = document.cookie.split(';');
+        var counter = 0;
+        var index = 0;
+        var userIndex = 0;
+        for(var i=0;i<array.length;i++) {
+            if(array[i].includes('apperalUserToken=')){
+                counter++;
+                index = i;
+            }
+            if(array[i].includes('user_id=')){
+                counter++;
+                userIndex = i;
+            }
+        }
+        if(decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1]) {
+            var token = decodeURIComponent(document.cookie).split(';')[index].split('apperalUserToken=')[1];
+            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+        } else {
+            var token = document.cookie.split(';')[index].split('apperalUserToken=')[1];
+            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+        }
+        document.getElementById('load').style.visibility="visible";
+        document.getElementById('cartItems').innerHTML = '';
+        $.ajax({
+            url : `${baseUrl}api/cart/getUserProductCart?user_id=${user_id}`,
+            dataType: "json",
+            type: "GET",
+            headers: {
+                'token':token ? token : 'testing',
+                'Content-Type':'application/json',
+                'platform': 'WEB'
+            },
+            success: function(response){
+              if(isDevelopment) {
+                    console.log(response);
+                }
+              if(response.data.length != 0){
+                var total = 0;
+                for(var i=0;i<response.data.length;i++){
+                    total = total + (response.data[i].discount_price * response.data[i].quantity);
+                    var url = `/each-product/${response.data[i].item_id}`;
+                    $('#cartItems').append('<div class="cart-item product-cart-item card"><div class="top"><div class="image" onclick="window.location.href=\''+ url +'\'"><img src="'+ response.data[i].cover_photo +'" alt=""></div><div class="name"><h4 onclick="window.location.href=\''+ url +'\'">'+ response.data[i].name +'</h4><p>Size: '+ response.data[i].description +'</p><br><div class="quantity"><a class="icon" onclick="incrementDecrement(\'sub\',\''+ ('item-quantity' +  response.data[i].cartId ) +'\',\''+ response.data[i].maximum_quantity +'\')"><span class="iconify" data-icon="ic:round-minus"></span></a><a class="item-quantity" id="'+ ('item-quantity' +  response.data[i].cartId ) +'">'+ response.data[i].quantity +'</a><a class="icon" onclick="incrementDecrement(\'add\',\''+ ('item-quantity' +  response.data[i].cartId ) +'\',\''+ response.data[i].maximum_quantity +'\')"><span class="iconify" data-icon="material-symbols:add-rounded"></span></a></div></div></div><hr><div class="bottom-total"><h6>Total : Rs '+ response.data[i].discount_price * response.data[i].quantity +'</h6><div id="delete-icon3" onclick="removeFromCart(\''+ response.data[i].cartId +'\')"><a><span class="iconify" data-icon="ant-design:delete-outlined"></span></a></div></div></div>');
+                }
+                document.getElementById('totalPrice').innerHTML = response.shippingDetails[0].maximum_value <= total ? total : response.shippingDetails[0].shipping_charges + total;
+                document.getElementById('add-item-note').style.display = response.shippingDetails[0].maximum_value <= total ? 'none' : 'block';
+                document.getElementById('shipping-price').innerHTML = response.shippingDetails[0].maximum_value <= total ? '' : response.shippingDetails[0].maximum_value;
+                document.getElementById('totalItems').innerHTML = response.data.length;
+                document.getElementById('shipping-cost').innerHTML = `Rs. ${response.shippingDetails[0].maximum_value <= total ? '0' : response.shippingDetails[0].shipping_charges}`;
+                if(response.address.length != 0) {
+                  var addressNullCounter = 0;
+                  for(var i=0;i<response.address.length;i++){
+                      userAddress.push({
+                          id:response.address[i].id,
+                          full_name:response.address[i].full_name,
+                          phoneNumber:response.address[i].phoneNumber,
+                          address: `${response.address[i].flat_no} ${response.address[i].area}, ${response.address[i].landmark.length != 0 ? response.address[i].landmark + ',' : '' } ${response.address[i].city}, ${response.address[i].state}(${response.address[i].pincode})`,
+                          default_address:response.address[i].default_address
+                      });
+                      if(response.address[i].default_address != null) {
+                          document.getElementById('namePhone').innerHTML = response.address[i].full_name;
+                          document.getElementById('namePhoneNumber').innerHTML = response.address[i].phoneNumber;
+                          document.getElementById('selectedAddress').innerHTML = `${response.address[i].flat_no} ${response.address[i].area}, ${response.address[i].landmark.length != 0 ? response.address[i].landmark + ',' : '' } ${response.address[i].city}, ${response.address[i].state}(${response.address[i].pincode})`;
+                          $('#allAddress').append(`<div class="row"><div class="col-sm-11 col-10" style="padding:0"><div class="form-check"><input onclick="onChangeAddress(this.value)" class="form-check-input" type="radio" name="allAddress" id="${'allAddress_' + response.address[i].id}" value="${response.address[i].full_name}_*_${response.address[i].phoneNumber}_*_${response.address[i].flat_no} ${response.address[i].area}, ${response.address[i].landmark.length != 0 ? response.address[i].landmark + ',' : '' } ${response.address[i].city}, ${response.address[i].state}(${response.address[i].pincode}_*_${response.address[i].id}" checked><label class="form-check-label" for="${'allAddress_' + response.address[i].id}">${response.address[i].full_name}, ${response.address[i].phoneNumber}<br>${response.address[i].flat_no} ${response.address[i].area}, ${response.address[i].landmark.length != 0 ? response.address[i].landmark + ',' : '' } ${response.address[i].city}, ${response.address[i].state}(${response.address[i].pincode}</label></div></div><div class="col-sm-1 col-2"><a class="edit" onclick="editAddress('${response.address[i].id}','${response.address[i].full_name}','${response.address[i].phoneNumber}','${response.address[i].flat_no}','${response.address[i].area}','${response.address[i].landmark}','${response.address[i].city}','${response.address[i].state}','${response.address[i].pincode}','${response.address[i].category}','${response.address[i].default_address}')"><span class="iconify" data-icon="akar-icons:edit"></span></a><a class="delete" onclick="deleteAddress('${response.address[i].id}')"><span class="iconify" data-icon="ant-design:delete-outlined"></span></a></div></div>`);
+                      } else {
+                          $('#allAddress').append(`<div class="row"><div class="col-sm-11 col-10" style="padding:0"><div class="form-check"><input onclick="onChangeAddress(this.value)" class="form-check-input" type="radio" name="allAddress" id="${'allAddress_' + response.address[i].id}" value="${response.address[i].full_name}_*_${response.address[i].phoneNumber}_*_${response.address[i].flat_no} ${response.address[i].area}, ${response.address[i].landmark.length != 0 ? response.address[i].landmark + ',' : '' } ${response.address[i].city}, ${response.address[i].state}(${response.address[i].pincode}_*_${response.address[i].id}"><label class="form-check-label" for="${'allAddress_' + response.address[i].id}">${response.address[i].full_name}, ${response.address[i].phoneNumber}<br>${response.address[i].flat_no} ${response.address[i].area}, ${response.address[i].landmark.length != 0 ? response.address[i].landmark + ',' : '' } ${response.address[i].city}, ${response.address[i].state}(${response.address[i].pincode}</label></div></div><div class="col-sm-1 col-2"><a class="edit" onclick="editAddress('${response.address[i].id}','${response.address[i].full_name}','${response.address[i].phoneNumber}','${response.address[i].flat_no}','${response.address[i].area}','${response.address[i].landmark}','${response.address[i].city}','${response.address[i].state}','${response.address[i].pincode}','${response.address[i].category}','${response.address[i].default_address}')"><span class="iconify" data-icon="akar-icons:edit"></span></a><a class="delete" onclick="deleteAddress('${response.address[i].id}')"><span class="iconify" data-icon="ant-design:delete-outlined"></span></a></div></div>`);
+                          addressNullCounter++;
+                      }
+                  }
+                  if(addressNullCounter >= response.address.length) {
+                      document.getElementById('defaultAddress').style.display="none";
+                      document.getElementById('namePhone').innerHTML = response.address[0].full_name;
+                      document.getElementById('namePhoneNumber').innerHTML = response.address[0].phoneNumber;
+                      document.getElementById('selectedAddress').innerHTML = `${response.address[0].flat_no} ${response.address[0].area}, ${response.address[0].landmark.length != 0 ? response.address[0].landmark + ',' : '' } ${response.address[0].city}, ${response.address[0].state}(${response.address[0].pincode})`;
+                  } else {
+                      document.getElementById('defaultAddress').style.display="inline";
+                  }
+                  document.getElementById('addAddress').style.display = 'none';
+                  document.getElementById('selectAddress').style.display = 'block';
+                  document.getElementById('userAddresses').setAttribute('data-showAddAddressPopup',0);
+                } else {
+                  document.getElementById('addAddress').style.display = 'block';
+                  document.getElementById('selectAddress').style.display = 'none';
+                  document.getElementById('userAddresses').setAttribute('data-showAddAddressPopup',1);
+                }
+              } else {
+                document.getElementById('final_price').style.display = 'none';
+                document.getElementById('cartItems').style.display = 'none';
+                document.getElementById('cartTotal').innerHTML = '<div class="col-12 text-center"><h6>No Items present</h6></div>';
+              }
+              document.getElementById('load').style.visibility="hidden";
+            },
+            error: function(err){
+                if(isDevelopment) {
+                    console.log(err);
+                }
+                alert('Some error occured !!');
+            }
+        });
+    }
+    setTimeout(() => {
+        getUserCart();
+    },500);
+
+    //Map initialisation
+    window.onload = () => {
+        checkCookie();
+        $('#city').selectize({
+            sortField: 'text'
+        });
+
+        $('#state').selectize({
+            sortField: 'text'
+        });
+    }
+    
+</script>
+<%- include('../components/footer/apperals_footer.ejs') %>

@@ -1,0 +1,163 @@
+
+<script src="/javascripts/home.js"></script>
+<script src="/javascripts/apperal_home.js"></script>
+<script type="module">
+    var loginModal;
+    var reloadCount;
+    var state;
+    var user;
+    $(function(){
+        // bootstraps modals
+        loginModal = new bootstrap.Modal(document.getElementById('login'));
+        state = history.state || {};
+        reloadCount = state.reloadCount || 0;
+        if (performance.navigation.type === 1) { // Reload
+            state.reloadCount = ++reloadCount;
+            history.replaceState(state, null, document.URL);
+        } else if (reloadCount) {
+            delete state.reloadCount;
+            reloadCount = 0;
+            history.replaceState(state, null, document.URL);
+        }
+    });
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-analytics.js";
+  import { getAuth, RecaptchaVerifier,signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-auth.js";
+  import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-messaging.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA1emjLa2Hvq37jMYfEfzK26geu4bniV1E",
+    authDomain: "healfit-smtp.firebaseapp.com",
+    projectId: "healfit-smtp",
+    storageBucket: "healfit-smtp.appspot.com",
+    messagingSenderId: "583727872448",
+    appId: "1:583727872448:web:e0af4962dbb1ae84a87025",
+    measurementId: "G-LKJDW8T8Z2"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  //const messaging = getMessaging(app);
+  //const firebaseKey = "<%- firebaseKey %>";
+
+    const auth = getAuth();
+    window.recaptchaVerifier = new RecaptchaVerifier(
+        "recaptcha-container",
+        {
+            size: "invisible",
+            callback: function(response) {
+                submitPhoneNumberAuth();
+            }
+        },auth
+    );
+
+    let obj = document.getElementById('sign-in-button');
+    obj.addEventListener("click", function(event) {
+        event.preventDefault();
+        submitPhoneNumberAuth();
+    });
+
+    function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i < ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
+      }
+
+    function submitPhoneNumberAuth() {
+        document.getElementById('sign-in-button').setAttribute('disabled','disabled');
+        var phoneNumber = document.getElementById("phoneNumber").value;
+            if(phoneNumber.length ==10) {
+                var appVerifier = window.recaptchaVerifier;
+                var a = '+91' + phoneNumber;
+                signInWithPhoneNumber(auth,a, appVerifier)
+                    .then(function(confirmationResult) {
+                        window.confirmationResult = confirmationResult;
+                        document.getElementById('phone_number_input').style.display="none";
+                        document.getElementById('otp_verification').style.display="block";
+                    })
+                    .catch(function(error) {
+                        console.log(error);
+                        // alert("Too many requests , Please try after some time");
+                        // alert('Please enter a correct phone number');
+                    });
+            } else {
+                alert('Please enter a phone number of length 10 digit');
+            }
+    }
+
+    let obj2 = document.getElementById('confirm-code');
+    obj2.addEventListener("click", function(event) {
+        event.preventDefault();
+        submitPhoneNumberAuthCode()
+    });
+
+    function submitPhoneNumberAuthCode() {
+        var phoneNumber = document.getElementById("phoneNumber").value;
+        document.getElementById('confirm-code').setAttribute('disabled','disabled');
+        document.getElementById('load').style.visibility="visible";
+        var code = document.getElementById("code").value;
+        if(code.length !=6){
+            alert('Please enter a correct OTP');
+        } else {
+            let userToken = getCookie("apperalUserToken");
+            confirmationResult
+                .confirm(code)
+                .then(function(result) {
+                    $.ajax({
+                        url : `${baseUrl}api/updatePhoneNumber`,
+                        dataType: "json",
+                        type: "POST",
+                        headers: {
+                            'token':userToken,
+                            'platform': 'WEB'
+                        },
+                        data:{
+                            phoneNumber: phoneNumber,
+                        },
+                        success: function(response){
+                            if(isDevelopment) {
+                                console.log(response);
+                            }
+                            location.reload();
+                        },
+                        error: function(err){
+                            if(isDevelopment) {
+                                console.log(err);
+                            }
+                            alert('Some error occured !!');
+                            document.getElementById('confirm-code').removeAttribute('disabled');
+                            document.getElementById('load').style.visibility="hidden";
+                        }
+                    });
+                })
+                .catch(function(error) {
+                    console.log(error);
+                        alert("OTP does not matched , Please try again");
+                        document.getElementById('confirm-code').removeAttribute('disabled');
+                        document.getElementById('load').style.visibility="hidden";
+                });
+        }
+    }
+
+</script>
+
+<!--Bootstrap js-->
+<script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!---->
+
+<!-- Ionify js -->
+<script src="/iconify/iconify.min.js"></script>
+<!---->
+
+</body>
+</html>

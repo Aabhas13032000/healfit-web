@@ -1,5 +1,635 @@
 <%- include('../../components/header/header.ejs',{cssFile : 'adminPages',page:'Dashboard'}) %> 
 
-<h1>Orders</h1>
+<div id="load"></div>
+
+<div class="alert alert-dismissible fade show" role="alert" id="success-alert">
+  <p id="alertMessage" style="margin: 0;">Edited successfully</p>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+
+<div class="modal fade" id="generateInvoice" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+      <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Generate Invoice</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" style="padding: 0;">
+            <div id="invoicePDF" style="padding:10px">
+              <table style="border-collapse: collapse;width:575px;table-layout:unset !important" border="0">
+                <tr style="width:100%">
+                  <td style="width:50%;">
+                    <a style="border: 0 !important;">
+                      <img id="curect-logo" src="/images/local/curectLogo.png" style="height: 35px;width:unset !important;">
+                      <img id="curect-name" src="/images/local/curectLogoName.png" style="height: 18px !important;width:unset !important;margin-left:10px">
+                    </a>
+                    <br>
+                    <br>
+                    <h6><b>HealFit Health and Wellness Pvt Ltd</b></h6>
+                    <h6><b>GSTIN - 09AAGCH3598B1ZG</b></h6>
+                    <h6><b>CIN - U85100UP2022PTC166110</b></h6>
+                  </td>
+                  <td style="text-align: right;vertical-align: bottom;width:50%;">
+                    <p style="margin: 0px;font-size:16px;">1237, , SIPRI BAZAR, Jhansi,<br>Jhansi, Uttar Pradesh, India - 284003</p>
+                    <p style="margin: 5px 0px 0px 0px;font-size:16px;">contact@curect.healfit.in</p>
+                    <p style="margin: 5px 0px 0px 0px;font-size:16px;">+91 9321596934</p>
+                  </td>
+                </tr>
+              </table>
+              <table style="border-collapse: collapse;width:575px;table-layout:unset !important" border="0">
+                <tr style="width:100%;border-top: 1px solid black !important">
+                  <td style="width: 50%;">
+                    <h5><b>Bill to:</b></h5>
+                    <h5 id="clientName" style="color:rgba(0,0,0,0.6)"></h5>
+                    <h5 id="clientMobileNumber" style="color:rgba(0,0,0,0.6)"></h5>
+                    <h5 id="clientAddress" style="color:rgba(0,0,0,0.6)"></h5>
+                    <h5><b>Invoice:</b> <span id="invoiceNumber" style="color:rgba(0,0,0,0.6)"></span></h5>
+                  </td>
+                  <td style="text-align: right;width: 50%;vertical-align:top;">
+                    <p id="purchaseDate" style="margin: 0px;font-size:17px;"></p>
+                  </td>
+                </tr>
+              </table>
+              <br><br>
+              <table style="border-collapse: collapse;width:575px;table-layout:unset !important" border="0">
+                <thead style="width:100%">
+                  <th style="border-top: 1px solid black !important;border-bottom: 0px !important;font-size:16px;"><b>ITEM</b></th>
+                  <th style="border-top: 1px solid black !important;border-bottom: 0px !important;font-size:16px;"><b>QUANTITY</b></th>
+                  <th style="border-top: 1px solid black !important;border-bottom: 0px !important;font-size:16px;"><b>UNIT PRICE</b></th>
+                  <th style="border-top: 1px solid black !important;border-bottom: 0px !important;font-size:16px;"><b>TOTAL</b></th>
+                </thead>
+                <tbody style="width:100%">
+                  <tr style="border-top: 1px solid black !important;border-bottom: 1px solid black !important;">
+                    <td>
+                      <h6 id="invoiceItem"></h6>
+                    </td>
+                    <td>
+                      <p id="invoiceQuantity" style="font-size:16px;"></p>
+                    </td>
+                    <td>
+                      <p id="invoiceUnitPrice" style="font-size:16px;"></p>
+                    </td>
+                    <td>
+                      <p id="invoiceTotalPrice" style="font-size:16px;"></p>
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 0px !important;">
+                    <td style="border-top: 0px !important;padding:0px 8px !important;"></td>
+                    <td style="border-top: 0px !important;padding:0px 8px !important;"></td>
+                    <td style="border-top: 0px !important;border-bottom: 0px !important;padding:0px 8px !important;">
+                      <h6>SUB TOTAL</h6>
+                    </td>
+                    <td style="border-top: 0px !important;border-bottom: 0px !important;padding:0px 8px !important;">
+                      <p id="invoiceSubTotalPrice" style="font-size:16px;"></p>
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 0px !important;border-top: 0px !important;" id="cgst">
+                    <td style="border-top: 0px !important;padding:0px 8px !important;"></td>
+                    <td style="border-top: 0px !important;padding:0px 8px !important;"></td>
+                    <td style="border-top: 0px !important;border-bottom: 0px !important;padding:0px 8px !important;">
+                      <h6 style="font-size:14px;">CGST@2.5%</h6>
+                    </td>
+                    <td style="border-top: 0px !important;border-bottom: 0px !important;padding:0px 8px !important;">
+                      <p id="invoiceCGSTPrice" style="font-size:14px;"></p>
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 0px !important;border-top: 0px !important;" id="sgst">
+                    <td style="border-top: 0px !important;padding:0px 8px !important;"></td>
+                    <td style="border-top: 0px !important;padding:0px 8px !important;"></td>
+                    <td style="border-top: 0px !important;border-bottom: 1px solid black !important;padding:0px 8px !important;">
+                      <h6 style="font-size:14px;">SGST@2.5%</h6>
+                    </td>
+                    <td style="border-top: 0px !important;border-bottom: 1px solid black !important;padding:0px 8px !important;">
+                      <p id="invoiceSGSTPrice" style="font-size:14px;"></p>
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 0px !important;border-top: 0px !important;" id="igst">
+                    <td style="border-top: 0px !important;padding:0px 8px !important;"></td>
+                    <td style="border-top: 0px !important;padding:0px 8px !important;"></td>
+                    <td style="border-top: 0px !important;border-bottom: 1px solid black !important;padding:0px 8px !important;">
+                      <h6 style="font-size:14px;">IGST@5%</h6>
+                    </td>
+                    <td style="border-top: 0px !important;border-bottom: 1px solid black !important;padding:0px 8px !important;">
+                      <p id="invoiceIGSTPrice" style="font-size:14px;"></p>
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 0px !important;">
+                    <td style="border-top: 0px !important;"></td>
+                    <td style="border-top: 0px !important;"></td>
+                    <td>
+                      <h6 style="font-size:16px;">TOTAL</h6>
+                    </td>
+                    <td>
+                      <p id="invoiceFinalTotalPrice" style="font-size:16px;"></p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="addOrder" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Add Order</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <form onsubmit="addOrder(event)" id="form" method="post" enctype="multipart/form-data" autocomplete="off">
+                  <div class="row">
+                      <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="form-group">
+                          <label for="user_id">User</label>
+                          <select class="form-control" id="user_id" style="margin-bottom: 10px;margin-top: 10px;" name="user_id" aria-label="Users Categories" required>
+                            <option value="">Select User</option>
+                          </select>
+                        </div>
+                        <div class="form-group">
+                          <label for="item_id" style="margin-top: 10px;">Products</label>
+                            <select class="form-control" id="item_id" style="margin: 10px 0px;" name="item_id" aria-label="Product">
+                              <option value="">Select product</option>
+                              <% products.forEach((product,index) => { %>
+                                <option value="<%= product.id %>"><%= product.name %> (<%= product.color %>)</option>
+                              <% }); %> 
+                            </select>
+                        </div>
+                        <div class="form-group">
+                          <label for="fullName" style="margin-top: 10px;">Full name</label>
+                          <input type="text" id="fullName" name="fullName" class="form-control" placeholder="Enter full name" style="margin-top: 10px;" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="phoneNumber" style="margin-top: 10px;">Phone number</label>
+                          <input type="tel" maxlength="13" minlength="10" id="phoneNumber" name="phoneNumber" class="form-control" placeholder="Enter phone number" style="margin-top: 10px;" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="finalAddress" style="margin-top: 10px;">Final address</label>
+                          <input type="text" id="finalAddress" name="finalAddress" class="form-control" placeholder="Enter final address" style="margin-top: 10px;" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="description" style="margin-top: 10px;">Size</label>
+                          <select class="form-control" id="description" style="margin-bottom: 10px;margin-top: 10px;" name="description" aria-label="Sizes" required>
+                            <option value="">Select Size</option>
+                            <option value="XS">XS</option>
+                            <option value="S">S</option>
+                            <option value="M">M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                            <option value="XXL">XXL</option>
+                          </select>
+                        </div>
+                        <div class="form-group">
+                          <label for="price" style="margin-top: 10px;">Paid price</label>
+                          <input type="number" id="price" name="price" class="form-control" placeholder="Enter the price (in Rs)" style="margin-top: 10px;" min="0" required>
+                        </div>
+                        <div class="form-group">
+                          <label for="quantity" style="margin-top: 10px;">Quantity</label>
+                          <input type="number" id="quantity" name="quantity" class="form-control" placeholder="Enter the quantity" style="margin-top: 10px;" min="1" required value="1">
+                        </div>
+                        <div class="form-group">
+                          <label for="date_purchased" style="margin-top: 10px;">Purchase Date</label>
+                          <input type="date" id="date_purchased" name="date_purchased" class="form-control" placeholder="Select end date" style="margin-top: 10px;" required>
+                        </div>
+                        <div class="button">
+                          <button type="submit" id="subscriptions_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin-top: 20px;">Add</button>
+                        </div>
+                      </div>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="searchOrders" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+      <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title">Search Orders</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div>
+              <form action="/admin/orders/getSearchOrders" method="get" class="search-form">
+                  <div class="row">
+                      <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="padding: 0px 5px !important;">
+                        <div class="form-group">
+                          <label for="userName" style="margin-top: 10px;">User name</label>
+                          <input type="text" class="form-control" id="userName" name="userName" placeholder="Search by user name" value="<%= userName %>">
+                        </div>
+                        <div class="form-group">
+                          <label for="dateFrom" style="margin-top: 10px;">Date From</label>
+                          <input type="date" class="form-control" id="dateFrom" name="dateFrom" placeholder="Select from date" value="<%= dateFrom %>">
+                        </div>
+                        <div class="form-group">
+                          <label for="status" style="margin-top: 10px;">Status</label>
+                            <select class="form-control" id="status" style="margin: 10px 0px;" name="status" aria-label="Status">
+                                <% if(status.length != 0) {%>
+                                  <option value="<%= status %>"><%= status %></option>
+                                <% } else { %>
+                                  <option value="">Select status</option>
+                                <% } %>
+                                <option value="PLACED">PLACED</option>
+                                <option value="DISPATCHED">DISPATCHED</option>
+                                <option value="ON THE WAY">ON THE WAY</option>
+                                <option value="DELIVERED">DELIVERED</option>
+                                <option value="REJECTED">REJECTED</option>
+                            </select>
+                        </div>
+                      </div>
+                      <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="padding: 0px 5px !important;">
+                        <div class="form-group">
+                          <label for="phoneNumber" style="margin-top: 10px;">Phone number</label>
+                          <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="Search by phone number" value="<%= phoneNumber %>">
+                        </div>
+                        <div class="form-group">
+                          <label for="dateTo" style="margin-top: 10px;">Date To</label>
+                          <input type="date" class="form-control" id="dateTo" name="dateTo" placeholder="Select to date" value="<%= dateTo %>">
+                        </div>
+                        <div class="form-group">
+                          <label for="product" style="margin-top: 10px;">Products</label>
+                            <select class="form-control" id="product" style="margin: 10px 0px;" name="product" aria-label="Product">
+                                <% if(product.length != 0) {%>
+                                  <option value="<%= product  %>"><%= product  %></option>
+                                <% } else { %>
+                                  <option value="">Select Product</option>
+                                <% } %>
+                              <% products.forEach((product,index) => { %>
+                                <option value="<%= product.name %>"><%= product.name %></option>
+                              <% }); %> 
+                            </select>
+                        </div>
+                      </div>
+                      <div class="col-lg-12 col-md-12 col-sm-12 col-12" style="padding: 0px 5px !important;">
+                          <div class="button">
+                              <button type="submit" id="book_verify" class="btn btn-primary d-flex justify-content-center" style="width: 100%;margin-top: 20px;">Search</button>
+                          </div>
+                      </div>
+                  </div>
+              </form>
+            </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="container-fluid" id="main">
+    <div class="top" id="content">
+        <div class="title">
+            <h5>Orders</h5>
+            <p>See all the orders here.</p>
+        </div>
+        <div class="button">
+          <button type="button" id="settings" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchOrders" aria-expanded="false"><span class="iconify" data-icon="akar-icons:search"></span></button>
+        </div>
+    </div>
+    <br>
+    <div class="content_table">
+        <div class="search_bar">
+                <div class="row">
+                    <div class="col-lg-8 col-md-6 d-flex align-items-center">
+                    </div>
+                    <div class="col-lg-4 col-md-6 d-flex align-items-center justify-content-md-end justify-content-start">
+                      <!-- <button id="add" class="btn btn-primary" onclick="generatePDF()"><span class="iconify" data-icon="bx:category"></span>&nbsp;&nbsp;Generate Invoice</button> -->
+                      <% if(!searchPage) { %>
+                        <button class="btn btn-primary addButton" onclick="getUsers()"><span class="iconify" data-icon="carbon:add-alt"></span>&nbsp;&nbsp;Add Order</button>
+                      <% } else { %>
+                        <button class="btn btn-primary" onclick="location.href='/admin/orders?page=1'">Reload</button>
+                      <% } %>
+                    </div>
+                </div>
+        </div>
+        <br>
+        <table id="printTable">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">PRODUCT</th>
+                <th scope="col">NAME/MOBILE</th>
+                <th scope="col">PAYMENT METHOD</th>
+                <th scope="col">COLOR</th>
+                <th scope="col">QUANTITY</th>
+                <th scope="col">PAID PRICE</th>
+                <th scope="col">SIZE</th>
+                <th scope="col">ADDRESS</th>
+                <th scope="col">DATE PURCHASED</th>
+                <th scope="col">STATUS</th>
+                <th scope="col">OPTIONS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if(data.length == 0) { %> 
+                <td>No Orders present</td>
+            <% } else { %>
+                <% data.forEach((order,index) => { %> 
+                    <tr>
+                      <th scope="row"><%= (index+1+metadata.offset) %></th>
+                      <td>
+                        <div class="profile_table_data">
+                          <div class="profile_image">
+                              <img src="<%= order.cover_photo %>" alt="">
+                          </div>
+                          <p style="margin: 0px 5px 0px 10px;"><%= order.productName %></p>
+                        </div>
+                      </td>
+                      <td><%= order.userName %><br><span style="color:var(--sub-text)"><%= order.phoneNumber %></span></td>
+                      <td><%- order.payment_method %></td>
+                      <td><%- order.color %></td>
+                      <td><%= order.quantity %></td>
+                      <% if(parseInt(order.productPrice) + shipping_charges == parseInt(order.paid_price)) { %> 
+                        <td><%= order.paid_price %></td>
+                      <% } else { %> 
+                        <td><%= order.productPrice %></td>
+                      <% } %> 
+                      <td><%= order.details %></td>
+                      <td style="width: 130px;"><%= order.address %></td>
+                      <td><%= order.date_purchased.toString().substring(0,15) %></td>
+                      <td>
+                        <% if(order.status == 'CANCELLED' || order.status == 'REJECTED') { %> 
+                          <a class="warning"><%= order.status %></a>
+                        <% } else { %>
+                          <div class="form-group">
+                              <select class="form-control" onchange="toggleBlocked('<%= order.id %>',`/admin/orders/changeOrderStatus?status=${this.value}&details=<%- order.details %>&quantity=<%- order.quantity %>&item_id=<%- order.item_id %>`)" style="margin: 10px 0px;" aria-label="Status">
+                                  <option value="PLACED" <%- order.status == 'PLACED' ? 'selected' : '' %>>PLACED</option>
+                                  <option value="DISPATCHED" <%- order.status == 'DISPATCHED' ? 'selected' : '' %>>DISPATCHED</option>
+                                  <option value="ON THE WAY" <%- order.status == 'ON THE WAY' ? 'selected' : '' %>>ON THE WAY</option>
+                                  <option value="DELIVERED" <%- order.status == 'DELIVERED' ? 'selected' : '' %>>DELIVERED</option>
+                                  <option value="REJECTED" <%- order.status == 'REJECTED' ? 'selected' : '' %>>REJECTED</option>
+                              </select>
+                          </div>
+                        <% } %> 
+                      </td>
+                      <td>
+                        <div class="options">
+                            <% if(parseInt(order.productPrice) + shipping_charges == parseInt(order.paid_price)) { %> 
+                              <a class="edit" onclick="genreateInvoice('<%= order.id %>','<%= order.userName %>','<%= order.phoneNumber %>','<%= order.address %>','<%= order.productName %>','<%= order.color %>','<%= order.quantity %>','<%= order.paid_price %>','<%= order.date_purchased.toString().substring(0,15) %>')"><span class="iconify" data-icon="mingcute:file-download-line"></span></a>
+                            <% } else { %> 
+                              <a class="edit" onclick="genreateInvoice('<%= order.id %>','<%= order.userName %>','<%= order.phoneNumber %>','<%= order.address %>','<%= order.productName %>','<%= order.color %>','<%= order.quantity %>','<%= order.productPrice %>','<%= order.date_purchased.toString().substring(0,15) %>')"><span class="iconify" data-icon="mingcute:file-download-line"></span></a>
+                            <% } %> 
+                        </div>
+                      </td>
+                    </tr>
+                <% }); %> 
+            <% } %> 
+            </tbody>
+          </table>
+          <% if(!searchPage && data.length != 0 && metadata.total_pages > 1) { %> 
+            <div class="pages">
+                <div class="total_pages">
+                    <div class="form-group">
+                        <input type="number" class="form-control" id="pageNumber" name="pageNumber" placeholder="Total pages = <%= metadata.total_pages %> ">
+                    </div>
+                    <button class="btn btn-primary" onclick="goToPage()">Go</button>
+                </div>
+                <div class="inner_pages">
+                    <% if(metadata.page == 1) { %>
+                        <a id="prev" class="disabled">Prev</a>
+                    <% } else { %>
+                        <a id="prev" onclick="location.href='/admin/orders?page=<%= metadata.page - 1 %>'">Prev</a>
+                    <% } %>
+                    <% if(metadata.total_pages >= 3) { %> 
+                        <% if(metadata.page == metadata.total_pages) { %> 
+                            <a class="page" onclick="location.href='/admin/orders?page=<%= metadata.page - 2 %>'"><%= metadata.page - 2 %></a>
+                            <a class="page" onclick="location.href='/admin/orders?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/orders?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                        <% } else if(metadata.page == (metadata.total_pages - 1)) { %>
+                            <a class="page" onclick="location.href='/admin/orders?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/orders?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/orders?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                        <% } else { %>
+                            <a class="page selected_page" onclick="location.href='/admin/orders?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/orders?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                            <a class="page" onclick="location.href='/admin/orders?page=<%= metadata.page + 2 %>'"><%= metadata.page + 2 %></a>
+                        <% } %>
+                    <% } else if(metadata.total_pages == 2) { %>
+                        <% if(metadata.page == metadata.total_pages) { %> 
+                            <a class="page" onclick="location.href='/admin/orders?page=<%= metadata.page - 1 %>'"><%= metadata.page - 1 %></a>
+                            <a class="page selected_page" onclick="location.href='/admin/orders?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                        <% } else if(metadata.page == (metadata.total_pages - 1)) { %>
+                            <a class="page selected_page" onclick="location.href='/admin/orders?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                            <a class="page" onclick="location.href='/admin/orders?page=<%= metadata.page + 1 %>'"><%= metadata.page + 1 %></a>
+                        <% } %>
+                    <% } else if(metadata.total_pages == 1) { %>
+                        <a class="page selected_page" onclick="location.href='/admin/orders?page=<%= metadata.page %>'"><%= metadata.page %></a>
+                    <% } %>
+                    <% if(metadata.page == metadata.total_pages) { %> 
+                        <a id="next" class="disabled">Next</a>
+                    <% } else { %>
+                        <a id="next" onclick="location.href='/admin/orders?page=<%= metadata.page + 1 %>'">Next</a>
+                    <% } %>
+                </div>
+            </div>
+          <% } %> 
+    </div>
+</div>
+
+<!-- Common.js -->
+<script src="/javascripts/common.js"></script>
+<!---->
+
+<!-- JS PDF -->
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.js"></script>
+
+<script>
+
+var dayTimeModal;
+
+$(function(){
+    
+  $('#item_id').selectize({
+    sortField: 'text'
+  });
+    // bootstraps modals
+    addModal = new bootstrap.Modal(document.getElementById('addOrder'));
+    generateInvoiceModal = new bootstrap.Modal(document.getElementById('generateInvoice'));
+
+});
+  
+  /* Functions */
+
+  async function genreateInvoice(id,userName,phoneNumber,address,productName,color,quantity,paid_price,date_purchased) {
+    document.getElementById('clientName').innerHTML = userName;
+    document.getElementById('clientMobileNumber').innerHTML = phoneNumber;
+    document.getElementById('clientAddress').innerHTML = address;
+    document.getElementById('purchaseDate').innerHTML = date_purchased;
+    document.getElementById('invoiceNumber').innerHTML = `#${id}`;
+    document.getElementById('invoiceItem').innerHTML = `${productName} - ${color}`;
+    document.getElementById('invoiceQuantity').innerHTML = quantity;
+    document.getElementById('invoiceUnitPrice').innerHTML = `Rs ${parseInt(paid_price)/parseInt(quantity)}`;
+    document.getElementById('invoiceTotalPrice').innerHTML = `Rs ${paid_price}`;
+    document.getElementById('invoiceSubTotalPrice').innerHTML = `Rs ${paid_price}`;
+    document.getElementById('invoiceFinalTotalPrice').innerHTML = `Rs ${paid_price}`;
+    if(address.toUpperCase().includes('UTTAR PRADESH')) {
+      document.getElementById('igst').style.display = 'none';
+      document.getElementById('sgst').style.display = 'table-row';
+      document.getElementById('cgst').style.display = 'table-row';
+      document.getElementById('invoiceSGSTPrice').innerHTML = `Rs. ${paid_price*(0.025)}`;
+      document.getElementById('invoiceCGSTPrice').innerHTML = `Rs. ${paid_price*(0.025)}`;
+    } else {
+      document.getElementById('igst').style.display = 'table-row';
+      document.getElementById('sgst').style.display = 'none';
+      document.getElementById('cgst').style.display = 'none';
+      document.getElementById('invoiceIGSTPrice').innerHTML = `Rs. ${paid_price*(0.05)}`;
+    }
+    document.getElementById('')
+    generateInvoiceModal.toggle();
+    document.getElementById('load').style.visibility="visible";
+    const { jsPDF } = window.jspdf;
+    var pdf = new jsPDF('p', 'pt','a4',true);
+    await pdf.html(document.getElementById('invoicePDF'), {
+      callback: function (pdf) {
+        pdf.save(`Invoice_${productName}_${color}_${date_purchased}.pdf`);
+        document.getElementById('load').style.visibility="hidden";
+        generateInvoiceModal.toggle();
+      },
+    });
+  }
+
+  //Get Users
+  function getUsers() {
+    var select = document.getElementById("user_id");
+    var length = select.options.length;
+    for (var i = length-1; i >= 0; i--) {
+        select.options[i] = null;
+    }   
+
+    var option = document.createElement("option");
+    option.text = "Select Users";
+    option.value= "";
+    select.add(option);
+
+    $.ajax({
+            url : `/admin/users/getUserData`,
+            dataType: "json",
+            type: "GET",
+            success: function(response){
+              console.log(response);
+                if(response.data.length != 0){
+                  for(var i=0;i<response.data.length;i++){
+                    var option = document.createElement("option");
+                            option.text = response.data[i].name + '-' + response.data[i].phoneNumber;
+                            option.value= response.data[i].id;
+                            select.add(option);
+                  }
+                } else {
+                    var option = document.createElement("option");
+                        option.text = "No Users present";
+                        option.value= "";
+                        select.add(option);
+                }
+                  // document.getElementById('tableLoader').style.display = 'none';
+                $('#user_id').selectize({
+                    sortField: 'text'
+                });
+
+                addModal.toggle();
+            },
+            error: function(err){
+                    console.log(err);
+                alert('Some error occured !!');
+            }
+        });
+  }
+
+  //Generate PDF
+  function generatePDF() {
+    // window.print();
+    var divToPrint=document.getElementById("printTable");
+  //  document.getElementById("optionTag").style.display = 'none !important';
+   newWin= window.open("");
+   newWin.document.write(divToPrint.outerHTML);
+   newWin.print();
+   newWin.close();
+  }
+
+  //Go to page 
+  function goToPage() {
+      var page = document.getElementById('pageNumber').value;
+      var total_pages = '<%- metadata.total_pages %>';
+      if(page.length != 0) {
+          if(parseInt(page) > parseInt(total_pages)){
+              alert('Please enter a page number less than total pages');
+          } else if(parseInt(page) == 0) {
+              alert('Please enter a page number greater than 0');
+          } else {
+              location.href=`/admin/orders?page=${page}`;
+          }
+      } else {
+          alert('Please enter a page number first');
+      }
+  }
+
+
+  //Add order
+  function addOrder(event) {
+    event.preventDefault();
+    if(document.getElementById('success-alert')) {
+      if(document.getElementById('success-alert').classList.contains('alert-success')) {
+        document.getElementById('success-alert').classList.remove('alert-success');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-danger')) {
+        document.getElementById('success-alert').classList.remove('alert-danger');
+      }
+      if(document.getElementById('success-alert').classList.contains('alert-warning')) {
+        document.getElementById('success-alert').classList.remove('alert-warning');
+      }
+    }
+    var quantity = document.getElementById('quantity').value;
+    var price = document.getElementById('price').value;
+    var fullName = document.getElementById('fullName').value;
+    var phoneNumber = document.getElementById('phoneNumber').value;
+    var finalAddress = document.getElementById('finalAddress').value;
+    var description = document.getElementById('description').value;
+    var item_id = document.getElementById('item_id').value;
+    var user_id = document.getElementById('user_id').value;
+    var date_purchased = document.getElementById('date_purchased').value;
+    $.ajax({
+        url : '/admin/orders/addOrder',
+        dataType: "json",
+        type: "POST",
+        data: {
+          quantity:quantity,
+          price:price,
+          fullName:fullName,
+          phoneNumber:phoneNumber,
+          finalAddress:finalAddress,
+          description:description,
+          item_id:item_id,
+          user_id:user_id,
+          date_purchased:date_purchased,
+        },
+        success: function(response){
+            if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-success');
+                document.getElementById('alertMessage').innerHTML = 'Product added successfully';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+            setTimeout(() => {
+                location.reload();
+            },1000);
+        },
+        error: function(err){
+            console.log(err);
+            if(document.getElementById('success-alert')) {
+                document.getElementById('success-alert').classList.add('alert-danger');
+                document.getElementById('alertMessage').innerHTML = 'Some error occurred.';
+                $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+                    $("#success-alert").slideUp(500);
+                });
+            }
+        }
+    });
+    // console.log(data);
+  }
+
+
+</script>
 
 <%- include('../../components/footer/footer.ejs') %> 

@@ -60,13 +60,24 @@
         document.getElementById('success-alert').classList.remove('alert-warning');
       }
     }
+    if(id.includes('cloth')) {
+        var inputId = document.getElementById(id).getAttribute('data-id');
+    } else {
+        var inputId = '';
+    }
     if(confirm('Do you want to delete it?') == true){
         if(path != '/images/extra/nopreview.jpeg') {
             $.ajax({
-                url : `/admin/common/deleteEditPhoto`,
+                url : id.includes('cloth_web') || id.includes('cloth_mobile') ? `/admin/products/deleteClothCategoryImage` : id.includes('cloth') ? `/admin/products/deleteClothCategoryCoverPhoto` : `/admin/common/deleteEditPhoto`,
                 dataType: "json",
                 type: "POST",
-                data: {
+                data: id.includes('cloth') 
+                ? {
+                    path:path,
+                    id: inputId,
+                    value: id.includes('cloth_web') ? 'web' : id.includes('cloth_mobile') ? 'mobile' : '',
+                }
+                : {
                     path:path
                 },
                 success: function(response){
@@ -77,7 +88,13 @@
                       $("#success-alert").slideUp(500);
                     });
                   }
+                  if(id.includes('cloth')) {
+                    setTimeout(() => {
+                      location.reload();
+                    },1000);
+                  } else {
                     document.getElementById(id).remove();
+                  }
                 },
                 error: function(err){
                     console.log(err);

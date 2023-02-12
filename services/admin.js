@@ -24,7 +24,7 @@ module.exports ={
             req.alert = 'alert-danger';
             next();
         } else {
-            const query = "UPDATE `admin` SET `password` = '"+ (req.body.c_password.length != 0 ? req.body.c_password : req.body.current_password) +"', `phoneNumber` = '"+ req.body.phoneNumber +"', `share_text` = '"+ req.body.shareText +"'";
+            const query = "UPDATE `admin` SET `password` = '"+ (req.body.c_password.length != 0 ? req.body.c_password : req.body.current_password) +"', `phoneNumber` = '"+ req.body.phoneNumber +"', `share_text` = '"+ req.body.shareText +"', `maximum_value` = '"+ req.body.maximum_value +"', `shipping_charges` = '"+ req.body.shipping_charges +"'";
             pool.query(query,function(err,results,fields){
                 if(err) {
                     req.error = 'Database error';

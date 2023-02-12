@@ -125,6 +125,8 @@ router.post('/sendNotification', function(req, res, next) {
             var sql1 = "UPDATE `books` SET `share_url` = '"+ result +"' WHERE `id` = '"+ req.body.item_id +"'";
           } else if(req.body.type == 'blog'){
             var sql1 = "UPDATE `blog` SET `share_url` = '"+ result +"' WHERE `id` = '"+ req.body.item_id +"'";
+          } else if(req.body.type == 'product'){
+            var sql1 = "UPDATE `products` SET `share_url` = '"+ result +"' WHERE `id` = '"+ req.body.item_id +"'";
           }
           pool.query(sql1,function(err,data1){
               if(err) {
@@ -307,11 +309,6 @@ router.post('/sendNotification', function(req, res, next) {
 
 //Main Page
 router.get('/reviews',render.getReviewsPage);
-
-/* Orders */
-
-//Main Page
-router.get('/orders',render.getOrdersPage);
 
 /* Social links */
 

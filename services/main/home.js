@@ -5,7 +5,10 @@ module.exports = {
         var user_id = req.query.user_id;
         if(req.headers.token) {
             var date = req.query.date;
-            var myPrograms = "SELECT c.`id`,tp.*,p.`title`,p.`cover_photo`, t.`name` AS trainerName FROM `subscription` c INNER JOIN `trainer_programs` tp ON tp.`id` = c.`trainer_program_id` INNER JOIN `programs` p ON p.`id` = c.`item_id` JOIN `trainer` t ON t.`id` = tp.`trainer_id` WHERE c.`user_id` = '"+ user_id +"' ORDER BY c.`end_date` DESC";
+            // var myPrograms = "SELECT c.`id`,tp.*,p.`title`,p.`cover_photo`, t.`name` AS trainerName FROM `subscription` c INNER JOIN `trainer_programs` tp ON tp.`id` = c.`trainer_program_id` INNER JOIN `programs` p ON p.`id` = c.`item_id` JOIN `trainer` t ON t.`id` = tp.`trainer_id` WHERE c.`user_id` = '"+ user_id +"' ORDER BY c.`end_date` DESC";
+            var clothCategories = "SELECT * FROM `cloth_category` WHERE `status` = 1";
+            var productCategories = "SELECT * FROM `product_categories` WHERE `status` = 1";
+            var impProducts = "SELECT * FROM `products` WHERE `status` = 1 AND `imp` = 1";
             var user_calories = "SELECT * FROM `user_calories` WHERE `created_at` LIKE '%"+ date +"%' AND `user_id` = '"+ user_id +"'";
             var user_exercise = "SELECT * FROM `user_exercise` WHERE `created_at` LIKE '%"+ date +"%' AND `user_id` = '"+ user_id +"'";
             var exclusivePrograms = "SELECT p.*, (SELECT MIN(tp.`price`) AS price FROM `trainer_programs` tp WHERE tp.`program_id` = p.`id`) AS price FROM `programs` p WHERE p.`status` = 1 AND p.`imp` = 1 AND p.`category` LIKE '%Exclusive for user%' ORDER BY p.`created_at` DESC";
@@ -15,9 +18,78 @@ module.exports = {
             var testimonials = "SELECT * FROM `testimonials` WHERE `status` = 1 AND `imp` =  1 ORDER BY `created_at` DESC";
             var experts = "SELECT * FROM `trainer` WHERE `status` = 1 AND `imp` = 1 ORDER BY `created_at` DESC";
             // console.log(spotlightPrograms);
-            pool.query(myPrograms,function(err,myPrograms){
-                pool.query(user_calories,function(err,user_calories){
-                    pool.query(user_exercise,function(err,user_exercise){
+            pool.query(impProducts,function(err,impProducts){
+                pool.query(clothCategories,function(err,clothCategories){
+                    pool.query(productCategories,function(err,productCategories){
+                        pool.query(user_calories,function(err,user_calories){
+                            pool.query(user_exercise,function(err,user_exercise){
+                                pool.query(exclusivePrograms,function(err,exclusivePrograms){
+                                    pool.query(spotlightPrograms,function(err,spotlightPrograms){
+                                        pool.query(ourBooks,function(err,ourBooks){
+                                            pool.query(popular,function(err,popular){
+                                                pool.query(testimonials,function(err,testimonials){
+                                                    pool.query(experts,function(err,experts){
+                                                        if(err) {
+                                                            console.log(err);
+                                                            res.json({
+                                                                message:'Database_connection_error',
+                                                                myPrograms:[],
+                                                                user_calories:[],
+                                                                user_exercise:[],
+                                                                exclusivePrograms:[],
+                                                                ourBooks:[],
+                                                                popular:[],
+                                                                testimonials:[],
+                                                                experts:[],
+                                                                spotlightPrograms:[],
+                                                                impProducts:[],
+                                                                clothCategories: [],
+                                                                productCategories:[],
+                                                                today:date,
+                                                            });
+                                                        } else {
+                                                          res.json({
+                                                              message:'success',
+                                                              myPrograms:[],
+                                                              user_calories:user_calories,
+                                                              user_exercise:user_exercise,
+                                                              exclusivePrograms:exclusivePrograms,
+                                                              ourBooks:ourBooks,
+                                                              popular:popular,
+                                                              testimonials:testimonials,
+                                                              experts:experts,
+                                                              spotlightPrograms:spotlightPrograms,
+                                                              impProducts:impProducts,
+                                                              clothCategories:clothCategories,
+                                                              productCategories:productCategories,
+                                                              today:date,
+                                                          });
+                                                        }
+                                                    });
+                                                });
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+          } else {
+            var date = new Date();
+            var clothCategories = "SELECT * FROM `cloth_category` WHERE `status` = 1";
+            var productCategories = "SELECT * FROM `product_categories` WHERE `status` = 1";
+            var impProducts = "SELECT * FROM `products` WHERE `status` = 1 AND `imp` = 1";
+            var exclusivePrograms = "SELECT p.*, (SELECT MIN(tp.`price`) AS price FROM `trainer_programs` tp WHERE tp.`program_id` = p.`id`) AS price FROM `programs` p WHERE p.`status` = 1 AND p.`imp` = 1 AND p.`category` LIKE '%Exclusive for user%' ORDER BY p.`created_at` DESC LIMIT 4 OFFSET 0";
+            var spotlightPrograms = "SELECT * FROM `programs` WHERE `status` = 1 AND `imp` = 1 AND `category` LIKE '%Spotlight%' ORDER BY `created_at` DESC";
+            var ourBooks = "SELECT * FROM `books` WHERE `status` = 1 AND `imp` = 1 ORDER BY `created_at` DESC LIMIT 4 OFFSET 0";
+            var popular = "SELECT b.* , (SELECT COUNT(*) FROM `like_comment` lk WHERE lk.`item_id` = b.`id` AND lk.`item_category` = 'blog' AND lk.`category` = 'LIKE') AS totalLikes , (SELECT COUNT(*) FROM `like_comment` lk WHERE lk.`item_id` = b.`id` AND lk.`item_category` = 'blog' AND lk.`category` = 'LIKE' AND lk.`user_id` = '"+ req.query.user_id+"') AS isLiked FROM `blog` b WHERE b.`status` = 1 AND b.`imp` = 1 ORDER BY b.`id` DESC";
+            var testimonials = "SELECT * FROM `testimonials` WHERE `status` = 1 AND `imp` =  1 ORDER BY `created_at` DESC";
+            var experts = "SELECT * FROM `trainer` WHERE `status` = 1 AND `imp` = 1 ORDER BY `created_at` DESC";
+            pool.query(impProducts,function(err,impProducts){
+                pool.query(clothCategories,function(err,clothCategories){
+                    pool.query(productCategories,function(err,productCategories){
                         pool.query(exclusivePrograms,function(err,exclusivePrograms){
                             pool.query(spotlightPrograms,function(err,spotlightPrograms){
                                 pool.query(ourBooks,function(err,ourBooks){
@@ -38,75 +110,31 @@ module.exports = {
                                                         experts:[],
                                                         spotlightPrograms:[],
                                                         today:date,
+                                                        impProducts:[],
+                                                        clothCategories: [],
+                                                        productCategories:[],
                                                     });
                                                 } else {
-                                                  res.json({
-                                                      message:'success',
-                                                      myPrograms:myPrograms,
-                                                      user_calories:user_calories,
-                                                      user_exercise:user_exercise,
-                                                      exclusivePrograms:exclusivePrograms,
-                                                      ourBooks:ourBooks,
-                                                      popular:popular,
-                                                      testimonials:testimonials,
-                                                      experts:experts,
-                                                      spotlightPrograms:spotlightPrograms,
-                                                      today:date,
-                                                  });
+                                                res.json({
+                                                    message:'success_without_token',
+                                                    myPrograms:[],
+                                                    user_calories:[],
+                                                    user_exercise:[],
+                                                    exclusivePrograms:exclusivePrograms,
+                                                    ourBooks:ourBooks,
+                                                    popular:popular,
+                                                    testimonials:testimonials,
+                                                    experts:experts,
+                                                    spotlightPrograms:spotlightPrograms,
+                                                    impProducts:impProducts,
+                                                    clothCategories:clothCategories,
+                                                    productCategories:productCategories,
+                                                    today:date
+                                                });
                                                 }
                                             });
                                         });
                                     });
-                                });
-                            });
-                        });
-                    });
-                });
-            });
-          } else {
-            var date = new Date();
-            var exclusivePrograms = "SELECT p.*, (SELECT MIN(tp.`price`) AS price FROM `trainer_programs` tp WHERE tp.`program_id` = p.`id`) AS price FROM `programs` p WHERE p.`status` = 1 AND p.`imp` = 1 AND p.`category` LIKE '%Exclusive for user%' ORDER BY p.`created_at` DESC LIMIT 4 OFFSET 0";
-            var spotlightPrograms = "SELECT * FROM `programs` WHERE `status` = 1 AND `imp` = 1 AND `category` LIKE '%Spotlight%' ORDER BY `created_at` DESC";
-            var ourBooks = "SELECT * FROM `books` WHERE `status` = 1 AND `imp` = 1 ORDER BY `created_at` DESC LIMIT 4 OFFSET 0";
-            var popular = "SELECT b.* , (SELECT COUNT(*) FROM `like_comment` lk WHERE lk.`item_id` = b.`id` AND lk.`item_category` = 'blog' AND lk.`category` = 'LIKE') AS totalLikes , (SELECT COUNT(*) FROM `like_comment` lk WHERE lk.`item_id` = b.`id` AND lk.`item_category` = 'blog' AND lk.`category` = 'LIKE' AND lk.`user_id` = '"+ req.query.user_id+"') AS isLiked FROM `blog` b WHERE b.`status` = 1 AND b.`imp` = 1 ORDER BY b.`id` DESC";
-            var testimonials = "SELECT * FROM `testimonials` WHERE `status` = 1 AND `imp` =  1 ORDER BY `created_at` DESC";
-            var experts = "SELECT * FROM `trainer` WHERE `status` = 1 AND `imp` = 1 ORDER BY `created_at` DESC";
-            pool.query(exclusivePrograms,function(err,exclusivePrograms){
-                pool.query(spotlightPrograms,function(err,spotlightPrograms){
-                    pool.query(ourBooks,function(err,ourBooks){
-                        pool.query(popular,function(err,popular){
-                            pool.query(testimonials,function(err,testimonials){
-                                pool.query(experts,function(err,experts){
-                                    if(err) {
-                                        console.log(err);
-                                        res.json({
-                                            message:'Database_connection_error',
-                                            myPrograms:[],
-                                            user_calories:[],
-                                            user_exercise:[],
-                                            exclusivePrograms:[],
-                                            ourBooks:[],
-                                            popular:[],
-                                            testimonials:[],
-                                            experts:[],
-                                            spotlightPrograms:[],
-                                            today:date
-                                        });
-                                    } else {
-                                      res.json({
-                                          message:'success_without_token',
-                                          myPrograms:[],
-                                          user_calories:[],
-                                          user_exercise:[],
-                                          exclusivePrograms:exclusivePrograms,
-                                          ourBooks:ourBooks,
-                                          popular:popular,
-                                          testimonials:testimonials,
-                                          experts:experts,
-                                          spotlightPrograms:spotlightPrograms,
-                                          today:date
-                                      });
-                                    }
                                 });
                             });
                         });
@@ -240,6 +268,7 @@ module.exports = {
             string = string + `\`name\` LIKE '%${array[i]}%'`;
         }
     }
+    // var firstQuery = "SELECT * FROM `food` WHERE MATCH(`name`) AGAINST ('"+ queryData.searchedTitle +"') AND `status` = 1 ORDER BY `name`";
     var firstQuery = "SELECT * FROM `food` WHERE `name` LIKE '%"+ queryData.searchedTitle +"%' AND `status` = 1 ORDER BY `name`";
     var query = "SELECT * FROM `food` WHERE "+ string +" AND `status` = 1 ORDER BY `name`";
     pool.query(firstQuery,function(err,results,fields){
@@ -279,6 +308,7 @@ module.exports = {
             string = string + `\`name\` LIKE '%${array[i]}%'`;
         }
     }
+    // var firstQuery = "SELECT * FROM `exercise` WHERE MATCH(`name`) AGAINST ('"+ queryData.searchedTitle +"') OR `cat` LIKE '%"+ queryData.searchedTitle +"%' AND `status` = 1 ORDER BY `name`";
     var firstQuery = "SELECT * FROM `exercise` WHERE `name` LIKE '%"+ queryData.searchedTitle +"%' OR `cat` LIKE '%"+ queryData.searchedTitle +"%' AND `status` = 1 ORDER BY `name`";
     var query = "SELECT * FROM `exercise` WHERE "+ string +" OR `cat` LIKE '%"+ queryData.searchedTitle +"%' AND `status` = 1 ORDER BY `name`";
     pool.query(firstQuery,function(err,results,fields){

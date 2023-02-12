@@ -14,9 +14,9 @@ module.exports ={
         var html = '';
         var compressedimage = path.join(__dirname,'../',imageUploadPath,new Date().getTime() + ".webp");
         await sharp(req.file.path).webp({
-            quality: 50
+            quality: 100
         }).resize({
-            width: 600
+            width: 800
             }).toFile(compressedimage,(err,info) => {
             if(err){
               console.log(err);
@@ -44,31 +44,51 @@ module.exports ={
         var counter = 0;
         for (let i=0; i<req.files.length; i++) {
           task(i,req.files[i]);
-       }
+        }
          
        function task(i,file) {
          setTimeout(function() {
               var compressedimage = path.join(__dirname,'../',imageUploadPath,new Date().getTime() + ".webp");
               var name = 'public/images/uploads/'+ compressedimage.split('/')[compressedimage.split('/').length - 1];
-              sharp(file.path).webp({
-                quality: 50
-              }).resize({
-                  width: 600
-                }).toFile(compressedimage,(err,info) => {
-                if(err){
-                  console.log(err);
-                }
-                fs.unlink(file.path,(err) => {
-                  if(err) {
+              console.log(req.query.category);
+              if(req.query.category) {
+                console.log('hello');
+                sharp(file.path).webp().toFile(compressedimage,(err,info) => {
+                  if(err){
                     console.log(err);
-                  } else {
-                    array_of_names.push(name);
-                    counter++;
-                    // console.log(counter);
-                    check_counter(counter);
                   }
+                  fs.unlink(file.path,(err) => {
+                    if(err) {
+                      console.log(err);
+                    } else {
+                      array_of_names.push(name);
+                      counter++;
+                      // console.log(counter);
+                      check_counter(counter);
+                    }
+                  });
                 });
-              });
+              } else {
+                sharp(file.path).webp({
+                  quality: 100
+                }).resize({
+                    width: 800
+                  }).toFile(compressedimage,(err,info) => {
+                  if(err){
+                    console.log(err);
+                  }
+                  fs.unlink(file.path,(err) => {
+                    if(err) {
+                      console.log(err);
+                    } else {
+                      array_of_names.push(name);
+                      counter++;
+                      // console.log(counter);
+                      check_counter(counter);
+                    }
+                  });
+                });
+              }
          }, 2000 * i);
        }
         function check_counter(counter1){
@@ -81,9 +101,9 @@ module.exports ={
         var compressedimage = path.join(__dirname,'../',imageUploadPath,new Date().getTime() + ".webp");
         var name = 'public/images/uploads/'+ compressedimage.split('/')[compressedimage.split('/').length - 1];
         await sharp(req.file.path).webp({
-          quality: 50
+          quality: 100
         }).resize({
-            width: 600
+            width: 800
           }).toFile(compressedimage,(err,info) => {
             if(err){
               console.log(err);
@@ -96,6 +116,59 @@ module.exports ={
               }
             });
           });
+      },
+      uploadSingleSliderImage: async (req,res,next) => {
+        var array_of_names = [];
+        var counter = 0;
+        for (let i=0; i<req.files.length; i++) {
+          task(i,req.files[i]);
+       }
+         
+       function task(i,file) {
+         setTimeout(function() {
+              var compressedimage = path.join(__dirname,'../',imageUploadPath,new Date().getTime() + ".webp");
+              var name = 'public/images/uploads/'+ compressedimage.split('/')[compressedimage.split('/').length - 1];
+              sharp(file.path).webp().toFile(compressedimage,(err,info) => {
+                if(err){
+                  console.log(err);
+                }
+                fs.unlink(file.path,(err) => {
+                  if(err) {
+                    console.log(err);
+                  } else {
+                    array_of_names.push(name);
+                    if(req.params.category == 'product') {
+                      if(req.params.value == 'web') {
+                        var categories = "UPDATE `product_categories` SET `web_slider` = '"+ name.split('public')[1] +"'  WHERE `id` = '"+ req.params.id +"'";
+                      } else {
+                          var categories = "UPDATE `product_categories` SET `mobile_slider` = '"+ name.split('public')[1] +"'  WHERE `id` = '"+ req.params.id +"'";
+                      }
+                    } else {
+                      if(req.params.value == 'web') {
+                        var categories = "UPDATE `cloth_category` SET `web_slider` = '"+ name.split('public')[1] +"'  WHERE `id` = '"+ req.params.id +"'";
+                      } else {
+                          var categories = "UPDATE `cloth_category` SET `mobile_slider` = '"+ name.split('public')[1] +"'  WHERE `id` = '"+ req.params.id +"'";
+                      }
+                    }
+                    pool.query(categories,function(err,categories){
+                        if(err) {
+                          req.error = 'Database error';
+                        } else {
+                          counter++;
+                          // console.log(counter);
+                          check_counter(counter);
+                        }
+                    });
+                  }
+                });
+              });
+         }, 2000 * i);
+       }
+        function check_counter(counter1){
+          if(counter1 == req.files.length){
+            res.json({files: array_of_names});
+          }
+        }
       },
       deleteImage: (req,res,next) =>{
         var path = `public${req.body.path}`;
@@ -136,9 +209,9 @@ module.exports ={
               var compressedimage = path.join(__dirname,'../',imageUploadPath,new Date().getTime() + ".webp");
               var name = 'public/images/uploads/'+ compressedimage.split('/')[compressedimage.split('/').length - 1];
               sharp(file.path).webp({
-                quality: 50
+                quality: 100
               }).resize({
-                  width: 600
+                  width: 800
                 }).toFile(compressedimage,(err,info) => {
                 if(err){
                   console.log(err);
@@ -149,6 +222,47 @@ module.exports ={
                   } else {
                     array_of_names.push(name);
                     var query  = "INSERT INTO `images` (`path`,`iv_category`,`item_category`,`item_id`) VALUES ('"+ name.slice(6,name.length) +"','image','"+ req.params.value +"','"+ req.params.id +"')";
+                    pool.query(query,function(err,results,fields){
+                        if(err) {
+                          console.log(err);
+                        } else {
+                            counter++;
+                            // console.log(counter);
+                            check_counter(counter);
+                        }
+                    });
+                  }
+                });
+              });
+         }, 2000 * i);
+       }
+        function check_counter(counter1){
+          if(counter1 == req.files.length){
+            res.json({files: array_of_names});
+          }
+        }
+      },
+      saveCategoryEditImages : async (req,res,next) => {
+        var array_of_names = [];
+        var counter = 0;
+        for (let i=0; i<req.files.length; i++) {
+          task(i,req.files[i]);
+       }
+         
+       function task(i,file) {
+         setTimeout(function() {
+              var compressedimage = path.join(__dirname,'../',imageUploadPath,new Date().getTime() + ".webp");
+              var name = 'public/images/uploads/'+ compressedimage.split('/')[compressedimage.split('/').length - 1];
+              sharp(file.path).webp().toFile(compressedimage,(err,info) => {
+                if(err){
+                  console.log(err);
+                }
+                fs.unlink(file.path,(err) => {
+                  if(err) {
+                    console.log(err);
+                  } else {
+                    array_of_names.push(name);
+                    var query  = "UPDATE `cloth_category` SET `cover_photo` = '"+ name.slice(6,name.length) +"'  WHERE `id` = '"+ req.params.id +"'";
                     pool.query(query,function(err,results,fields){
                         if(err) {
                           console.log(err);
@@ -204,10 +318,10 @@ module.exports ={
         var compressedimage = path.join(__dirname,'../',userUploadPath,new Date().getTime() + ".webp");
         var name = 'public/images/user/'+ compressedimage.split('/')[compressedimage.split('/').length - 1];
         await sharp(req.file.path).webp({
-          quality: 50
+          quality: 100
           // lossless: true
         }).resize({
-            width: 600
+            width: 800
           }).toFile(compressedimage,(err,info) => {
             if(err){
               console.log(err);

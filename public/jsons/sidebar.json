@@ -54,6 +54,12 @@
         "sub-options":[]
     },
     {
+        "name": "Orders",
+        "path": "/admin/orders?page=1",
+        "icon": "codicon:list-ordered",
+        "sub-options":[]
+    },
+    {
         "name": "Subscriptions",
         "path": "/admin/subscriptions?page=1",
         "icon": "codicon:list-ordered",

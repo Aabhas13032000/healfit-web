@@ -84,6 +84,7 @@ module.exports = {
                 res.status(200).render('admin/users/each_user',{
                     data:req.data,
                     subscriptions: req.subscriptions,
+                    user_devices: req.user_devices,
                     message: req.message,
                     alert: req.alert,
                 });
@@ -91,6 +92,7 @@ module.exports = {
                 res.status(200).render('admin/users/each_user',{
                     data:req.data,
                     subscriptions: req.subscriptions,
+                    user_devices: req.user_devices,
                     message: null,
                     alert: null,
                 });
@@ -328,6 +330,49 @@ module.exports = {
                     alert: null,
                     searchPage: req.searchPage,
                     searchValue: req.searchValue,
+                    metadata: {
+                        page: req.page,
+                        offset: req.offset,
+                        total_items:req.data.length,
+                        total: req.totalUsers,
+                        total_pages: parseInt(req.totalUsers/20) + 1,
+                    }
+                });
+            }
+        }
+    },
+    getProductPage: (req,res) => {
+        if(req.error) {
+            res.render(req.error);
+        } else {
+            if(req.message) {
+                res.status(200).render('admin/products/products',{
+                    data:req.data,
+                    message: req.message,
+                    alert: req.alert,
+                    searchPage: req.searchPage,
+                    searchValue: req.searchValue,
+                    statusValue:req.statusValue,
+                    categories: req.categories,
+                    clothCategories: req.clothCategories,
+                    metadata: {
+                        page: req.page,
+                        offset: req.offset,
+                        total_items:req.data.length,
+                        total: req.totalUsers,
+                        total_pages: parseInt(req.totalUsers/20) + 1,
+                    }
+                });
+            } else {
+                res.status(200).render('admin/products/products',{
+                    data:req.data,
+                    message: null,
+                    alert: null,
+                    searchPage: req.searchPage,
+                    searchValue: req.searchValue,
+                    statusValue:req.statusValue,
+                    categories: req.categories,
+                    clothCategories: req.clothCategories,
                     metadata: {
                         page: req.page,
                         offset: req.offset,
@@ -605,15 +650,49 @@ module.exports = {
         } else {
             if(req.message) {
                 res.status(200).render('admin/orders/orders',{
-                    // data:req.data,
+                    data:req.data,
                     message: req.message,
                     alert: req.alert,
+                    searchPage: req.searchPage,
+                    dateFrom : req.dateFrom,
+                    dateTo : req.dateTo,
+                    phoneNumber : req.phoneNumber,
+                    userName : req.userName,
+                    products: req.products,
+                    product: req.product,
+                    status: req.status,
+                    maximum_value:req.maximum_value,
+                    shipping_charges:req.shipping_charges,
+                    metadata: {
+                        page: req.page,
+                        offset: req.offset,
+                        total_items:req.data.length,
+                        total: req.totalUsers,
+                        total_pages: parseInt(req.totalUsers/20) + 1,
+                    }
                 });
             } else {
                 res.status(200).render('admin/orders/orders',{
-                    // data:req.data,
+                    data:req.data,
                     message: null,
                     alert: null,
+                    searchPage: req.searchPage,
+                    dateFrom : req.dateFrom,
+                    dateTo : req.dateTo,
+                    phoneNumber : req.phoneNumber,
+                    userName : req.userName,
+                    products: req.products,
+                    product: req.product,
+                    status: req.status,
+                    maximum_value:req.maximum_value,
+                    shipping_charges:req.shipping_charges,
+                    metadata: {
+                        page: req.page,
+                        offset: req.offset,
+                        total_items:req.data.length,
+                        total: req.totalUsers,
+                        total_pages: parseInt(req.totalUsers/20) + 1,
+                    }
                 });
             }
         }
