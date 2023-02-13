@@ -76,11 +76,21 @@
                   <tr style="border-bottom: 0px !important;">
                     <td style="border-top: 0px !important;"></td>
                     <td style="border-top: 0px !important;"></td>
-                    <td style="border-top: 0px !important;border-bottom: 1px solid black !important;">
+                    <td style="border-top: 0px !important;border-bottom: 0px solid black !important;">
                       <h6>SUB TOTAL</h6>
                     </td>
-                    <td style="border-top: 0px !important;border-bottom: 1px solid black !important;">
+                    <td style="border-top: 0px !important;border-bottom: 0px solid black !important;">
                       <p id="invoiceSubTotalPrice" style="font-size:16px;"></p>
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 0px !important;border-top: 0px !important;" id="igst">
+                    <td style="border-top: 0px !important;padding:0px 8px !important;"></td>
+                    <td style="border-top: 0px !important;padding:0px 8px !important;"></td>
+                    <td style="border-top: 0px !important;border-bottom: 1px solid black !important;padding:0px 8px !important;">
+                      <h6 style="font-size:14px;">IGST@5%</h6>
+                    </td>
+                    <td style="border-top: 0px !important;border-bottom: 1px solid black !important;padding:0px 8px !important;">
+                      <p id="invoiceIGSTPrice" style="font-size:14px;"></p>
                     </td>
                   </tr>
                   <tr style="border-bottom: 0px !important;">
@@ -552,10 +562,11 @@ $(function(){
     document.getElementById('invoiceNumber').innerHTML = `#${id}`;
     document.getElementById('invoiceItem').innerHTML = `${productName}`;
     document.getElementById('invoiceQuantity').innerHTML = quantity;
-    document.getElementById('invoiceUnitPrice').innerHTML = `Rs ${paid_price}`;
-    document.getElementById('invoiceTotalPrice').innerHTML = `Rs ${paid_price}`;
-    document.getElementById('invoiceSubTotalPrice').innerHTML = `Rs ${paid_price}`;
+    document.getElementById('invoiceUnitPrice').innerHTML = `Rs ${paid_price - paid_price*(0.05)}`;
+    document.getElementById('invoiceTotalPrice').innerHTML = `Rs ${paid_price - paid_price*(0.05)}`;
+    document.getElementById('invoiceSubTotalPrice').innerHTML = `Rs ${paid_price - paid_price*(0.05)}`;
     document.getElementById('invoiceFinalTotalPrice').innerHTML = `Rs ${paid_price}`;
+    document.getElementById('invoiceIGSTPrice').innerHTML = `Rs. ${(paid_price*(0.05)).toFixed(2)}`;
     document.getElementById('')
     generateInvoiceModal.toggle();
     document.getElementById('load').style.visibility="visible";
