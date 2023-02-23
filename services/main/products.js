@@ -30,6 +30,7 @@ module.exports = {
     },
     getProductsByGender: (req,res,next) => {
         var offset = req.query.offset;
+        var clothCategory = "SELECT `cloth_category` FROM `products` WHERE `gender` LIKE '%"+ req.query.gender +"%' GROUP BY cloth_category";
         if(req.query.gender == 'All') {
           if(req.query.category){
             var totalProducts = "SELECT COUNT(*) AS totalProducts FROM `products` WHERE `status` = 1 AND `cloth_category` = '"+ req.query.category +"'";
@@ -54,28 +55,34 @@ module.exports = {
         pool.query(query,function(err,query){
           pool.query(impProducts,function(err,impProducts){
             pool.query(totalProducts,function(err,totalProducts){
+              pool.query(clothCategory,function(err,clothCategory){
                 if(err) {
                     console.log(err);
                       res.json({
                           message:'Database_connection_error',
                           products: [],
+                          clothCategory:[],
                           totalProducts:0,
                           impProducts:[],
                       });
                 } else {
+                    clothCategory.unshift({ cloth_category: 'ALL' });
                     res.json({
                       message:'success',
                       products:query,
+                      clothCategory:clothCategory,
                       impProducts:impProducts,
                       totalProducts: totalProducts.length != 0 ? totalProducts[0].totalProducts : 0,
                     });
                 }
+              });
             });
           });
         });
     },
     getProductsByCategory: (req,res,next) => {
         var offset = req.query.offset;
+        var clothCategory = "SELECT `cloth_category` FROM `products` WHERE `category` LIKE '%"+ req.query.category +"%' GROUP BY cloth_category";
         if(req.query.cloth_category == 'ALL') {
           if(req.query.category){
             var totalProducts = "SELECT COUNT(*) AS totalProducts FROM `products` WHERE `status` = 1 AND `category` LIKE '%"+ req.query.category +"%'";
@@ -100,6 +107,7 @@ module.exports = {
         pool.query(query,function(err,query){
           pool.query(impProducts,function(err,impProducts){
             pool.query(totalProducts,function(err,totalProducts){
+              pool.query(clothCategory,function(err,clothCategory){
                 if(err) {
                     console.log(err);
                       res.json({
@@ -107,16 +115,20 @@ module.exports = {
                           products: [],
                           totalProducts:0,
                           impProducts:[],
+                          clothCategory:[],
                       });
                 } else {
+                    clothCategory.unshift({ cloth_category: 'ALL' });
                     res.json({
                       message:'success',
                       products:query,
                       impProducts:impProducts,
+                      clothCategory:clothCategory,
                       totalProducts: totalProducts.length != 0 ? totalProducts[0].totalProducts : 0,
                     });
                 }
             });
+          });
           });
         });
     },
@@ -201,8 +213,17 @@ module.exports = {
                               moreProducts: [],
                               eachQuantity:[],
                               similiarColors:[],
+                              sizeChart:'',
                           });
                       } else {
+                        var size_chart = '';
+                        if(query[0].cloth_category == "RAGLAN CROP TOPS") {
+                          size_chart = '/images/local/crop_top.jpg';
+                        } else if(query[0].cloth_category == "REGULAR CREW NECK") {
+                          size_chart = '/images/local/regular_fit.jpg';
+                        } else if(query[0].cloth_category == "OVERSIZED CREW NECK") {
+                          size_chart = '/images/local/oversize.jpg';
+                        }
                         res.json({
                           message:'success',
                           data:query,
@@ -210,6 +231,7 @@ module.exports = {
                           moreProducts: moreProducts,
                           eachQuantity:eachQuantity,
                           similiarColors:similiarColors,
+                          sizeChart:size_chart,
                         });
                       }
                   });

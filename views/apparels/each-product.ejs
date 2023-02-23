@@ -307,7 +307,7 @@
                     document.getElementById('product-discount').style.display = 'none';
                 } else {
                     document.getElementById('product-actual-price').innerHTML =  response.data[0].discount_price == 0 ? '' : dis == 0 ? '' : `Rs.${response.data[0].price}`;
-                    document.getElementById('product-discount').innerHTML = response.data[0].discount_price == 0 ? '' : dis == 0 ? '' : `${dis}%`;
+                    document.getElementById('product-discount').innerHTML = response.data[0].discount_price == 0 ? '' : dis == 0 ? '' : `${dis}% Off`;
                 }
                 document.getElementById('product-desc').innerHTML = response.data[0].description;
 
