@@ -100,7 +100,9 @@
             var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
         }
         document.getElementById('load').style.visibility="visible";
-        document.getElementById('experts').innerHTML = '';
+        if(offset == 0) {
+            document.getElementById('experts').innerHTML = '';
+        }
         $.ajax({
             url : `${baseUrl}api/products/getUserProductOrders?user_id=${user_id}&offset=${offset}`,
             dataType: "json",

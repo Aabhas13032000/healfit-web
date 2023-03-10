@@ -2,13 +2,32 @@ const { query } = require('express');
 const pool = require('../../database/connection');
 
 module.exports = {
+  getAddress: (req,res,next) => {
+      if(req.headers.token) {
+        var address = "SELECT * FROM `address` WHERE `id` = '"+ req.query.id +"'";
+        pool.query(address,function(err,address){
+          if(err) {
+            console.log(err);
+              res.json({message:'Database_connection_error'});
+          } else {
+            res.json({
+              message: 'success',
+              address:address,
+          });
+          }
+      });
+        } else {
+          res.json({
+            message : 'Auth_token_failure',
+          });
+        }
+  },
     addAddress: (req,res,next) => {
         if(req.headers.token) {
           var area = req.body.area.replace(/'/g, '-').replace(/"/g, '');
           var landmark = req.body.landmark.replace(/'/g, '-').replace(/"/g, '');
           var flat_no = req.body.flat_no.replace(/'/g, '-').replace(/"/g, '');
           var checkCart = "INSERT INTO `address` (`user_id`,`full_name`,`phoneNumber`,`flat_no`,`area`,`landmark`,`pincode`,`city`,`state`,`category`) VALUES ('"+ req.body.user_id +"','"+ req.body.full_name +"','"+ req.body.phoneNumber +"','"+ flat_no +"','"+ area +"','"+ landmark +"','"+ req.body.pincode +"','"+ req.body.city +"','"+ req.body.state +"','"+ req.body.category +"')";
-          console.log(checkCart);
           pool.query(checkCart,function(err,checkCart){
             if(err) {
               console.log(err);
@@ -85,4 +104,32 @@ module.exports = {
             });
           }
     },
+    getCitiesStates: (req,res,next) => {
+      if(req.headers.token) {
+      var cities = "SELECT c.* , s.`name` AS state_name FROM `cities` c INNER JOIN `states` s ON s.`id` = c.`state_id` WHERE s.`country_id` = 101 ORDER BY c.`name`";
+      var states = "SELECT * FROM `states` WHERE `country_id` = 101";
+      pool.query(cities,function(err,cities){
+          pool.query(states,function(err,states){
+              if(err) {
+                  console.log(err);
+                  res.json({
+                    message:'Database_connection_error',
+                    cities:[],
+                    states:[],
+                  });
+              } else {
+                  res.json({
+                    message:'success',
+                    cities:cities,
+                    states:states,
+                  });
+              }
+          });
+      });
+    } else {
+      res.json({
+        message : 'Auth_token_failure',
+      });
+    }
+  },
 }

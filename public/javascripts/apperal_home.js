@@ -75,7 +75,7 @@ function apperalSaveData(event) {
         var token = document.cookie.split(';')[index].split('apperalUserToken=')[1];
         var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
     }
-    var name = document.getElementById('fullname1').value;
+    var name = document.getElementById('fullname1').value.trim();
     var email = document.getElementById('email1').value;
     if(document.getElementsByClassName('selected-gcard')[0]) {
         var gender = document.getElementsByClassName('selected-gcard')[0].getAttribute('data-gvalue');

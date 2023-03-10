@@ -28,6 +28,13 @@ module.exports = {
         if(req.headers.token) {
           var isShowForceUpdate = false;
           var isShowUpdate =  false;
+          var isPaymentAllowed =  false;
+          var allowedCountries = ['+91'];
+          var slider = [
+            'https://cdn.mos.cms.futurecdn.net/KLZwUWe4JwyyXY7pV7CpaU.jpg',
+            'https://resize.indiatvnews.com/en/resize/newbucket/1200_-/2022/02/fitness-tips-1645774618.jpg',
+            'https://static.wixstatic.com/media/6a670ac1508f442cac494d76770e1ded.jpg/v1/fill/w_640,h_452,al_t,q_80,usm_0.66_1.00_0.01,enc_auto/6a670ac1508f442cac494d76770e1ded.jpg',
+        ];
           if(req.headers.app_version){
             // console.log(req.headers.app_version);
             if(req.headers.platform == 'ANDROID') {
@@ -52,14 +59,21 @@ module.exports = {
                       user:[],
                       isShowForceUpdate : false,
                       isShowUpdate : false,
+                      allowedCountries: true,
+                      slider:slider,
                   });
               } else {
                 if(user.length !=0){ 
+                  if(allowedCountries.includes(user[0].country_code)) {
+                    isPaymentAllowed = true;
+                  }
                   res.json({
                     message:'User_Authenticated_successfully',
                     user:user,
                     isShowForceUpdate : isShowForceUpdate,
                     isShowUpdate : isShowUpdate,
+                    isPaymentAllowed : isPaymentAllowed,
+                    slider:slider,
                   });
                 } else {
                   const insertUser  = "INSERT INTO `users` (`device_id`,`device`) VALUES ('"+ req.headers.token +"','"+ req.headers.platform +"')";
@@ -73,6 +87,7 @@ module.exports = {
                             user:[],
                             isShowForceUpdate : false,
                             isShowUpdate : false,
+                            slider:slider,
                         });
                       } else { 
                         res.json({
@@ -91,6 +106,10 @@ module.exports = {
                               profile_image: "",
                               phoneNumber: "",
                               height: 0,
+                              country_code: '+91',
+                              medical_conditions: '',
+                              food_allergies: '',
+                              goal: '',
                               device: req.headers.platform,
                               status: "ACTIVE",
                               is_otp_verified: 0,
@@ -99,6 +118,8 @@ module.exports = {
                           ],
                           isShowForceUpdate : isShowForceUpdate,
                           isShowUpdate : isShowUpdate,
+                          isPaymentAllowed : isPaymentAllowed,
+                          slider:slider,
                         });
                       }
                     });
@@ -112,12 +133,15 @@ module.exports = {
               user:[],
               isShowForceUpdate : false,
               isShowUpdate : false,
+              slider:slider,
             });
           }
     },
     updatePhoneNumber : (req, res, next) => {
         var date = new Date();
         // console.log(req.headers.token);
+          var isPaymentAllowed =  false;
+          var allowedCountries = ['+91'];
         if(req.headers.token) {
           const user = "SELECT u.*,ud.`logged_in`,ud.`is_otp_verified` FROM `user_devices` ud INNER JOIN `users` u ON u.`id` = ud.`user_id` WHERE ud.`device_id` = '"+ req.headers.token +"' AND ud.`device` = '"+ req.headers.platform +"'";
           pool.query(user,function(err,user){
@@ -138,13 +162,18 @@ module.exports = {
                         res.json({
                             message:'Database_connection_error',
                             user:[],
+                            isPaymentAllowed : isPaymentAllowed,
                         });
                       } else { 
+                        if(allowedCountries.includes(user[0].country_code)) {
+                          isPaymentAllowed = true;
+                        }
                         user[0].logged_in = 0;
                         user[0].is_otp_verified = 1;
                         res.json({
                           message:'Updated_successfully',
-                          user: user
+                          user: user,
+                          isPaymentAllowed : isPaymentAllowed,
                         });
                       }
                     });
@@ -156,13 +185,18 @@ module.exports = {
                         res.json({
                             message:'Database_connection_error',
                             user:[],
+                            isPaymentAllowed : isPaymentAllowed,
                         });
                       } else { 
+                        if(allowedCountries.includes(user[0].country_code)) {
+                          isPaymentAllowed = true;
+                        }
                         user[0].logged_in = 1;
                         user[0].is_otp_verified = 1;
                         res.json({
                           message:'Updated_successfully',
-                          user: user
+                          user: user,
+                          isPaymentAllowed : isPaymentAllowed,
                         });
                       }
                     });
@@ -175,6 +209,7 @@ module.exports = {
                         res.json({
                             message:'Database_connection_error',
                             user:[],
+                            isPaymentAllowed : isPaymentAllowed,
                         });
                     } else {
                       if(checkUser.length != 0){
@@ -186,13 +221,18 @@ module.exports = {
                               res.json({
                                   message:'Database_connection_error',
                                   user:[],
+                                  isPaymentAllowed : isPaymentAllowed,
                               });
                             } else { 
+                              if(allowedCountries.includes(checkUser[0].country_code)) {
+                                isPaymentAllowed = true;
+                              }
                               checkUser[0].logged_in = 0;
                               checkUser[0].is_otp_verified = 1;
                               res.json({
                                 message:'Updated_successfully',
-                                user: checkUser
+                                user: checkUser,
+                                isPaymentAllowed : isPaymentAllowed,
                               });
                             }
                           });
@@ -204,19 +244,24 @@ module.exports = {
                               res.json({
                                   message:'Database_connection_error',
                                   user:[],
+                                  isPaymentAllowed : isPaymentAllowed,
                               });
                             } else { 
+                              if(allowedCountries.includes(checkUser[0].country_code)) {
+                                isPaymentAllowed = true;
+                              }
                               checkUser[0].logged_in = 1;
                               checkUser[0].is_otp_verified = 1;
                               res.json({
                                 message:'Updated_successfully',
-                                user: checkUser
+                                user: checkUser,
+                                isPaymentAllowed : isPaymentAllowed,
                               });
                             }
                           });
                         }
                       } else {
-                        const insertUser  = "INSERT INTO `users` (`device_id`,`device`,`phoneNumber`) VALUES ('"+ req.headers.token +"','"+ req.headers.platform +"','"+ req.body.phoneNumber +"')";
+                        const insertUser  = "INSERT INTO `users` (`device_id`,`device`,`phoneNumber`,`country_code`) VALUES ('"+ req.headers.token +"','"+ req.headers.platform +"','"+ req.body.phoneNumber +"','"+ req.body.country_code +"')";
                         const deleteUser = "DELETE FROM `users` WHERE `device_id` = '"+ req.headers.token +"' AND `phoneNumber` = '+910000000000'";
                         pool.query(insertUser,function(err,insertUser){
                           const updateUserDevice = "UPDATE `user_devices` SET `logged_in` = 0, `user_id` = '"+ insertUser.insertId +"',`is_otp_verified` = 1 WHERE `device` = '"+ req.headers.platform +"' AND `device_id` = '"+ req.headers.token +"'";
@@ -226,8 +271,12 @@ module.exports = {
                               res.json({
                                   message:'Database_connection_error',
                                   user:[],
+                                  isPaymentAllowed : isPaymentAllowed,
                               });
                             } else { 
+                              if(allowedCountries.includes(req.body.country_code)) {
+                                isPaymentAllowed = true;
+                              }
                               pool.query(deleteUser,function(err,deleteUser){
                                 res.json({
                                   message:'Updated_successfully',
@@ -245,12 +294,17 @@ module.exports = {
                                       profile_image: "",
                                       phoneNumber: req.body.phoneNumber,
                                       height: 0,
+                                      country_code: req.body.country_code,
+                                      medical_conditions: '',
+                                      food_allergies: '',
+                                      goal: '',
                                       device: req.headers.platform,
                                       status: "ACTIVE",
                                       is_otp_verified: 1,
-                                      created_at: date.toISOString()
+                                      created_at: date.toISOString(),
                                     }
                                   ],
+                                  isPaymentAllowed : isPaymentAllowed,
                                 });
                               });
                             }
@@ -261,7 +315,7 @@ module.exports = {
                   });
                 }
               } else {
-                const insertUser  = "INSERT INTO `users` (`device_id`,`device`,`phoneNumber`) VALUES ('"+ req.headers.token +"','"+ req.headers.platform +"','"+ req.body.phoneNumber +"')";
+                const insertUser  = "INSERT INTO `users` (`device_id`,`device`,`phoneNumber`,`country_code`) VALUES ('"+ req.headers.token +"','"+ req.headers.platform +"','"+ req.body.phoneNumber +"','"+ req.body.country_code +"')";
                 const deleteUser = "DELETE FROM `users` WHERE `device_id` = '"+ req.headers.token +"' AND `phoneNumber` = '+910000000000'";
                 pool.query(insertUser,function(err,insertUser){
                   const insertUserId  = "INSERT INTO `user_devices` (`user_id`,`device_id`,`device`,`is_otp_verified`) VALUES ('"+ insertUser.insertId +"','"+ req.headers.token +"','"+ req.headers.platform +"',1)";
@@ -271,8 +325,12 @@ module.exports = {
                       res.json({
                           message:'Database_connection_error',
                           user:[],
+                          isPaymentAllowed : isPaymentAllowed,
                       });
                     } else { 
+                      if(allowedCountries.includes(req.body.country_code)) {
+                        isPaymentAllowed = true;
+                      }
                       pool.query(deleteUser,function(err,deleteUser){
                         res.json({
                           message:'Updated_successfully',
@@ -291,11 +349,16 @@ module.exports = {
                               phoneNumber: req.body.phoneNumber,
                               height: 0,
                               device: req.headers.platform,
+                              country_code: req.body.country_code,
+                              medical_conditions: '',
+                              food_allergies: '',
+                              goal: '',
                               status: "ACTIVE",
                               is_otp_verified: 1,
                               created_at: date.toISOString()
                             }
                           ],
+                          isPaymentAllowed : isPaymentAllowed,
                         });
                       });
                     }
@@ -313,8 +376,10 @@ module.exports = {
       },
       updateData : (req,res,next) => {
         var date = new Date();
+        var isPaymentAllowed =  false;
+        var allowedCountries = ['+91'];
         if(req.headers.token) {
-            const user = "UPDATE `users` SET `name` = '"+ req.body.name +"',`email` = '"+ req.body.email +"',`gender` = '"+ req.body.gender +"',`age` = '"+ req.body.age +"',`weight` = '"+ req.body.weight +"',`target_weight` = '"+ req.body.target_weight +"',`profile_image` = '"+ req.body.profile_image +"',`height` = '"+ req.body.height +"' WHERE `id` = '"+ req.body.user_id +"'";
+            const user = "UPDATE `users` SET `name` = '"+ req.body.name +"',`email` = '"+ req.body.email +"',`gender` = '"+ req.body.gender +"',`age` = '"+ req.body.age +"',`weight` = '"+ req.body.weight +"',`target_weight` = '"+ req.body.target_weight +"',`profile_image` = '"+ req.body.profile_image +"',`height` = '"+ req.body.height +"',`medical_conditions` = '"+ req.body.medical_conditions +"',`food_allergies` = '"+ req.body.food_allergies +"',`goal` = '"+ req.body.goal +"' WHERE `id` = '"+ req.body.user_id +"'";
             const userId = "UPDATE `user_devices` SET `logged_in` = 1 WHERE `device_id` = '"+ req.headers.token +"'";
             pool.query(user,function(err,user){
               pool.query(userId,function(err,userId){
@@ -323,8 +388,12 @@ module.exports = {
                     res.json({
                         message:'Database_connection_error',
                         user:[],
+                        isPaymentAllowed : isPaymentAllowed,
                     });
                 } else {
+                  if(allowedCountries.includes(req.body.country_code)) {
+                    isPaymentAllowed = true;
+                  }
                     res.json({
                     message:'Updated_successfully',
                     user:[
@@ -342,11 +411,16 @@ module.exports = {
                         phoneNumber: req.body.phoneNumber,
                         height: req.body.height,
                         device: req.headers.platform,
+                        country_code: req.body.country_code,
+                        medical_conditions: req.body.medical_conditions,
+                        food_allergies: req.body.food_allergies,
+                        goal: req.body.goal,
                         status: "ACTIVE",
                         is_otp_verified: 1,
                         created_at: date.toISOString()
                       }
                     ],
+                    isPaymentAllowed : isPaymentAllowed,
                     });
                 }
               });

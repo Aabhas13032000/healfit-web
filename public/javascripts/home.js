@@ -622,7 +622,7 @@ function saveData(event) {
         var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
         var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
     }
-    var name = document.getElementById('fullname').value;
+    var name = document.getElementById('fullname').value.trim();
     var email = document.getElementById('email').value;
     if(document.getElementsByClassName('selected-gcard')[0]) {
         var gender = document.getElementsByClassName('selected-gcard')[0].getAttribute('data-gvalue');
@@ -632,56 +632,66 @@ function saveData(event) {
     var age = document.getElementById('age').value;
     var weight = document.getElementById('weight').value;
     var target_weight = document.getElementById('target_weight').value;
+    var medical_conditions = document.getElementById('medical_conditions').value.trim();
+    var food_allergies = document.getElementById('food_allergies').value.trim();
+    var goal = document.getElementById('goal').value.trim();
     var height = `${document.getElementById('ft').value}.${document.getElementById('in').value}`;
-    if(gender.length != 0) {
-        var selectedImage = document.getElementById('profileImageData').getAttribute('src');
-        if(selectedImage == '/images/local/addImage.png') {
-            if(gender == '1'){
-                selectImage = '/images/local/male.png';
-            } else if(gender == '2'){
-                selectImage = '/images/local/female.png';
-            } else if(gender == '3'){
-                selectImage = '/images/local/others.png';
-            } else {
-                selectImage = '/images/local/male.png';
+    if(name.length != 0){
+        if(gender.length != 0) {
+            var selectedImage = document.getElementById('profileImageData').getAttribute('src');
+            if(selectedImage == '/images/local/addImage.png') {
+                if(gender == '1'){
+                    selectImage = '/images/local/male.png';
+                } else if(gender == '2'){
+                    selectImage = '/images/local/female.png';
+                } else if(gender == '3'){
+                    selectImage = '/images/local/others.png';
+                } else {
+                    selectImage = '/images/local/male.png';
+                }
             }
+            // if(selectedImage != '/images/local/addImage.png') {
+                $.ajax({
+                    url : `/api/updateData`,
+                    dataType: "json",
+                    type: "POST",
+                    headers: {
+                        'token':token ? token : 'testing',
+                        'platform': 'WEB'
+                    },
+                    data: {
+                        name: name,
+                        email: email,
+                        gender: gender,
+                        age: age,
+                        weight: weight,
+                        target_weight: target_weight.length != 0 ? target_weight : 0,
+                        profile_image: selectedImage,
+                        height: height,
+                        user_id: user_id,
+                        medical_conditions:medical_conditions,
+                        food_allergies:food_allergies,
+                        goal:goal,
+                    },
+                    success: function(response){
+                        setTimeout(() => {
+                            location.reload();
+                        },1000);
+                    },
+                    error: function(err){
+                        if(isDevelopment) {
+                        console.log(err);
+                    }
+                    }
+                });
+        //   } else {
+        //     alert('Select a profile image');
+        //   }
+        } else {
+            alert('Select a gender');
         }
-        // if(selectedImage != '/images/local/addImage.png') {
-            $.ajax({
-                url : `/api/updateData`,
-                dataType: "json",
-                type: "POST",
-                headers: {
-                    'token':token ? token : 'testing',
-                    'platform': 'WEB'
-                },
-                data: {
-                    name: name,
-                    email: email,
-                    gender: gender,
-                    age: age,
-                    weight: weight,
-                    target_weight: target_weight.length != 0 ? target_weight : 0,
-                    profile_image: selectedImage,
-                    height: height,
-                    user_id: user_id,
-                },
-                success: function(response){
-                    setTimeout(() => {
-                        location.reload();
-                    },1000);
-                },
-                error: function(err){
-                    if(isDevelopment) {
-                    console.log(err);
-                }
-                }
-            });
-    //   } else {
-    //     alert('Select a profile image');
-    //   }
     } else {
-        alert('Select a gender');
+        alert('Please enter a name');
     }
 }
 
@@ -709,7 +719,7 @@ function saveData1(event) {
         var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
         var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
     }
-    var name = document.getElementById('fullname1').value;
+    var name = document.getElementById('fullname1').value.trim();
     var email = document.getElementById('email1').value;
     if(document.getElementsByClassName('selected-gcard')[0]) {
         var gender = document.getElementsByClassName('selected-gcard')[0].getAttribute('data-gvalue');
@@ -719,57 +729,67 @@ function saveData1(event) {
     var age = document.getElementById('age1').value;
     var weight = document.getElementById('weight1').value;
     var target_weight = document.getElementById('target_weight1').value;
+    var medical_conditions = document.getElementById('medical_conditions1').value.trim();
+    var food_allergies = document.getElementById('food_allergies1').value.trim();
+    var goal = document.getElementById('goal1').value.trim();
     var userId = document.getElementById('user_values').getAttribute('data-userId');
     var height = `${document.getElementById('ft1').value}.${document.getElementById('in1').value}`;
-    if(gender.length != 0) {
-        var selectedImage = document.getElementById('profileImageData1').getAttribute('src');
-        // if(selectedImage != '/images/local/addImage.png') {
-            if(selectedImage == '/images/local/addImage.png') {
-                if(gender == '1'){
-                    selectImage = '/images/local/male.png';
-                } else if(gender == '2'){
-                    selectImage = '/images/local/female.png';
-                } else if(gender == '3'){
-                    selectImage = '/images/local/others.png';
-                } else {
-                    selectImage = '/images/local/male.png';
+    if(name.length != 0){
+        if(gender.length != 0) {
+            var selectedImage = document.getElementById('profileImageData1').getAttribute('src');
+            // if(selectedImage != '/images/local/addImage.png') {
+                if(selectedImage == '/images/local/addImage.png') {
+                    if(gender == '1'){
+                        selectImage = '/images/local/male.png';
+                    } else if(gender == '2'){
+                        selectImage = '/images/local/female.png';
+                    } else if(gender == '3'){
+                        selectImage = '/images/local/others.png';
+                    } else {
+                        selectImage = '/images/local/male.png';
+                    }
                 }
-            }
-            $.ajax({
-                url : `/api/updateData`,
-                dataType: "json",
-                type: "POST",
-                headers: {
-                    'token':token ? token : 'testing',
-                    'platform': 'WEB'
-                },
-                data: {
-                    name: name,
-                    email: email,
-                    gender: gender,
-                    age: age,
-                    weight: weight,
-                    target_weight: target_weight.length != 0 ? target_weight : 0,
-                    profile_image: selectedImage,
-                    height: height,
-                    user_id: user_id,
-                },
-                success: function(response){
-                    setTimeout(() => {
-                        location.reload();
-                    },1000);
-                },
-                error: function(err){
-                    if(isDevelopment) {
-                    console.log(err);
-                }
-                }
-            });
-    //   } else {
-    //     alert('Select a profile image');
-    //   }
+                $.ajax({
+                    url : `/api/updateData`,
+                    dataType: "json",
+                    type: "POST",
+                    headers: {
+                        'token':token ? token : 'testing',
+                        'platform': 'WEB'
+                    },
+                    data: {
+                        name: name,
+                        email: email,
+                        gender: gender,
+                        age: age,
+                        weight: weight,
+                        target_weight: target_weight.length != 0 ? target_weight : 0,
+                        profile_image: selectedImage,
+                        height: height,
+                        user_id: user_id,
+                        medical_conditions:medical_conditions,
+                        food_allergies:food_allergies,
+                        goal:goal,
+                    },
+                    success: function(response){
+                        setTimeout(() => {
+                            location.reload();
+                        },1000);
+                    },
+                    error: function(err){
+                        if(isDevelopment) {
+                        console.log(err);
+                    }
+                    }
+                });
+        //   } else {
+        //     alert('Select a profile image');
+        //   }
+        } else {
+            alert('Select a gender');
+        }
     } else {
-        alert('Select a gender');
+        alert('Please enter a name');
     }
 }
 
@@ -1042,6 +1062,9 @@ function setHomeCookie(cname,cvalue,exdays) {
                     document.getElementById('age1').value = response.user[0].age != '0' ? response.user[0].age : '';
                     document.getElementById('weight1').value = response.user[0].weight != '0' ? response.user[0].weight :'';
                     document.getElementById('target_weight1').value = response.user[0].target_weight != '0' ? response.user[0].target_weight : '';
+                    document.getElementById('medical_conditions1').value = response.user[0].medical_conditions;
+                    document.getElementById('food_allergies1').value = response.user[0].food_allergies;
+                    document.getElementById('goal1').value = response.user[0].goal;
                     document.getElementById('ft1').value = response.user[0].height.toString().split('.')[0] != '0' ? response.user[0].height.toString().split('.')[0] : '';
                     document.getElementById('in1').value = response.user[0].height.toString().split('.')[1] != '0' ? response.user[0].height.toString().split('.')[1] : '';
                     if(response.user[0].profile_image != null && response.user[0].profile_image.length != 0){
@@ -1099,6 +1122,9 @@ function setHomeCookie(cname,cvalue,exdays) {
                                 document.getElementById('age').value = response.user[0].age != '0' ? response.user[0].age : '';
                                 document.getElementById('weight').value = response.user[0].weight != '0' ? response.user[0].weight :'';
                                 document.getElementById('target_weight').value = response.user[0].target_weight != '0' ? response.user[0].target_weight : '';
+                                document.getElementById('medical_conditions').value = response.user[0].medical_conditions;
+                                document.getElementById('food_allergies').value = response.user[0].food_allergies;
+                                document.getElementById('goal').value = response.user[0].goal;
                                 document.getElementById('ft').value = response.user[0].height.toString().split('.')[0] != '0' ? response.user[0].height.toString().split('.')[0] : '';
                                 document.getElementById('in').value = response.user[0].height.toString().split('.')[1] != '0' ? response.user[0].height.toString().split('.')[1] : '';
                                 if(response.user[0].profile_image != null && response.user[0].profile_image.length != 0){

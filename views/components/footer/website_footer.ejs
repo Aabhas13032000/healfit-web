@@ -59,9 +59,10 @@
     function submitPhoneNumberAuth() {
         document.getElementById('sign-in-button').setAttribute('disabled','disabled');
         var phoneNumber = document.getElementById("phoneNumber").value;
-            if(phoneNumber.length ==10) {
+        var selectedCountryCode = document.getElementById("selectedCountryCode").value;
+            if(phoneNumber.length >= 10) {
                 var appVerifier = window.recaptchaVerifier;
-                var a = '+91' + phoneNumber;
+                var a = selectedCountryCode + phoneNumber;
                 signInWithPhoneNumber(auth,a, appVerifier)
                     .then(function(confirmationResult) {
                         window.confirmationResult = confirmationResult;
@@ -103,6 +104,7 @@
 
     function submitPhoneNumberAuthCode() {
         var phoneNumber = document.getElementById("phoneNumber").value;
+        var selectedCountryCode = document.getElementById("selectedCountryCode").value;
         document.getElementById('confirm-code').setAttribute('disabled','disabled');
         var code = document.getElementById("code").value;
         document.getElementById('load').style.visibility="visible";
@@ -123,6 +125,7 @@
                         },
                         data:{
                             phoneNumber: phoneNumber,
+                            country_code:selectedCountryCode,
                         },
                         success: function(response){
                             if(isDevelopment) {

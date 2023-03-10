@@ -337,8 +337,9 @@ router.post('/purchaseSingleItemMobile',function (req,res,next){
   var item_id = req.body.item_id;
   var price = req.body.price;
   var productName = req.body.productName;
+  var paymentMethod = req.body.paymentMethod;
   var array = [];
-  var finalQuery  = "INSERT INTO `orders` (`order_id`,`payment_status`,`payment_method`,`quantity`,`paid_price`,`full_name`,`phoneNumber`,`address`,`details`,`item_category`,`item_id`,`user_id`) VALUES ('"+ (user_id+'_'+item_id) +"','pending','COD','"+ quantity +"','"+ price +"','"+ fullName +"','"+ phoneNumber +"','"+ finalAddress +"','"+ description +"','product','"+ item_id +"','"+ user_id +"')";
+  var finalQuery  = "INSERT INTO `orders` (`order_id`,`payment_status`,`payment_method`,`quantity`,`paid_price`,`full_name`,`phoneNumber`,`address`,`details`,`item_category`,`item_id`,`user_id`) VALUES ('"+ (user_id+'_'+item_id) +"','pending','"+ paymentMethod +"','"+ quantity +"','"+ price +"','"+ fullName +"','"+ phoneNumber +"','"+ finalAddress +"','"+ description +"','product','"+ item_id +"','"+ user_id +"')";
   var updateQuantity  = "UPDATE `product_size_quantity` SET `quantity` = `quantity` - 1  WHERE `size` = '"+ description +"' AND `item_id` = '"+ item_id +"'";
   pool.query(finalQuery,function(err,results){
     pool.query(updateQuantity,function(err,updateQuantity){

@@ -243,6 +243,9 @@
                         <p style="margin-bottom: 0;">Shipping Cost : </p>
                         <p style="margin-bottom: 0;">Rs. <span id="shipping-cost">0</span></p>
                     </div>
+                    <div class="details">
+                        <p id="add-item-note" style="margin-bottom: 0;color:var(--warning);font-size:14px">Note : Shipping free above Rs. <span id="shipping-price"></span></p>
+                    </div>
                     <hr>
                     <div class="total">
                         <h5>Total : </h5>
@@ -253,7 +256,7 @@
                         <button type="button" style="border: 0;width: 100%;display: flex;align-items: center;justify-content: center" class="btn btn-primary" onclick="callRazorPayFunctionForCart()">
                             Proceed to pay
                         </button>
-                        <button type="button" onclick="payOnDelivery()" class="btn btn-primary d-flex justify-content-center" style="background-color: transparent !important;color: var(--highlight);width: 100%;margin-left:5px">Pay on delivery</button>
+                        <!-- <button type="button" onclick="payOnDelivery()" class="btn btn-primary d-flex justify-content-center" style="background-color: transparent !important;color: var(--highlight);width: 100%;margin-left:5px">Pay on delivery</button> -->
                     </div>
                 </div>
             </div>
@@ -675,6 +678,7 @@
                 item_id : product_id,
                 price : price,
                 productName : productName,
+                paymentMethod: 'COD'
             }
             document.getElementById('load').style.visibility="visible";
             $.ajax({
@@ -772,6 +776,8 @@ function editAddress(id,full_name,phoneNumber,flat_no,area,landmark,city,state,p
                 }
                 maximum_charge = response.shippingDetails[0].maximum_value;
                 shipping_charge = response.shippingDetails[0].shipping_charges;
+                document.getElementById('add-item-note').style.display = response.shippingDetails[0].maximum_value <= total ? 'none' : 'block';
+                document.getElementById('shipping-price').innerHTML = response.shippingDetails[0].maximum_value <= total ? '' : response.shippingDetails[0].maximum_value;
                 document.getElementById('totalPrice').innerHTML = response.shippingDetails[0].maximum_value <= total ? total : response.shippingDetails[0].shipping_charges + total;
                 document.getElementById('totalItems').innerHTML = response.data.length;
                 document.getElementById('shipping-cost').innerHTML = response.shippingDetails[0].maximum_value <= total ? '0' : response.shippingDetails[0].shipping_charges;

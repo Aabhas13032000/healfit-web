@@ -288,11 +288,17 @@ module.exports = {
                       if(err) {
                           res.json({message:'Database connection error !!'});
                       } else {
-                          res.json({data:results});
+                          res.json({
+                            message:'success',
+                            data:results
+                        });
                       }
                   });
               } else {
-                  res.json({data:results});
+                res.json({
+                  message:'success',
+                  data:results
+              });
               }
           }
       });

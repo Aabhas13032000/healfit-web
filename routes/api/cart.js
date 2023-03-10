@@ -32,6 +32,9 @@ router.post('/increaseDecreaseQuantity',authenticationMiddleware.tokenAuthentica
 //Remove from cart 
 router.post('/removeFromCart',authenticationMiddleware.tokenAuthentication,cartMiddlewares.removeFromCart);
 
+//get Address
+router.get('/getAddress',authenticationMiddleware.tokenAuthentication,addressMiddlewares.getAddress);
+
 //add Address
 router.post('/addAddress',authenticationMiddleware.tokenAuthentication,addressMiddlewares.addAddress);
 
@@ -40,5 +43,8 @@ router.post('/saveAddress',authenticationMiddleware.tokenAuthentication,addressM
 
 //save address 
 router.post('/deleteAddress',authenticationMiddleware.tokenAuthentication,addressMiddlewares.deleteAddress);
+
+//Get Cities/States 
+router.get('/getCitiesStates',authenticationMiddleware.tokenAuthentication,addressMiddlewares.getCitiesStates);
 
 module.exports = router;

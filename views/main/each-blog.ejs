@@ -1,4 +1,4 @@
-<%- include('../components/header/website_header.ejs',{cssFile : 'index',page:page}) %> 
+<%- include('../components/header/website_header.ejs',{cssFile : 'index',page:page,country_codes:country_codes}) %> 
 
 <div id="load"></div>
 
@@ -53,7 +53,8 @@
             <div class="col-12" id="similiarBlogs">
                 <br>
                 <div class="heading" id="heading">
-                    <h5>More blogs to read</h5>
+                    <!-- <h5>More blogs to read</h5> -->
+                    <h5>More Feeds</h5>
                 </div>
                 <br>
                 <div class="row experts" id="moreBlogs">
@@ -153,7 +154,8 @@
                 if(response.moreBlogs.length !=0) {
                     for(var i=0;i<response.moreBlogs.length;i++){
                         var description = response.moreBlogs[i].description;
-                        var desc = description.replace(/<[^>]+>/g, '');
+                        var newdesc = description.replace(/<[^>]+>/g, '');
+                        var desc = newdesc.length > 100 ? `${newdesc.slice(0,100)}...<span style="font-weight: 700;">Read More</span>` : newdesc;
                         var color;
                         var icon;
                         if(response.moreBlogs[i].isLiked == 1) {
@@ -163,7 +165,9 @@
                             color = 'var(--sub-text)';
                             icon = 'bx:like';
                         }
-                        $('#moreBlogs').append('<div class="col-lg-4 col-md-4 col-sm-6 col-12"><div class="box2" style="background-image: url(\''+ response.moreBlogs[i].cover_photo +'\');margin: 0;"><div class="inside_container"><div onclick="window.location.href=\'/each-blog/'+ response.moreBlogs[i].id +'\'"><p class="date">'+ response.moreBlogs[i].created_at.toString().slice(0,10) +'</p><h5>'+ response.moreBlogs[i].title +'</h5><p>'+ desc +'</p></div><div class="info"><p class="downloads" onclick="likeDislike(\''+ response.moreBlogs[i].id +'\')" style="color: '+ color +'" data-liked="'+ response.moreBlogs[i].isLiked +'" id="icon_update_'+ response.moreBlogs[i].id +'"><span class="iconify" id="icon_to_update_'+ response.moreBlogs[i].id +'" data-icon="'+ icon +'"></span>&nbsp;&nbsp;<span id="total_likes_'+ response.moreBlogs[i].id +'">'+ response.moreBlogs[i].totalLikes +'</span></p><p class="date"><span class="iconify" data-icon="akar-icons:comment" onclick="getComments(\''+ response.moreBlogs[i].id +'\',0)"></span>&nbsp;&nbsp;<span class="iconify" data-icon="ci:share" onclick="generateShareLink(\''+ response.moreBlogs[i].id +'\',\'blog\',\''+ ('/each-blog/'+ response.moreBlogs[i].id +'?item_id='+ response.moreBlogs[i].id +'') +'\',\''+ response.moreBlogs[i].share_url +'\')"></span></p></div></div></div></div>');
+                        var openBlog = newdesc.length > 100 ? 'window.location.href=\'/each-blog/'+ response.moreBlogs[i].id +'\'' : '';
+                        //$('#moreBlogs').append('<div class="col-lg-4 col-md-4 col-sm-6 col-12"><div class="box2" style="background-image: url(\''+ response.moreBlogs[i].cover_photo +'\');margin: 0;"><div class="inside_container"><div onclick="window.location.href=\'/each-blog/'+ response.moreBlogs[i].id +'\'"><p class="date">'+ response.moreBlogs[i].created_at.toString().slice(0,10) +'</p><h5>'+ response.moreBlogs[i].title +'</h5><p>'+ desc +'</p></div><div class="info"><p class="downloads" onclick="likeDislike(\''+ response.moreBlogs[i].id +'\')" style="color: '+ color +'" data-liked="'+ response.moreBlogs[i].isLiked +'" id="icon_update_'+ response.moreBlogs[i].id +'"><span class="iconify" id="icon_to_update_'+ response.moreBlogs[i].id +'" data-icon="'+ icon +'"></span>&nbsp;&nbsp;<span id="total_likes_'+ response.moreBlogs[i].id +'">'+ response.moreBlogs[i].totalLikes +'</span></p><p class="date"><span class="iconify" data-icon="akar-icons:comment" onclick="getComments(\''+ response.moreBlogs[i].id +'\',0)"></span>&nbsp;&nbsp;<span class="iconify" data-icon="ci:share" onclick="generateShareLink(\''+ response.moreBlogs[i].id +'\',\'blog\',\''+ ('/each-blog/'+ response.moreBlogs[i].id +'?item_id='+ response.moreBlogs[i].id +'') +'\',\''+ response.moreBlogs[i].share_url +'\')"></span></p></div></div></div></div>');
+                        $('#moreBlogs').append('<div class="col-lg-4 col-md-4 col-sm-6 col-12"><div class="box7" style="margin: 0;"><div class="desc" onclick="'+openBlog+'"><p>'+ desc +'</p></div><div class="image"><img src="'+ response.moreBlogs[i].cover_photo +'" alt=""></div><div class="inside_container"><div class="info"><p class="downloads" onclick="likeDislike(\''+ response.moreBlogs[i].id +'\')" style="color: '+ color +'" data-liked="'+ response.moreBlogs[i].isLiked +'" id="icon_update_'+ response.moreBlogs[i].id +'"><span class="iconify" id="icon_to_update_'+ response.moreBlogs[i].id +'" data-icon="'+ icon +'"></span>&nbsp;&nbsp;<span id="total_likes_'+ response.moreBlogs[i].id +'">'+ response.moreBlogs[i].totalLikes +'</span></p><p class="date"><span class="iconify" data-icon="akar-icons:comment" onclick="getComments(\''+ response.moreBlogs[i].id +'\',0)"></span>&nbsp;&nbsp;<span class="iconify" data-icon="ci:share" onclick="generateShareLink(\''+ response.moreBlogs[i].id +'\',\'blog\',\''+ ('/each-blog/'+ response.moreBlogs[i].id +'?item_id='+ response.moreBlogs[i].id +'') +'\',\''+ response.moreBlogs[i].share_url +'\')"></span></p></div></div></div></div>');
                     }
                 } else {
                     document.getElementById('similiarBlogs').style.display = 'none';

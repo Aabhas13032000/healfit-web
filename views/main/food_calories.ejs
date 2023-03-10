@@ -1,4 +1,4 @@
-<%- include('../components/header/website_header.ejs',{cssFile : 'index',page:page}) %> 
+<%- include('../components/header/website_header.ejs',{cssFile : 'index',page:page,country_codes:country_codes}) %> 
 
 <div id="load"></div>
 
@@ -118,9 +118,12 @@
                     <div class="selectedValue" id="selectedFood" data-foodId="0" data-foodCalories="0">
                         
                     </div>
-                    <form onsubmit="addFood(event)" id="form" method="post" autocomplete="off">
+                    <form onsubmit="addFood(event)" id="myForm" method="post" autocomplete="off">
                         <div class="row">
                             <input type="hidden" name="food_id" id="food_id">
+                            <input type="hidden" name="functionValue" id="functionValue">
+                            <input type="hidden" name="calorieId" id="calorieId">
+                            <input type="hidden" name="calorie_id" id="calorie_id">
                             <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                                 <div class="form-group">
                                     <label for="meal" style="margin:0px 0px 10px 0px;">Meal</label>
@@ -317,65 +320,152 @@ function removeFromUserFoodCalories(id) {
 //Add food
 function addFood(event) {
     event.preventDefault();
-    var value = document.getElementById('selectedFood').innerHTML;
-    var newDate = document.getElementById('currentDateFood').value;
-    if(value.trim().length != 0){
-        document.getElementById('load').style.visibility="visible";
-        var array = document.cookie.split(';');
-        var counter = 0;
-        var index = 0;
-        var userIndex = 0;
-        for(var i=0;i<array.length;i++) {
-            if(array[i].includes('currentUserToken=')){
-                counter++;
-                index = i;
-            }
-            if(array[i].includes('user_id=')){
-                counter++;
-                userIndex = i;
-            }
-        }
-        if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
-            var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
-            var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
-        } else {
-            var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
-            var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
-        }
-        var food_id = document.getElementById('selectedFood').getAttribute('data-foodId');
-        var foodCalories = document.getElementById('selectedFood').getAttribute('data-foodCalories');
-        var meal = document.getElementById('meal').value;
-        var unit = document.getElementById('unit').value;
-        var servings = document.getElementById('servings').value;
-        var calories = parseFloat(foodCalories)*parseFloat(servings);
-
-        $.ajax({
-            url : '/api/addFood',
-            dataType: "json",
-            type: "POST",
-            data: {
-                user_id:user_id,
-                food_id:food_id,
-                meal:meal,
-                unit:unit,
-                servings:servings,
-                calories:calories,
-                date:newDate + ' 00:00:00'
-            },
-            success: function(response){
-                location.reload();
-            },
-            error: function(err){
-                if(isDevelopment) {
-                    console.log(err);
+    var functionValue = document.getElementById('functionValue').value;
+    if(functionValue == 'edit') {
+        var calorieId = document.getElementById('calorieId').value;
+        var value = document.getElementById('selectedFood').innerHTML;
+        var newDate = document.getElementById('currentDateFood').value;
+        if(value.trim().length != 0){
+            document.getElementById('load').style.visibility="visible";
+            var array = document.cookie.split(';');
+            var counter = 0;
+            var index = 0;
+            var userIndex = 0;
+            for(var i=0;i<array.length;i++) {
+                if(array[i].includes('currentUserToken=')){
+                    counter++;
+                    index = i;
                 }
-                alert('Some error occured !!');
+                if(array[i].includes('user_id=')){
+                    counter++;
+                    userIndex = i;
+                }
             }
-        });
+            if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+                var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+                var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+            } else {
+                var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+                var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+            }
+            var food_id = document.getElementById('selectedFood').getAttribute('data-foodId');
+            var foodCalories = document.getElementById('selectedFood').getAttribute('data-foodCalories');
+            var meal = document.getElementById('meal').value;
+            var unit = document.getElementById('unit').innerHTML.split(' ')[2];
+            var servings = document.getElementById('servings').value;
+            var calories = parseFloat(foodCalories)*parseFloat(servings);
+
+            $.ajax({
+                url : '/api/editFood',
+                dataType: "json",
+                type: "POST",
+                data: {
+                    meal:meal,
+                    unit:unit,
+                    servings:servings,
+                    calories:calories,
+                    id:calorieId,
+                },
+                success: function(response){
+                    location.reload();
+                },
+                error: function(err){
+                    if(isDevelopment) {
+                        console.log(err);
+                    }
+                    alert('Some error occured !!');
+                }
+            });
+        } else {
+                alert('Please select a food item first');
+        }
     } else {
-            alert('Please select a food item first');
+        var value = document.getElementById('selectedFood').innerHTML;
+        var newDate = document.getElementById('currentDateFood').value;
+        if(value.trim().length != 0){
+            document.getElementById('load').style.visibility="visible";
+            var array = document.cookie.split(';');
+            var counter = 0;
+            var index = 0;
+            var userIndex = 0;
+            for(var i=0;i<array.length;i++) {
+                if(array[i].includes('currentUserToken=')){
+                    counter++;
+                    index = i;
+                }
+                if(array[i].includes('user_id=')){
+                    counter++;
+                    userIndex = i;
+                }
+            }
+            if(decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1]) {
+                var token = decodeURIComponent(document.cookie).split(';')[index].split('currentUserToken=')[1];
+                var user_id = decodeURIComponent(document.cookie).split(';')[userIndex].split('user_id=')[1];
+            } else {
+                var token = document.cookie.split(';')[index].split('currentUserToken=')[1];
+                var user_id = document.cookie.split(';')[userIndex].split('user_id=')[1];
+            }
+            var food_id = document.getElementById('selectedFood').getAttribute('data-foodId');
+            var foodCalories = document.getElementById('selectedFood').getAttribute('data-foodCalories');
+            var meal = document.getElementById('meal').value;
+            var unit = document.getElementById('unit').innerHTML.split(' ')[2];
+            var servings = document.getElementById('servings').value;
+            var calories = parseFloat(foodCalories)*parseFloat(servings);
+
+            $.ajax({
+                url : '/api/addFood',
+                dataType: "json",
+                type: "POST",
+                data: {
+                    user_id:user_id,
+                    food_id:food_id,
+                    meal:meal,
+                    unit:unit,
+                    servings:servings,
+                    calories:calories,
+                    date:newDate + ' 00:00:00'
+                },
+                success: function(response){
+                    location.reload();
+                },
+                error: function(err){
+                    if(isDevelopment) {
+                        console.log(err);
+                    }
+                    alert('Some error occured !!');
+                }
+            });
+        } else {
+                alert('Please select a food item first');
+        }
     }
   }
+
+  function clearForm() {
+    document.getElementById('selectedFood').innerHTML = '';
+    document.getElementById('myForm').reset();
+    document.getElementById('food_verify').innerHTML = 'Add';
+    document.getElementById('functionValue').value = '';
+    document.getElementById('calorieId').value = '';
+  }
+
+  function editFoodItem(id,name,calories,carbs,fats,fiber,protein,food_quantity,cover_photo,unit,meal,servings,foodId) {
+    document.getElementById('selectedFood').innerHTML = '';
+    document.getElementById('selectedFood').setAttribute('data-foodId',foodId);
+    document.getElementById('selectedFood').setAttribute('data-foodCalories',calories);
+    document.getElementById('servings').style.borderRadius = '10px 0px 0px 10px';
+    document.getElementById('unit').style.padding = '0px 10px';
+    document.getElementById('unit').innerHTML = `* ${food_quantity} ${unit}`;
+    $('#selectedFood').append('<div class="item"><div class="top"><div class="image"><img src="'+ cover_photo +'" alt=""></div><div class="content"> <div class="name"><p>'+ name +' (1 serving = '+ food_quantity +''+ unit +')</p><p>'+ calories +' kcal</p></div><div id="delete-icon3" onclick="clearForm()" style="margin-left: 10px;"><a><span class="iconify" data-icon="ant-design:delete-outlined"></span></a></div></div></div><hr><div class="details"><div class="detail"><p>Protein</p><p>'+ protein +'g</p></div><div class="detail"><p>Carbs</p><p>'+ carbs +'g</p></div><div class="detail"><p>Fats</p><p>'+ fats +'g</p></div><div class="detail"><p>Fiber</p><p>'+ fiber +'g</p></div></div></div>');
+    document.getElementById('searchText').value = '';
+    document.getElementById('foodContent').innerHTML = '';
+    document.getElementById('food_verify').innerHTML = 'Save';
+    document.getElementById('meal').value = meal;
+    document.getElementById('servings').value = servings;
+    document.getElementById('functionValue').value = 'edit';
+    document.getElementById('calorieId').value = id;
+  }
+
 
     function getCalorieCounterData() {
         var newDate = document.getElementById('currentDateFood').value;
@@ -432,19 +522,19 @@ function addFood(event) {
                     for(var i = 0;i<response.user_calories.length;i++) {
                         if(response.user_calories[i].meal == 'BREAKFAST') {
                             breakfast = breakfast + response.user_calories[i].calories;
-                            $('#breakFastItems').append('<div class="item"><div class="image"><img src="'+ response.user_calories[i].cover_photo +'" alt=""></div><div class="content"><div class="name"><p>'+ response.user_calories[i].name +' ('+ response.user_calories[i].servings +' servings)</p><p>'+ response.user_calories[i].calories +' kcal</p></div><div id="delete-icon3" onclick="removeFromUserFoodCalories(\''+ response.user_calories[i].id +'\')" style="margin-left: 10px;"><a><span class="iconify" data-icon="ant-design:delete-outlined"></span></a></div></div></div>');
+                            $('#breakFastItems').append('<div class="item"><div class="image"><img src="'+ response.user_calories[i].cover_photo +'" alt=""></div><div class="content"><div class="name"><p>'+ response.user_calories[i].name +' ('+ response.user_calories[i].servings +' servings)</p><p>'+ response.user_calories[i].calories +' kcal</p></div><div class="d-flex"><div id="delete-icon3" onclick="editFoodItem(\''+ response.user_calories[i].id +'\',\''+ response.user_calories[i].name +'\',\''+ response.user_calories[i].food_calories +'\',\''+ response.user_calories[i].carbs +'\',\''+ response.user_calories[i].fats +'\',\''+ response.user_calories[i].fiber +'\',\''+ response.user_calories[i].protein +'\',\''+ response.user_calories[i].food_quantity +'\',\''+ response.user_calories[i].cover_photo +'\',\''+ response.user_calories[i].unit +'\',\''+ response.user_calories[i].meal +'\',\''+ response.user_calories[i].servings +'\',\''+ response.user_calories[i].food_id +'\')" style="margin-left: 10px;background-color: var(--highlight);"><a><span class="iconify" data-icon="material-symbols:edit-outline-rounded"></span></a></div><div id="delete-icon3" onclick="removeFromUserFoodCalories(\''+ response.user_calories[i].id +'\')" style="margin-left: 10px;"><a><span class="iconify" data-icon="ant-design:delete-outlined"></span></a></div></div></div></div>');
                         }
                         if(response.user_calories[i].meal == 'LUNCH') {
                             lunch = lunch + response.user_calories[i].calories;
-                            $('#lunchItems').append('<div class="item"><div class="image"><img src="'+ response.user_calories[i].cover_photo +'" alt=""></div><div class="content"><div class="name"><p>'+ response.user_calories[i].name +' ('+ response.user_calories[i].servings +' servings)</p><p>'+ response.user_calories[i].calories +' kcal</p></div><div id="delete-icon3" onclick="removeFromUserFoodCalories(\''+ response.user_calories[i].id +'\')" style="margin-left: 10px;"><a><span class="iconify" data-icon="ant-design:delete-outlined"></span></a></div></div></div>');
+                            $('#lunchItems').append('<div class="item"><div class="image"><img src="'+ response.user_calories[i].cover_photo +'" alt=""></div><div class="content"><div class="name"><p>'+ response.user_calories[i].name +' ('+ response.user_calories[i].servings +' servings)</p><p>'+ response.user_calories[i].calories +' kcal</p></div><div class="d-flex"><div id="delete-icon3" onclick="editFoodItem(\''+ response.user_calories[i].id +'\',\''+ response.user_calories[i].name +'\',\''+ response.user_calories[i].food_calories +'\',\''+ response.user_calories[i].carbs +'\',\''+ response.user_calories[i].fats +'\',\''+ response.user_calories[i].fiber +'\',\''+ response.user_calories[i].protein +'\',\''+ response.user_calories[i].food_quantity +'\',\''+ response.user_calories[i].cover_photo +'\',\''+ response.user_calories[i].unit +'\',\''+ response.user_calories[i].meal +'\',\''+ response.user_calories[i].servings +'\',\''+ response.user_calories[i].food_id +'\')" style="margin-left: 10px;background-color: var(--highlight);"><a><span class="iconify" data-icon="material-symbols:edit-outline-rounded"></span></a></div><div id="delete-icon3" onclick="removeFromUserFoodCalories(\''+ response.user_calories[i].id +'\')" style="margin-left: 10px;"><a><span class="iconify" data-icon="ant-design:delete-outlined"></span></a></div></div></div></div>');
                         }
                         if(response.user_calories[i].meal == 'DINNER') {
                             dinner = dinner + response.user_calories[i].calories;
-                            $('#dinnerItems').append('<div class="item"><div class="image"><img src="'+ response.user_calories[i].cover_photo +'" alt=""></div><div class="content"><div class="name"><p>'+ response.user_calories[i].name +' ('+ response.user_calories[i].servings +' servings)</p><p>'+ response.user_calories[i].calories +' kcal</p></div><div id="delete-icon3" onclick="removeFromUserFoodCalories(\''+ response.user_calories[i].id +'\')" style="margin-left: 10px;"><a><span class="iconify" data-icon="ant-design:delete-outlined"></span></a></div></div></div>');
+                            $('#dinnerItems').append('<div class="item"><div class="image"><img src="'+ response.user_calories[i].cover_photo +'" alt=""></div><div class="content"><div class="name"><p>'+ response.user_calories[i].name +' ('+ response.user_calories[i].servings +' servings)</p><p>'+ response.user_calories[i].calories +' kcal</p></div><div class="d-flex"><div id="delete-icon3" onclick="editFoodItem(\''+ response.user_calories[i].id +'\',\''+ response.user_calories[i].name +'\',\''+ response.user_calories[i].food_calories +'\',\''+ response.user_calories[i].carbs +'\',\''+ response.user_calories[i].fats +'\',\''+ response.user_calories[i].fiber +'\',\''+ response.user_calories[i].protein +'\',\''+ response.user_calories[i].food_quantity +'\',\''+ response.user_calories[i].cover_photo +'\',\''+ response.user_calories[i].unit +'\',\''+ response.user_calories[i].meal +'\',\''+ response.user_calories[i].servings +'\',\''+ response.user_calories[i].food_id +'\')" style="margin-left: 10px;background-color: var(--highlight);"><a><span class="iconify" data-icon="material-symbols:edit-outline-rounded"></span></a></div><div id="delete-icon3" onclick="removeFromUserFoodCalories(\''+ response.user_calories[i].id +'\')" style="margin-left: 10px;"><a><span class="iconify" data-icon="ant-design:delete-outlined"></span></a></div></div></div></div>');
                         }
                         if(response.user_calories[i].meal == 'SNACKS') {
                             snacks = snacks + response.user_calories[i].calories;
-                            $('#snacksItems').append('<div class="item"><div class="image"><img src="'+ response.user_calories[i].cover_photo +'" alt=""></div><div class="content"><div class="name"><p>'+ response.user_calories[i].name +' ('+ response.user_calories[i].servings +' servings)</p><p>'+ response.user_calories[i].calories +' kcal</p></div><div id="delete-icon3" onclick="removeFromUserFoodCalories(\''+ response.user_calories[i].id +'\')" style="margin-left: 10px;"><a><span class="iconify" data-icon="ant-design:delete-outlined"></span></a></div></div></div>');
+                            $('#snacksItems').append('<div class="item"><div class="image"><img src="'+ response.user_calories[i].cover_photo +'" alt=""></div><div class="content"><div class="name"><p>'+ response.user_calories[i].name +' ('+ response.user_calories[i].servings +' servings)</p><p>'+ response.user_calories[i].calories +' kcal</p></div><div class="d-flex"><div id="delete-icon3" onclick="editFoodItem(\''+ response.user_calories[i].id +'\',\''+ response.user_calories[i].name +'\',\''+ response.user_calories[i].food_calories +'\',\''+ response.user_calories[i].carbs +'\',\''+ response.user_calories[i].fats +'\',\''+ response.user_calories[i].fiber +'\',\''+ response.user_calories[i].protein +'\',\''+ response.user_calories[i].food_quantity +'\',\''+ response.user_calories[i].cover_photo +'\',\''+ response.user_calories[i].unit +'\',\''+ response.user_calories[i].meal +'\',\''+ response.user_calories[i].servings +'\',\''+ response.user_calories[i].food_id +'\')" style="margin-left: 10px;background-color: var(--highlight);"><a><span class="iconify" data-icon="material-symbols:edit-outline-rounded"></span></a></div><div id="delete-icon3" onclick="removeFromUserFoodCalories(\''+ response.user_calories[i].id +'\')" style="margin-left: 10px;"><a><span class="iconify" data-icon="ant-design:delete-outlined"></span></a></div></div></div></div>');
                         }
                     }
                     total = breakfast + dinner + snacks + lunch;

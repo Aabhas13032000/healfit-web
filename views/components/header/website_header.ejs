@@ -155,7 +155,7 @@
 <div class="modal fade" id="login" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
-            <div class="modal-body">
+            <div class="modal-body" style="overflow-y: scroll !important">
                 <div id="close" data-bs-dismiss="modal">
                     <a><span class="iconify" data-icon="eva:close-fill"></span></a>
                 </div>
@@ -181,8 +181,17 @@
                                 <p>OTP Verification</p>
                                 <div class="form-group">
                                     <label for="phoneNumber" style="margin:0px 0px 10px 0px;">Phone number</label>
-                                    <div class="input-group search" style="height: 50px !important;">
-                                        <a style="background-color: var(--card-bg);">+91</a>
+                                    <div class="input-group search1" style="height: 50px !important;">
+                                        <!-- <a style="background-color: var(--card-bg);">+91</a> -->
+                                        <select class="form-select" id="selectedCountryCode">
+                                            <% for(var i=0;i<country_codes.length;i++){ %>
+                                                <% if(country_codes[i].phone_code == '+91') { %>
+                                                    <option value="<%- country_codes[i].phone_code %>" selected><%= country_codes[i].country %> <%= country_codes[i].phone_code %></option>
+                                                <% } else { %>
+                                                    <option value="<%- country_codes[i].phone_code %>"><%= country_codes[i].country %> <%= country_codes[i].phone_code %></option>
+                                                <% } %>
+                                            <% } %>
+                                          </select>
                                         <input type="text" id="phoneNumber" name="phoneNumber" class="form-control" placeholder="Enter 10 digit phone number here.." maxlength="10" minlength="10" style="border: 0;height: 100%;margin: 0;outline: 0 !important;">
                                     </div>
                                 </div>
@@ -266,6 +275,18 @@
                                         <label for="target_weight" style="margin:10px 0px 10px 0px;">Target weight (optional)</label>
                                         <input type="number" step=0.01 class="form-control" name="target_weight" id="target_weight" placeholder="Enter your target weight"/>
                                     </div>
+                                    <div class="form-group">
+                                        <label for="medical_conditions" style="margin:10px 0px 10px 0px;">Medical Conditionals (optional)</label>
+                                        <textarea type="text" class="form-control" rows="3" name="medical_conditions" id="medical_conditions" placeholder="Mention your medical conditions here.."></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="food_allergies" style="margin:10px 0px 10px 0px;">Food Allergies (optional)</label>
+                                        <textarea type="text" class="form-control" rows="3" name="food_allergies" id="food_allergies" placeholder="Mention your food allergies here.."></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="goal" style="margin:10px 0px 10px 0px;">Goal (optional)</label>
+                                        <textarea type="text" class="form-control" rows="3" name="goal" id="goal" placeholder="Enter your goal here.."></textarea>
+                                    </div>
                                     <div class="button" style="margin:30px 0px 10px 0px;">
                                         <button type="submit" style="border: 0;width: 100%;display: flex;align-items: center;justify-content: center;" class="btn btn-primary">
                                             Submit
@@ -285,7 +306,7 @@
 <div class="modal fade" id="userProfile" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
-            <div class="modal-body">
+            <div class="modal-body" style="overflow-y: scroll !important">
                 <div id="close" data-bs-dismiss="modal">
                     <a><span class="iconify" data-icon="eva:close-fill"></span></a>
                 </div>
@@ -345,12 +366,24 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="weight" style="margin:10px 0px 10px 0px;">Weight</label>
+                                <label for="weight1" style="margin:10px 0px 10px 0px;">Weight</label>
                                 <input type="number" step=0.01 class="form-control" name="weight1" id="weight1" placeholder="Enter your weight" required/>
                             </div>
                             <div class="form-group">
-                                <label for="target_weight" style="margin:10px 0px 10px 0px;">Target weight (optional)</label>
+                                <label for="target_weight1" style="margin:10px 0px 10px 0px;">Target weight (optional)</label>
                                 <input type="number" step=0.01 class="form-control" name="target_weight1" id="target_weight1" placeholder="Enter your target weight"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="medical_conditions1" style="margin:10px 0px 10px 0px;">Medical Conditionals (optional)</label>
+                                <textarea type="text" style="height: unset!important;" class="form-control" rows="3" name="medical_conditions1" id="medical_conditions1" placeholder="Mention your medical conditions here.."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="food_allergies1" style="margin:10px 0px 10px 0px;">Food Allergies (optional)</label>
+                                <textarea type="text" style="height: unset!important;" class="form-control" rows="3" name="food_allergies1" id="food_allergies1" placeholder="Mention your food allergies here.."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="goal1" style="margin:10px 0px 10px 0px;">Goal (optional)</label>
+                                <textarea type="text" style="height: unset!important;" class="form-control" rows="3" name="goal1" id="goal1" placeholder="Enter your goal here.."></textarea>
                             </div>
                             <div class="button" style="margin:30px 0px 10px 0px;">
                                 <button type="submit" style="border: 0;width: 100%;display: flex;align-items: center;justify-content: center" class="btn btn-primary">

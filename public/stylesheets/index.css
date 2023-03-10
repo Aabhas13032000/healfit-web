@@ -239,7 +239,7 @@ textarea::placeholder {
     object-fit: cover;
 }
 
-#delete-icon, #delete-icon1,#delete-icon3 {
+#delete-icon, #delete-icon1,#delete-icon3,#delete-icon4 {
     height: 40px;
     width: 40px;
     border-radius: 50%;
@@ -252,7 +252,7 @@ textarea::placeholder {
     right: -2px;
 }
 
-#delete-icon .iconify, #delete-icon1 .iconify,#delete-icon3 .iconify {
+#delete-icon .iconify, #delete-icon1 .iconify,#delete-icon3 .iconify,#delete-icon4 .iconify {
     height: 20px;
     width: 20px;
     color: var(--white);
@@ -1045,6 +1045,26 @@ textarea::placeholder {
     overflow: hidden;
     /* width: 250px; */
     background-color: var(--background);
+}
+
+.search1 {
+    border: 1.0px solid var(--default-input-borders);
+    border-radius: 8px;
+}
+
+.search1 .form-select {
+    background-color: var(--white) !important;
+    border-right: 1.0px solid var(--default-input-borders) !important;
+    border-top: 0px !important;
+    border-left: 0px !important;
+    border-bottom: 0px !important;
+    color: var(--rich-black) !important;
+    width: 0.3% !important;
+    border-radius: 8px;
+}
+
+.search1 .form-control {
+    flex: 3 !important;
 }
 
 .search .form-control {
@@ -3553,6 +3573,97 @@ textarea::placeholder {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+/* Box 6 - new blog design */
+
+.box7 {
+    min-height: unset !important;
+    max-height: unset !important;
+    height: 350px !important;
+    display: block !important;
+    border-radius: 15px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0px 0px 8px rgba(0,0,0,0.08);
+    transition: all 0.3s ease-in;
+    position: relative;
+    padding: 15px;
+    background-color: var(--white)
+}
+
+.box7 .desc {
+    height: 20%;
+    margin-bottom: 10px;
+}
+
+.box7 .desc p {
+    font-size: 14px;
+}
+
+.box7 .desc p span {
+    font-family: Gilroy-Medium;
+}
+
+.box7 .image {
+    height: 65% !important;
+    border-radius:10px;
+    padding: 0px!important;
+    overflow: hidden;
+}
+
+.box7 .image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.box7 .inside_container{
+    height: 15%;
+    background: var(--white) !important;
+    margin: 0px;
+    border-radius: 10px;
+    padding: 0px 0px 0px 0px;
+    width: 100%;
+    /* height: 170px !important; */
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    overflow: hidden;
+}
+
+.box7 .inside_container .info {
+    min-width: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+.box7 .inside_container .info .downloads {
+    color: var(--sub-text);
+    font-size: 18px;
+    font-family: Hellix-Regular;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.box7 .inside_container .info .downloads .iconify {
+    width: 20px;
+    height: 20px;
+}
+
+.box7 .inside_container .info .date {
+    color: var(--sub-text);
+    font-size: 14px;
+    font-family: Hellix-Regular;
+    margin: 0;
+}
+
+.box7 .inside_container .info .date .iconify {
+    width: 20px;
+    height: 20px;
 }
 
 @media screen and (max-width:1024px) {

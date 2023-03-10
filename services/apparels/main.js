@@ -85,4 +85,16 @@ module.exports = {
             });
         });
     },
+    getCountryCodes: (req,res,next) => {
+        var country_codes = "SELECT * FROM `country_codes`";
+        pool.query(country_codes,function(err,country_codes){
+            if(err) {
+                console.log(err);
+                req.country_codes = [];
+            } else {
+                req.country_codes = country_codes;
+            }
+            next();
+        });
+    },
 }
