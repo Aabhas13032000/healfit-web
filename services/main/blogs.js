@@ -6,7 +6,8 @@ module.exports = {
           var offset = req.query.offset;
           var imp = req.query.imp ? req.query.imp : 0 ;
           // var query = "SELECT * FROM `blog` WHERE `status` = 1 AND `imp` = '"+ imp +"' ORDER BY `id` DESC LIMIT 20 OFFSET "+ offset +"";
-          var totalBlogs = "SELECT COUNT(*) AS totalblogs FROM `blog` WHERE `status` = 1 AND `imp` = '"+ imp +"'";
+          // var totalBlogs = "SELECT COUNT(*) AS totalblogs FROM `blog` WHERE `status` = 1 AND `imp` = '"+ imp +"'";
+          var totalBlogs = "SELECT COUNT(*) AS totalblogs FROM `blog` WHERE `status` = 1";
           // var query = "SELECT b.* , (SELECT COUNT(*) FROM `like_comment` lk WHERE lk.`item_id` = b.`id` AND lk.`item_category` = 'blog' AND lk.`category` = 'LIKE') AS totalLikes , (SELECT COUNT(*) FROM `like_comment` lk WHERE lk.`item_id` = b.`id` AND lk.`item_category` = 'blog' AND lk.`category` = 'LIKE' AND lk.`user_id` = '"+ req.query.user_id+"') AS isLiked FROM `blog` b WHERE b.`status` = 1 AND b.`imp` = '"+ imp +"' ORDER BY b.`id` DESC LIMIT 20 OFFSET "+ offset +"";
           var query = "SELECT b.* , (SELECT COUNT(*) FROM `like_comment` lk WHERE lk.`item_id` = b.`id` AND lk.`item_category` = 'blog' AND lk.`category` = 'LIKE') AS totalLikes , (SELECT COUNT(*) FROM `like_comment` lk WHERE lk.`item_id` = b.`id` AND lk.`item_category` = 'blog' AND lk.`category` = 'LIKE' AND lk.`user_id` = '"+ req.query.user_id+"') AS isLiked FROM `blog` b WHERE b.`status` = 1 ORDER BY b.`id` DESC LIMIT 20 OFFSET "+ offset +"";
           if(offset == 0 && imp == 0) {
